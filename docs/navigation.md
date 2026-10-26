@@ -1,7 +1,7 @@
 # Customising the navigation
 
 The navigation bar is yours to arrange: which buttons, in what order, what they are called, what they look like, whether it sits on
-the left, the right or along the bottom, which of ten styles it has, and how big it is. The same goes for the Quick Panel, the Apps screen and the order of
+the left, the right or along the bottom, which of twelve styles it has, and how big it is. The same goes for the Quick Panel, the Apps screen and the order of
 the dashboard pages.
 
 ![The editor's Look tab, beside the live navigation](screenshots/nav-editor.jpg)
@@ -40,12 +40,12 @@ and that is deliberate: it is the way back to everything else.
 | | |
 | --- | --- |
 | **Where** | left, bottom or right. Along the bottom the bar runs across the screen and the page sits above it |
-| **Style** | ten styles, each shown live on your own buttons (below) |
+| **Style** | twelve styles, each shown live on your own buttons (below) |
 | **Size** | small, medium, large (the buttons are never smaller than 44 px) |
 | **Names under the pictures** | always, current page only, never |
 | **Ready-made** | *Default*; *Minimal* (Home, Music, Auto, names on the current page only); *Driver* (Drive, Music, Auto, large, names on the current page only). Each replaces the whole arrangement, so use *Revert* if it was not what you wanted |
 
-![The ten styles, along the bottom](screenshots/dock-styles.jpg)
+![The twelve styles, along the bottom](screenshots/dock-styles.jpg)
 
 | Style | |
 | --- | --- |
@@ -59,6 +59,8 @@ and that is deliberate: it is the way back to everything else.
 | Text tabs | names only, in tabs |
 | Wave | a bar shaped like a wave |
 | Mascot | your mascot in the middle |
+| Neon tube | a glowing neon tube round the bar, humming now and then |
+| Bubbles | every button its own floating bubble |
 
 The looks in Settings → Looks & layouts choose a matching style; you can change it here afterwards.
 

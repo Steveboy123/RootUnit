@@ -1,5 +1,27 @@
 # Changelog
 
+## 3.1.0: more styles, animations and your own looks
+
+**Themes and styles.** Eight palettes (Neon Noir, Miami, Toxic, Rose Gold, Abyss, Holo, Paper, Peach; 44 in all). Four card styles:
+Brutalist, Holographic, Terminal, Lumen. Four backgrounds: Halftone, Low poly, Sun rays, Plasma. Six wallpapers: Cherry road, Cyber
+alley, Miami beach, Deep sea, Holo waves, Paper hills. A new **Styles** group of 14 looks built around them, each matched end to end.
+
+**Animations.** Six scenes (Highway, Sakura, Embers, Radar, Skyline, Storm), four page transitions (Cube, Drop, Tilt, Portal), three
+touch effects (Sparkle, Ring, 3D press), three album-art styles (Cube, Mirror floor, Sleeve), two navigation bars (Neon tube, Bubbles),
+two mascot motions (Bounce, Drift) and auras (Rings, Aurora). All of them only move transform and opacity, and rest while driving.
+
+**Gauges and clocks.** An LED race dash and a HUD gauge; Nixie, word-clock and binary standby screens.
+
+**Your own looks.** *My looks* saves the look on screen under a name, wears it again in one tap and shares it as a code another head
+unit can add. *Surprise me* puts together a random look that still matches. *Reset the look* is unchanged.
+
+**More.** The WLED lights can match the screen's colour. Three widgets: Calendar, My looks, and a Sound meter that shows the real
+music level (and says so when there is no meter, rather than inventing one). The garage service form has its Note field back.
+
+**Checked by tests:** every new palette against the contrast and distinctness rules; every new option used by at least one look; saved
+looks and share codes against damaged and hostile input; the word and binary clocks; and the CSS rules, now including that no
+animation name is defined twice.
+
 ## 3.0.0 — RootUnit
 
 A new interface and a much bigger choice of looks, with every v2 feature kept. Guides: [themes.md](themes.md),

@@ -32,6 +32,11 @@ Recommended low-cost setup: original ESP32 WROOM board (not ESP8266), WLED 0.15+
 
 Connect ESP32 to same *private* car Wi-Fi as Pi. In **Apps → Lights** enter its IPv4 address (e.g. `192.168.4.40`). The server refuses internet IPs, DNS hostnames and loopback connections for device control. Brightness, colour, mode and effects apply as you change them. The address is checked on the screen as well as the server, and the server is the one that refuses.
 
+**Match the screen** (3.1, in the Colour panel of **Apps → Lights**): the lights take the colour the interface is drawn in, and the
+album's colour while the accent follows the album art. It only works in the plain-colour mode (an effect or a music mode you chose is
+left alone), waits until the colour has settled so a run of track changes sends one colour, and never sends the colour the lights
+already have.
+
 For Pi audio monitor mode, the head-unit uses `parec --device=@DEFAULT_MONITOR@` and streams WLED DRGB LED packets UDP 21324. This is experimental: configure PipeWire/PulseAudio default sink monitoring first, and only enable when audio is playing through that sink. Native HDMI/ALSA applications bypassing PipeWire are not captured. Prefer ESP microphone/line-in to react to everything.
 
 Install LED power with a fuse, proper 12V automotive transient protection, and an appropriate 5V regulator. Never pull LED strip current from the Pi GPIO header. Keep effects dim at night.

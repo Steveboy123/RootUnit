@@ -18,19 +18,28 @@ Pick a whole look in one tap, then change any single part of it. A look sets eve
 wallpaper, card style, depth, glass, motion, typeface, page transitions, gauges, the navigation bar's style and the mascot's motion
 and light.
 
-* **61 ready-made looks**: 6 featured (Retro Synthwave, Arctic Crystal, Phantom Pink, Liquid Chrome, Stealth AMOLED, Nature Drive),
-  25 signature themes, v2's 16 3D scenes and v2's 14 looks.
+* **75 ready-made looks**: 6 featured (Retro Synthwave, Arctic Crystal, Phantom Pink, Liquid Chrome, Stealth AMOLED, Nature Drive),
+  14 design styles (Neo Brutal, Holo Foil, Neon Noir, Toxic Lab, Miami Nights, Deep Dive…), 25 signature themes, v2's 16 3D scenes
+  and v2's 14 looks.
+* **My looks**: save any look under a name, wear it again in one tap, share it as a code, or let **Surprise me** put one together.
 * **4 Home layouts**: Cockpit, Player focus, Glass hub and Classic. Every widget can still be moved, resized or removed.
-* **36 palettes** with day/night switching by the clock or the real sunrise and sunset, and **any accent colour**, kept readable.
-* **8 card styles, 7 depths, 6 glass finishes**, 19 backgrounds, **20 built-in wallpapers** plus your own, and **18 animated scenes**.
-* **15 album-art styles** (spinning vinyl, CD, cassette, hologram, Polaroid…), **7 page transitions**, 3 touch effects.
-* **8 typefaces, 6 gauge styles, 6 standby screens.**
-* **10 navigation bar styles** on the left, the right or along the bottom, with an album or mascot medallion if you like.
+* **44 palettes** with day/night switching by the clock or the real sunrise and sunset, and **any accent colour**, kept readable.
+* **12 card styles** (from glass and chrome to brutalist, holographic and green-screen terminal), **7 depths, 6 glass finishes**,
+  23 backgrounds, **26 built-in wallpapers** plus your own, and **24 animated scenes** (a highway at night, sakura, a radar, a storm…).
+* **18 album-art styles** (spinning vinyl, CD, cassette, a turning cube, a record sliding out of its sleeve…), **11 page
+  transitions**, 6 touch effects.
+* **8 typefaces, 8 gauge styles** (including an LED race dash and a HUD), **9 standby screens** (Nixie tubes, a word clock, binary…).
+* **12 navigation bar styles** on the left, the right or along the bottom, with an album or mascot medallion if you like.
 * **9 music-reactive light styles**, driven by the real sound (never a made-up beat).
-* **The mascot**: 3 artworks, 10 motions, 4 auras, anywhere on the screen.
+* **The mascot**: 3 artworks, 12 motions, 6 auras, anywhere on the screen.
 * **Boot Studio**: the start-up screen, with 10 themes, 9 backgrounds, 8 mascot motions, 9 loaders, 7 letterings and 6 hand-overs.
 
-![The ten navigation styles](docs/screenshots/dock-styles.jpg)
+| | |
+| --- | --- |
+| ![Neon Noir](docs/screenshots/style-neon-noir.jpg) | ![Holo Foil](docs/screenshots/style-holo-foil.jpg) |
+| ![Neo Brutal](docs/screenshots/style-neo-brutal.jpg) | ![Deep Dive](docs/screenshots/style-deep-dive.jpg) |
+
+![The twelve navigation styles](docs/screenshots/dock-styles.jpg)
 
 Guides: [themes and looks](docs/themes.md) · [3D effects and motion](docs/3d-motion.md) · [navigation](docs/navigation.md) ·
 [mascot](docs/mascot.md) · [boot screen](docs/mascot-boot.md) · [music-reactive light](docs/music-reactive.md)
@@ -51,9 +60,15 @@ phones, Wi-Fi, and wired Android Auto through an optional receiver ([android-aut
 | Group | Apps |
 | --- | --- |
 | Car | Trips · Garage · System · Find my car · Performance · Phones · Vehicle |
-| Car Lab | GPS · Lights (WLED) · Dashcam · FM transmitter ([car-lab.md](docs/car-lab.md)) |
+| Car Lab | GPS · Lights (WLED, which can match the screen's colour) · Dashcam · FM transmitter ([car-lab.md](docs/car-lab.md)) |
 | Everyday | Scenes · Quick actions · Notes · Weather · Timers · Sleep sounds · Tools (converter, tip split, world clocks) |
 | Play | Arcade (only while parked) |
+
+**Home widgets** (29): speed, revs and any gauge, the music, radio presets, the FM tuner, the clock, weather, trips, the garage,
+timers, scenes, quick actions, phones, a compass, a calendar, your saved looks, a sound meter of the real music level, and more. Drag,
+resize and arrange them on as many pages as you like.
+
+![Calendar, My looks and Sound meter widgets](docs/screenshots/widgets-31.jpg)
 
 **Little things that matter in a car.** A trip survives the power being cut with the ignition. Timers live on the server and keep
 running. Typing and parked-only apps lock above 8 km/h ("I'm a passenger" lifts it), and decorative animation stops while you drive.

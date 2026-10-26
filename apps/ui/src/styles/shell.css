@@ -523,6 +523,11 @@ html[data-calm='true'] .dock-medal-art {
 .dock[data-look='tabs'] .dock-btn {
   min-height: 46px;
 }
+/* On a side the bar is narrow: smaller, tighter capitals so "SETTINGS" still fits. */
+.dock[data-look='tabs']:not([data-pos='bottom']) .dock-btn > span {
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+}
 .dock[data-look='tabs'] .dock-ind {
   background: var(--accent);
   box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.4);

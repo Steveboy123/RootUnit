@@ -945,7 +945,7 @@
   transform: scale(var(--sc));
   transform-origin: 50% 0;
   opacity: 0;
-  animation: sc-bolt calc(13s * var(--tempo)) linear var(--delay) infinite;
+  animation: sc-bolt calc(27s * var(--tempo)) linear var(--delay) infinite;
 }
 @keyframes sc-bolt {
   0%,

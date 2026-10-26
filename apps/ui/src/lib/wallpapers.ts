@@ -169,9 +169,18 @@ function jelly(x: number, y: number, s: number, colour: string): string {
   return out;
 }
 
-/** A neon sign with a glow: a wide faint stroke under a thin bright one. */
+/**
+ * A lit neon sign: a soft glow, a filled panel and bright strokes inside that read as lettering (never an empty outline, which would
+ * look like a selected button through a see-through card).
+ */
 function neonRect(x: number, y: number, w: number, h: number, colour: string): string {
-  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="none" stroke="${colour}" stroke-width="16" opacity="0.18"/>` + `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="none" stroke="${colour}" stroke-width="4" opacity="0.95"/>`;
+  const vertical = h > w;
+  const strokes = Array.from({ length: 3 }, (_, i) =>
+    vertical
+      ? `<rect x="${r1(x + w * 0.3)}" y="${r1(y + h * (0.12 + i * 0.29))}" width="${r1(w * 0.4)}" height="${r1(h * 0.18)}" rx="3" fill="${colour}" opacity="0.95"/>`
+      : `<rect x="${r1(x + w * (0.08 + i * 0.3))}" y="${r1(y + h * 0.3)}" width="${r1(w * 0.24)}" height="${r1(h * 0.4)}" rx="3" fill="${colour}" opacity="0.95"/>`,
+  ).join('');
+  return `<rect x="${x - 14}" y="${y - 14}" width="${w + 28}" height="${h + 28}" rx="18" fill="${colour}" opacity="0.1"/>` + `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${colour}" opacity="0.22"/>` + strokes;
 }
 
 /** A neon perspective grid floor from the horizon at `y` down to the bottom. */

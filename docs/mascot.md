@@ -9,8 +9,8 @@ style and music-reactive overlay.
 | --- | --- |
 | **Show the mascot** | on or off |
 | **Artwork** | Original (dark backdrop) · Neon cut-out · 3D armour (both cut-outs are truly transparent) |
-| **Movement** | Still · Float · Hologram · 3D tilt · Breathe · Glitch · Orbit · Scan · Peek · Sway · Pulse |
-| **Light** | None · Glow · Halo · Sparks · Smoke, and how strong the glow is |
+| **Movement** | Still · Float · Hologram · 3D tilt · Breathe · Glitch · Orbit · Scan · Peek · Sway · Pulse · Bounce · Drift |
+| **Light** | None · Glow · Halo · Sparks · Smoke · Rings · Aurora, and how strong the glow is |
 | **Pulse with the music** | follows the music-reactive meter when it is on; with no meter it stays still, never an invented beat |
 | **Where it stands** | Home only or every page; behind the widgets or in front; across, up and down, size, visibility; mirror |
 | **Reset the mascot** | two taps back to the defaults |

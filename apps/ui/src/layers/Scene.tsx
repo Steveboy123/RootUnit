@@ -181,7 +181,7 @@ function sceneBody(scene: DashScene, k: number): ReactNode {
           <i className="sc-cloud b" />
           <i className="sc-flash" />
           {[0, 1, 2].map((i) => (
-            <i key={i} className="sc-bolt" style={{ ['--x' as string]: `${[22, 64, 82][i]}%`, ['--delay' as string]: `${[-1, -5.5, -9][i]}s`, ['--sc' as string]: [1, 0.7, 0.85][i] }} />
+            <i key={i} className="sc-bolt" style={{ ['--x' as string]: `${[22, 64, 82][i]}%`, ['--delay' as string]: `${[-1, -10, -19][i]}s`, ['--sc' as string]: [1, 0.7, 0.85][i] }} />
           ))}
           {scatter(countFor(50, k), 201, (r) => ({ '--x': `${r() * 110 - 5}%`, '--d': `${0.6 + r() * 0.4}s`, '--delay': `${-r() * 2}s`, '--l': `${24 + r() * 36}px`, '--o': 0.18 + r() * 0.3 }), 'sc-drop')}
         </>

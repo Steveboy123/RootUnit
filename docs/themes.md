@@ -14,6 +14,7 @@ combination, not a screenshot. Change any single part afterwards and the rest st
 | Kind | Looks |
 | --- | --- |
 | **Featured** (6) | Retro Synthwave · Arctic Crystal · Phantom Pink · Liquid Chrome · Stealth AMOLED · Nature Drive |
+| **Styles** (14, new in 3.1) | Neo Brutal · Holo Foil · Toxic Lab · Neon Noir · Miami Nights · Rose Gold · Deep Dive · Paper Cut · Peach Blossom · Night Highway · Storm Chaser · Campfire · Mission Control · Arcade |
 | **Signature** (25) | RootUnit · Plague Doctor · Tokyo Drift · Replicant · Digital Rain · Retro Terminal · Vaporwave · Deep Space · Nebula · Ocean Breeze · Lava Lounge · Blueprint Lab · Moonlight · Night Vision · Track Day · Gothic · Workshop · Cobalt Code · Aurora Lake · Golden Hour · First Snow · Cherry Blossom · Café · Lavender Fields · Concrete Jungle |
 | **3D scenes** (16, from v2) | Cyber Neon · Ocean Glass · Vinyl Lounge · Aurora 3D · Night Racer · AMOLED Eclipse · Sunset GT · Focus HUD · Crystal Palace · Silver Grid · Emerald Matrix · Galaxy Purple · Arctic Ice · Ruby Glass · Copper Retro · Hyperdrive |
 | **Looks** (14, from v2) | Classic · Glass Night · Album Immersion · Ambient · Neon Drive · Sunset Cruise · Forest Retreat · Ocean Deep · Racing Red · Gold Standard · Daylight Clean · Paper Glass · Sun Glare · Night Shift |
@@ -27,6 +28,41 @@ mascot motion. v2's *Liquid Chrome* scene is now called **Silver Grid**, because
 | **Retro Synthwave** with *Player focus* | **Arctic Crystal** with *Glass hub* |
 | ![Phantom Pink with Cockpit](screenshots/home-phantom.jpg) | ![Liquid Chrome with Classic](screenshots/home-chrome.jpg) |
 | **Phantom Pink** with *Cockpit* | **Liquid Chrome** with *Classic* |
+
+### Design styles (3.1)
+
+![The Styles group in Settings](screenshots/settings-styles.jpg)
+
+Each one is built around a design style and matched end to end, like the featured looks: palette, card style, background or
+wallpaper, scene, typeface, transitions, touch feedback, gauges, standby clock, navigation bar and the mascot's motion and light.
+
+| | |
+| --- | --- |
+| ![Neo Brutal](screenshots/style-neo-brutal.jpg) | ![Holo Foil](screenshots/style-holo-foil.jpg) |
+| **Neo Brutal**: newsprint, thick lines, hard red shadows, a word clock | **Holo Foil**: holographic edges over pastel waves, bubbles for a navigation bar |
+| ![Neon Noir](screenshots/style-neon-noir.jpg) | ![Deep Dive](screenshots/style-deep-dive.jpg) |
+| **Neon Noir**: a rainy alley, lit glass, an LED race dash and a neon-tube bar | **Deep Dive**: the deep sea, jellyfish light and a HUD gauge |
+| ![Toxic Lab](screenshots/style-toxic-lab.jpg) | ![Miami Nights](screenshots/style-miami-nights.jpg) |
+| **Toxic Lab**: a green-screen terminal, a radar sweep and a binary clock | **Miami Nights**: palms, a pink sunset and records in their sleeves |
+
+**Surprise me** (top of the Looks section) puts together a random look that still hangs together: it starts from a palette and that
+palette's own accent, then keeps the pairings a designer would (a terminal panel gets a mono face and square corners, clay is round,
+brutalist cards press in, light palettes skip the neon tube). Tap it again for another; save one you like under **My looks**.
+
+## My looks
+
+![My looks, with a share code open](screenshots/my-looks.jpg)
+
+Under **Settings → Looks & layouts → My looks**:
+
+* **Save this look** keeps everything about the look on screen under a name (up to 16 looks, names up to 24 characters).
+* **Use** wears a saved look again in one tap. The **My looks** widget does the same from Home.
+* **Share** shows the look as a code (`RU1.…`) with a **Copy** button. Paste it into **Add from code** on another head unit, or keep
+  it in a note. A code holds only the look: never units, music, sign-ins or anything personal. A damaged or made-up code can only ever
+  give a valid look, or nothing.
+* Naming and adding wait until you are parked; using a saved look does not.
+
+Saved looks are part of the settings, so they are in every backup.
 
 ## Home layouts
 
@@ -48,24 +84,39 @@ it, and placed behind the widgets in the space left for it otherwise. After that
 | Section | What you can choose |
 | --- | --- |
 | **Looks & layouts** | The looks and layouts above; the accent colour (8 swatches, or any colour with *Hue* and *Lightness*); *colour the interface from the album art*; **Reset the look** |
-| **Colours** | 36 palettes (below); a day palette and a night palette, switched by the clock or by the real sunrise and sunset |
-| **Cards & depth** | Card style: Solid · Glass · Outline · Neon · Clay · HUD · Chrome · Aero. Depth: Flat · Soft · Deep · Crystal · Floating · Bevel · Layered. Glass finish: Clear · Frosted · Prismatic · Iridescent · Smoked · Liquid, and how see-through it is. Corners: Sharp · Soft · Round |
-| **Background** | None · Album blur · Album cover · Ambient · Aurora · Gradient · Grid · Carbon · Wallpaper · Mesh · Stars · Hexagons · Topographic · Circuit · Dots · Waves · Synth sun · Bokeh · Scanlines; 20 built-in wallpapers and your own pictures; dim and blur; an animated scene behind the widgets (below); real weather in the scene |
-| **3D effects** | Effects level; motion intensity (Off · Calm · Lively · Cinematic); album glow, background motion and particle switches; 15 artwork styles; 8 page transitions; touch feedback (None · Ripple · Glow · Pop). See [3d-motion.md](3d-motion.md) |
-| **Type & gauges** | Typeface: Inter · System · Grotesk · Outfit · Rounded · Tech · Future · Mono; text size; gauges: Arc · Needle · Digital · Ring · Bar · Sport; standby screen: Clock · Analog · Flip · Mascot · Orbit · Minimal |
+| **Colours** | 44 palettes (below); a day palette and a night palette, switched by the clock or by the real sunrise and sunset |
+| **Cards & depth** | Card style: Solid · Glass · Outline · Neon · Clay · HUD · Chrome · Aero · Brutalist · Holographic · Terminal · Lumen. Depth: Flat · Soft · Deep · Crystal · Floating · Bevel · Layered. Glass finish: Clear · Frosted · Prismatic · Iridescent · Smoked · Liquid, and how see-through it is. Corners: Sharp · Soft · Round |
+| **Background** | None · Album blur · Album cover · Ambient · Aurora · Gradient · Grid · Carbon · Wallpaper · Mesh · Stars · Hexagons · Topographic · Circuit · Dots · Waves · Synth sun · Bokeh · Scanlines · Halftone · Low poly · Sun rays · Plasma; 26 built-in wallpapers and your own pictures; dim and blur; an animated scene behind the widgets (below); real weather in the scene |
+| **3D effects** | Effects level; motion intensity (Off · Calm · Lively · Cinematic); album glow, background motion and particle switches; 18 artwork styles; 12 page transitions; touch feedback (None · Ripple · Glow · Pop · Sparkle · Ring · 3D press). See [3d-motion.md](3d-motion.md) |
+| **Type & gauges** | Typeface: Inter · System · Grotesk · Outfit · Rounded · Tech · Future · Mono; text size; gauges: Arc · Needle · Digital · Ring · Bar · Sport · LED · HUD; standby screen: Clock · Analog · Flip · Mascot · Orbit · Minimal · Nixie · Word clock · Binary |
 | **Music reactive** | Off · Glow · Wash · Rings · Spectrum · Edges · Halo · Burst · Wave · Radial, coloured by Accent · Album · Rainbow · Custom · Heat. See [music-reactive.md](music-reactive.md) |
-| **Mascot** | Original · Neon cut-out · 3D armour; 11 motions; 5 auras. See [mascot.md](mascot.md) |
+| **Mascot** | Original · Neon cut-out · 3D armour; 13 motions; 7 auras. See [mascot.md](mascot.md) |
 | **Boot screen** | The start-up screen. See [mascot-boot.md](mascot-boot.md) |
 
-The navigation bar's ten styles and three positions are under **Settings → Navigation → Edit navigation… → Look**
+The navigation bar's twelve styles and three positions are under **Settings → Navigation → Edit navigation… → Look**
 ([navigation.md](navigation.md)).
 
 **Animated scenes:** Off · Glow · Orbits · Grid · Particles · Warp · Waves · Rain · Fireflies · Matrix · Nebula · Snow · Lava · Rings ·
-Comets · Bubbles · Tunnel · Synth sun · Circuit.
+Comets · Bubbles · Tunnel · Synth sun · Circuit · Highway · Sakura · Embers · Radar · Skyline · Storm.
+
+![The six scenes new in 3.1](screenshots/scenes-31.jpg)
 
 **Built-in wallpapers:** Night road · City lights · Mountains · Dunes · Waves · Neon city · Galaxy · Pine forest · Coast road · Canyon ·
-Tunnel · Race track · Aurora lake · Synthwave sunset · Ice peaks · Liquid chrome · Phantom smoke · Eclipse · Vinyl lounge · Sunset GT.
+Tunnel · Race track · Aurora lake · Synthwave sunset · Ice peaks · Liquid chrome · Phantom smoke · Eclipse · Vinyl lounge · Sunset GT ·
+Cherry road · Cyber alley · Miami beach · Deep sea · Holo waves · Paper hills.
+
+![The six wallpapers new in 3.1](screenshots/wallpapers-31.jpg)
+
+![The four card styles new in 3.1, each on one of the new backgrounds](screenshots/cards-31.jpg)
 They are drawn as SVG in the app, so they cost no download and stay sharp on any screen.
+
+**Gauges and standby clocks.** The **LED** gauge is a race dash: shift lights going green, amber and red over a big number on an
+LCD panel. **HUD** is a sci-fi readout of fine ticks and brackets. The standby screen can be **Nixie** tubes, a **Word clock** (the time
+to the last five minutes, spelled out on a grid of letters) or a **Binary** clock (each digit as lit dots, with the plain time under it).
+
+![The LED and HUD gauges](screenshots/gauges-31.jpg)
+
+![Nixie, word and binary standby clocks](screenshots/standby-31.jpg)
 
 **The accent is always readable.** A colour that would be too faint against the palette in force (under 3:1) is lightened or
 darkened just enough; the sample under the sliders shows the colour in use, its contrast, and says when it was adjusted.
@@ -75,9 +126,12 @@ navigation-style setting back as it came. Units, music, text size, your navigati
 
 ## Palettes
 
-| Dark (26) | | Light (8) | High visibility (2) |
+| Dark (32) | | Light (10) | High visibility (2) |
 | --- | --- | --- | --- |
-| Obsidian · Midnight · Carbon · AMOLED · Ember · Ocean · Forest · Aurora · Synthwave · Nord · Mocha · Crimson · Royal | Neon Plague · Tokyo Night · Vampire · Matrix · Night City · Amber CRT · Night Red · Sunset · Cobalt · Gunmetal · Lunar · Velvet · Blueprint | Daylight · Sand · Mint · Sakura · Lavender · Arctic · Latte · Concrete | High contrast · Sunlit |
+| Obsidian · Midnight · Carbon · AMOLED · Ember · Ocean · Forest · Aurora · Synthwave · Nord · Mocha · Crimson · Royal · Neon Plague · Tokyo Night · Vampire | Matrix · Night City · Amber CRT · Night Red · Sunset · Cobalt · Gunmetal · Lunar · Velvet · Blueprint · **Neon Noir** · **Miami** · **Toxic** · **Rose Gold** · **Abyss** · **Holo** | Daylight · Sand · Mint · Sakura · Lavender · Arctic · Latte · Concrete · **Paper** · **Peach** | High contrast · Sunlit |
+
+New in 3.1 in bold. Every palette passes the same tests as the rest: text contrast on every surface, readable over the worst-case
+picture, and different enough from every other palette that none is a recolour.
 
 Day and night switching changes the **palette** only; your card style, background and everything else stay.
 
@@ -119,14 +173,16 @@ The look is built to be cheap on a Pi 5:
 
 ## For developers
 
-* Palettes live in `apps/ui/src/lib/themes/` (`core.ts`, `groupA.ts` … `groupE.ts`). Each is a full token set (`Palette` in
+* Palettes live in `apps/ui/src/lib/themes/` (`core.ts`, `groupA.ts` … `groupF.ts`). Each is a full token set (`Palette` in
   `types.ts`) applied as CSS variables on `<html>` by `applyAppearance()` (`apply.ts`), which also sets the `data-*` attributes the
   styles key on (`data-surface`, `data-depth`, `data-glass`, `data-font` and so on).
 * The tests check **every** palette: all tokens present, WCAG contrast of text, dim, accent and status colours, glass and card fills
   over the worst-case picture, and that no palette is a recolour of another. To add one: add its id to `THEME_IDS`
   (`packages/shared/src/appearance.ts`), write it with `definePalette()`, and run `npm test -w @headunit/ui`.
 * Looks are in `lib/themes/presets.ts`, layouts in `lib/layoutPresets.ts`, and every option's name and one-line description in
-  `lib/appearanceInfo.ts`.
+  `lib/appearanceInfo.ts`. A test fails if an option added in 3.1 is not used by at least one look.
+* What a look is (`LOOK_KEYS`), how a saved look is checked (`lookFromUntrusted`, `sanitizeSavedLooks`) and the limits are in
+  `packages/shared/src/looks.ts` and `validate.ts`; share codes in `lib/lookCode.ts`; Surprise me in `lib/surprise.ts`.
 * `styles/policy.test.ts` guards the Pi's performance across all the CSS: keyframes may only animate transform and opacity, nothing
   transitions layout, `filter` is confined to the background layers, `backdrop-filter` only through `--surface-blur`, every
   `var(--x)` is defined, every animation names a keyframe that exists, and decorative motion (`.fx`) stops while driving.
