@@ -50,15 +50,31 @@ export function NavLook({ config, onChange }: NavLookProps) {
       </section>
       <section className="ne-group">
         <h3 className="ne-h">Style</h3>
-        <div className="dock-styles" role="radiogroup" aria-label="Navigation style">
+        <div className="dock-styles" role="radiogroup" aria-label="Navigation style" data-pos={config.position}>
           {DOCK_STYLES.map((id) => (
-            <button key={id} type="button" role="radio" aria-checked={dockStyle === id} className="dock-style" data-active={dockStyle === id} onClick={() => patchSettings({ dockStyle: id })}>
+            // Not a <button>: the preview inside is a real (inert) dock, and buttons cannot hold buttons.
+            <div
+              key={id}
+              role="radio"
+              tabIndex={dockStyle === id ? 0 : -1}
+              aria-checked={dockStyle === id}
+              aria-label={DOCK_INFO[id].label}
+              className="dock-style"
+              data-active={dockStyle === id}
+              onClick={() => patchSettings({ dockStyle: id })}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  patchSettings({ dockStyle: id });
+                }
+              }}
+            >
               <span className="dock-style-pic" data-pos={config.position}>
                 <NavPreview config={config} style={id} />
               </span>
               <b>{DOCK_INFO[id].label}</b>
               <small>{DOCK_INFO[id].blurb}</small>
-            </button>
+            </div>
           ))}
         </div>
       </section>

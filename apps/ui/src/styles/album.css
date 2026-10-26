@@ -481,3 +481,8 @@
 html[data-calm='true'] .art-flip .art-cover {
   animation: none;
 }
+
+/* Album glow off (Appearance → 3D effects): no light behind the artwork. */
+html[data-album-glow='off'] .art-glow {
+  display: none;
+}

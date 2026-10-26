@@ -5,26 +5,10 @@
 import { mkdir, readFile, rename, writeFile, copyFile, stat } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import type { IncomingMessage } from 'node:http';
+import { BOOT_CHOICES, BOOT_DEFAULTS, type BootConfig } from '@headunit/shared';
 
-export const BOOT_DEFAULTS = {
-  preset: 'neon', title: 'HEAD UNIT', subtitle: 'Starting system', readyText: 'Opening head unit',
-  bg: 'aurora', bgColor: '#08040f', bgColor2: '#310c2f', accent: '#ff2a93', accent2: '#56d8ff',
-  image: 'armored', positionX: 50, positionY: 44, size: 52, opacity: 100, glow: 48,
-  motion: 'float', motionSpeed: 50, mirror: false, showMascot: true,
-  loader: 'bar', textStyle: 'wide', titleSize: 28, dim: 0, showStatus: true,
-  transition: 'fade', transitionMs: 350, backgroundImage: false, particles: true,
-} as const;
-export type BootConfig = { [K in keyof typeof BOOT_DEFAULTS]: typeof BOOT_DEFAULTS[K] extends string ? string : typeof BOOT_DEFAULTS[K] extends number ? number : boolean };
-/** Every v2 value first (a saved boot-studio.json keeps working), then the RootUnit additions. */
-export const BOOT_CHOICES = {
-  preset: ['neon', 'glass', 'matrix', 'sunset', 'minimal', 'custom', 'hyperdrive', 'vapor', 'blueprint', 'ember', 'plague'],
-  bg: ['solid', 'gradient', 'aurora', 'grid', 'image', 'stars', 'warp', 'mesh', 'synthsun'],
-  image: ['original', 'transparent', 'armored', 'custom'],
-  motion: ['none', 'float', 'pulse', 'tilt', 'orbit', 'hologram', 'glitch', 'breathe', 'spin3d'],
-  loader: ['bar', 'ring', 'dots', 'scanner', 'none', 'pulse', 'wave', 'segments', 'orbit', 'heartbeat'],
-  textStyle: ['wide', 'clean', 'mono', 'neon', 'glitch', 'outline', 'future'],
-  transition: ['none', 'fade', 'zoom', 'slide', 'iris', 'warp', 'shutter'],
-} as const;
+export { BOOT_CHOICES, BOOT_DEFAULTS, type BootConfig };
+
 const choices: Partial<Record<keyof BootConfig, readonly string[]>> = BOOT_CHOICES;
 const limits: Partial<Record<keyof BootConfig, readonly [number, number]>> = {
   positionX: [0,100], positionY:[0,100],size:[10,90],opacity:[0,100],glow:[0,100],motionSpeed:[0,100],

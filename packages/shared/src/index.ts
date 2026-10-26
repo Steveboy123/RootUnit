@@ -6,3 +6,4 @@ export * from './features';
 export * from './fm';
 export * from './nav';
 export * from './sun';
+export * from './boot';

@@ -685,3 +685,8 @@
     transform: translateX(25%);
   }
 }
+
+/* Background motion off (Appearance → 3D effects): the backdrop and the scene stay still; everything else keeps its own motion. */
+html[data-bg-motion='off'] :is(.backdrop, .scene) :is(*, *::before, *::after) {
+  animation: none !important;
+}

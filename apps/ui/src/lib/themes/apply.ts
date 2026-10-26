@@ -183,6 +183,8 @@ export type AppearanceInput = Pick<
   | 'gaugeStyle'
   | 'dockStyle'
   | 'sceneIntensity'
+  | 'albumGlow'
+  | 'bgMotion'
 > & {
   theme: ThemeId;
   accent: string;
@@ -206,6 +208,8 @@ export interface ResolvedAppearance {
     touch: Settings['touchFx'];
     gauge: Settings['gaugeStyle'];
     dock: Settings['dockStyle'];
+    albumGlow: 'on' | 'off';
+    bgMotion: 'on' | 'off';
   };
   /** The accent after accentFor (>= 3:1 on the palette's bg) and the ink for text on it (>= 4.5:1). */
   accent: string;
@@ -277,6 +281,8 @@ export function resolveAppearance(input: AppearanceInput): ResolvedAppearance {
       touch: oneOf(TOUCH_FX, input.touchFx, d.touchFx),
       gauge: oneOf(GAUGE_STYLES, input.gaugeStyle, d.gaugeStyle),
       dock: oneOf(DOCK_STYLES, input.dockStyle, d.dockStyle),
+      albumGlow: (input.albumGlow ?? d.albumGlow) ? 'on' : 'off',
+      bgMotion: (input.bgMotion ?? d.bgMotion) ? 'on' : 'off',
     },
     accent,
     accent2: accentFor(palette, shiftHueHex(accent, 48)).accent,
@@ -358,6 +364,8 @@ export function appearanceInput(s: Settings, theme: ThemeId, accent: string): Ap
     gaugeStyle: s.gaugeStyle,
     dockStyle: s.dockStyle,
     sceneIntensity: s.sceneIntensity,
+    albumGlow: s.albumGlow,
+    bgMotion: s.bgMotion,
   };
 }
 
