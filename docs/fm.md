@@ -6,7 +6,7 @@ it: tune the radio to a free frequency, switch the transmitter on, and the music
 It uses [markondej/fm_transmitter](https://github.com/markondej/fm_transmitter), which turns one of a Raspberry Pi's pins into a tiny
 FM transmitter. Its source is included, unchanged, in `vendor/fm_transmitter` (BSD licence, see the end of this page).
 
-![The FM transmitter page](screenshots/21-fm.png)
+![The FM transmitter page](screenshots/fm.jpg)
 
 ## Read this first
 

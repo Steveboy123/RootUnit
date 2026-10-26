@@ -14,7 +14,7 @@ now.
 | **Auto day/night theme** by schedule, or by the real sunrise and sunset where the car is | Computed offline from the GPS position (or the weather's place). Settings → Appearance → Palette. |
 | **OBD-II** — live data, check-engine lamp, fault codes read/clear, graceful ignition-off/adapter-loss handling | [obd.md](obd.md) |
 | **Music library** — recently played, top items, playlists, Liked Songs, albums, artists, search, queue, ♥ like, "Play on…" other Connect devices, shown on a provider-neutral `LibraryProvider` | [spotify.md](spotify.md). Built against Spotify's Feb-2026 dev-mode rules; not run live. |
-| **Album-art accent colour** and **typing locked while driving** | Settings → Music. |
+| **Album-art accent colour** and **typing locked while driving** | Settings → Looks & layouts, and Settings → Music services. |
 | **Alerts** — overheating, low/high battery voltage, low fuel, phone battery low; dismiss stays dismissed until the condition clears and returns | |
 
 ### Added in v2

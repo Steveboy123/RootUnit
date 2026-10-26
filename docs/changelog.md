@@ -1,5 +1,35 @@
 # Changelog
 
+## 3.0.0 — RootUnit
+
+A new interface and a much bigger choice of looks, with every v2 feature kept. Guides: [themes.md](themes.md),
+[3d-motion.md](3d-motion.md), [navigation.md](navigation.md), [mascot-boot.md](mascot-boot.md).
+
+**Looks.** 61 one-tap looks (6 featured, 25 signature, v2's 16 3D scenes and 14 looks), each setting palette, wallpaper, cards,
+depth, glass, motion, typeface, transitions, gauges, navigation style and the mascot together so nothing clashes. v2's *Liquid Chrome*
+scene is now *Silver Grid*. Four Home layouts (Cockpit, Player focus, Glass hub, Classic) that also place the mascot so it never
+shows twice.
+
+**More of everything.** 36 palettes (was 17), 8 card styles, 7 depths, 6 glass finishes, 19 backgrounds, 20 built-in wallpapers,
+18 animated scenes, 15 album-art styles, 7 page transitions, touch effects, 8 typefaces, 6 gauge styles, 6 standby screens, 9
+music-reactive styles, 10 mascot motions and 4 auras, and switches for album glow and background motion. Any accent colour through
+Hue and Lightness, kept readable. *Reset the look* puts it all back.
+
+**Navigation.** Ten bar styles (classic dock, edge rail, floating pill, minimal icons, glowing curve, 3D glass, split with the
+album art, text tabs, wave, mascot) and a new bottom position. On a short screen the bar scrolls instead of pushing the page off.
+
+**New screens and apps.** Settings is a full page in two groups (*Look and feel*, *Head unit*). A Home hero player, clock and
+weather, FM tuner, quick tiles and vehicle card widgets. An Apps carousel. Tall volume and brightness sliders in the Quick Panel. FM
+with a 3D dial and band spectrum. New apps: Sleep sounds and Tools (converter, tip split, world clocks).
+
+**Boot Studio.** Five more themes (Hyperdrive, Vaporwave, Blueprint, Ember, Plague doctor), stars, warp, colour-mesh and synth-sun
+backgrounds, glitch, breathe and 3D-spin mascot motions, pulse, wave, segments, orbit and heartbeat loaders, neon, glitch, outline
+and future lettering, slide, iris, warp and shutter hand-overs, and a *Default look* button. Saved v2 designs keep working.
+
+**Checked by tests:** every CSS rule for the Pi (only transform and opacity animate, no layout transitions, one token for
+backdrop-filter, every variable defined, every animation's keyframe exists, decorative motion stops while driving), and that the
+boot page draws every Boot Studio choice.
+
 ## 2.1.0 — customisable navigation
 
 The navigation bar, the Quick Panel and the Apps screen can now be arranged by the person who owns the head unit. The full guide,

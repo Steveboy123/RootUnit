@@ -44,9 +44,32 @@ If the app does not finish loading, the boot animation **keeps showing** with a 
 
 ## What is customizable?
 
-The early Plymouth screen and local HTML use the included `deploy/boot/plymouth-mascot.png` and `deploy/boot/mascot.png`; they can be replaced with an image of the same name. The app's Appearance → Mascot settings still control the animated mascot inside the main UI, independently. Because boot runs before saved UI settings and audio exist, boot colour and motion are intentionally separate from the live UI theme and cannot respond to music until the head-unit application starts.
+The early Plymouth screen and local HTML use the included `deploy/boot/plymouth-mascot.png` and `deploy/boot/mascot.png`; they can be replaced with an image of the same name. **Settings → Mascot** still controls the animated mascot inside the main UI, independently. Because boot runs before saved UI settings and audio exist, boot colour and motion are intentionally separate from the live UI theme and cannot respond to music until the head-unit application starts.
 
-In **v2.8.1**, open **Settings → Appearance → Customise → Boot Studio**. Choose a preset or adjust the background, palette, uploaded custom mascot/wallpaper, size, position, glow, text, progress animation and transition. The preview is the real loading HTML running in a safe iframe. Tap **Save boot design** to persist settings in `data/boot-studio.json` and update the local boot script. Uploaded pictures persist in `data/boot-assets` and are restored after software updates.
+## Boot Studio
+
+Open **Settings → Boot screen**. The preview is the real loading page running in a safe frame, so what you see is what the car shows.
+Nothing changes until you tap **Save** (**Undo** goes back to what is saved). Settings are kept in `data/boot-studio.json`; uploaded
+pictures in `data/boot-assets/`, and both survive software updates.
+
+![Settings → Boot screen](screenshots/settings-boot.jpg)
+
+| | |
+| --- | --- |
+| **Theme** | Cyber pink · Crystal blue · Matrix green · Sunset GT · Dark minimal · Hyperdrive · Vaporwave · Blueprint · Ember · Plague doctor, or Custom with your own four colours |
+| **Background** | Solid · Gradient · Aurora · 3D grid · Stars · Warp speed · Colour mesh · Synth sun · Your photo; darken; floating glow particles |
+| **Mascot** | Original · Neon cut-out · 3D armour · your upload; position, size, visibility, neon glow, mirror |
+| **Mascot motion** | Still · Float · Pulse · 3D tilt · Orbit · Hologram · Glitch · Breathe · 3D spin, and its speed |
+| **Words** | the title, what it says while loading and when ready, and the lettering: Wide · Clean · Terminal · Neon · Glitch · Outline · Future |
+| **Progress** | Sliding bar · Neon ring · Pulse dots · Laser scan · Pulse · Wave · Segments · Orbit · Heartbeat · Hidden. It never shows a made-up percentage: it runs until the head unit answers |
+| **Into the dashboard** | Instant · Fade · Zoom · Slide · Iris · Warp · Shutter, and how long the hand-over takes |
+
+| | |
+| --- | --- |
+| ![Synth sun, heartbeat loader, glitch lettering](screenshots/boot-synthsun.jpg) | ![Stars, pulse loader, future lettering](screenshots/boot-stars.jpg) |
+| ![Colour mesh, segments, outline lettering](screenshots/boot-mesh.jpg) | ![Warp speed, wave loader, neon lettering](screenshots/boot-warp.jpg) |
+
+Older saved designs keep working: every v2 choice is still there under the same name.
 
 Important: if `sync` tells you the mascot kiosk is not enabled, run `sudo ./deploy/setup-boot-experience.sh enable "$USER"` FIRST and reboot. `sync` is only for refreshing Plymouth after you have enabled the session.
 
@@ -65,7 +88,7 @@ For safety, saving Boot Studio settings never alters LightDM or OS startup files
 
 If the Pi initially shows a black screen with **Terminal**, **Reconfigure**, and **Exit**, but the head unit appears when logging in a second time, the dedicated compositor is running and Chromium is not reliably opening on its first attempt. This release adds a supervised Chromium launcher, a dedicated Chromium profile to avoid the normal desktop process singleton, and a second `labwc -s` startup path if the compositor skips its autostart on cold boot.
 
-1. While the head unit is accessible (you may need to Exit and log in once), install v2.8.3 in Settings → Software Update.
+1. While the head unit is accessible (you may need to Exit and log in once), install the update in Settings → Backup & update → Software update.
 2. Open a terminal **in the installed project directory** (not inside the ZIP) and run `sudo ./deploy/setup-boot-experience.sh repair`.
 3. Reboot with `sudo reboot`.
 

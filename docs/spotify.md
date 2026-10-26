@@ -5,7 +5,7 @@ Without configuration the Music page uses a built-in **demo player and library**
 on…") so you can design the UI offline. To use real Spotify you need **Spotify
 Premium** — Spotify doesn't allow playback control from the Web API on free accounts.
 
-![Music home](screenshots/05-music.png)
+![The Music screen](screenshots/music.jpg)
 
 ## What you get
 
@@ -19,8 +19,8 @@ Premium** — Spotify doesn't allow playback control from the Web API on free ac
 | **Queue** — view it, **＋** any track to add it | `GET /me/player/queue`, `POST /me/player/queue` |
 | **♥ Like** the current song (Music page and the dashboard widget) | `PUT/DELETE /me/library` |
 | **Play on…** — move playback to your phone or any Connect speaker | `GET /me/player/devices`, `PUT /me/player` |
-| **Art-coloured accent** — the UI takes its highlight colour from the album cover | Computed in the browser from the cover image (Settings → Music turns it off) |
-| **Locked while driving** — typing (search) is replaced by a notice above 8 km/h | UI only, uses the vehicle speed; **Settings → Music** turns it off, and "I'm a passenger" lifts it until reload |
+| **Art-coloured accent** — the UI takes its highlight colour from the album cover | Computed in the browser from the cover image (Settings → Looks & layouts turns it off) |
+| **Locked while driving** — typing (search) is replaced by a notice above 8 km/h | UI only, uses the vehicle speed; **Settings → Music services** turns it off, and "I'm a passenger" lifts it until reload |
 
 
 

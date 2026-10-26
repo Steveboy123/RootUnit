@@ -104,7 +104,7 @@ long-press context menu).
    — use the one from your HAT maker's documentation, e.g. `dtoverlay=hifiberry-dacplus`,
    `dtoverlay=iqaudio-dacplus` or `dtoverlay=justboom-dac` — and usually turn the Pi's own audio
    off with `dtparam=audio=off`. Reboot, then check it appears: `aplay -l`.
-2. **Choose it in the app:** *Settings → Display & sound → Sound output* lists every output
+2. **Choose it in the app:** *Settings → Display & sound → Sound comes out of* lists every output
    PipeWire sees (the HAT, HDMI, Bluetooth speakers…) and sets the default with one tap. Volume
    then controls whichever output is selected. (This reads `pw-dump` and uses `wpctl set-default`;
    it's tested against sample `pw-dump` output, **not on a real Pi**.)

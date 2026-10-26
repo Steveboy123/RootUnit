@@ -1,33 +1,56 @@
-# 3D Glass Motion Studio — Head Unit v2.3.0
+# 3D effects and motion
 
-The new Home, Music and Settings effects are part of the **real web UI source code**, implemented with CSS animations and 3D transforms. No mock images, network texture downloads, WebGL engine, or secondary graphics process is required. The interface does **not** change audio processing or the FM transmitter functionality.
+Every effect is drawn by the real interface with CSS 3D transforms and animations. There is no WebGL, no video and no extra graphics
+process, so it runs on the Pi 5's own GPU without anything else installed. None of it touches the audio or the FM transmitter.
 
-## Controls
+![Settings → 3D effects](screenshots/settings-motion.jpg)
 
-In the head unit open **Settings → Appearance → Customise → Effects**. Changes are applied and saved through the existing settings API.
+## Where to find it
 
-- **3D music artwork**: Classic, Spinning vinyl, Floating 3D, Hologram, Glass 3D, Orbit ring, Prism shift. Used on Now Playing, the Home music widget and, since v2.8.9, the Spotify, TIDAL and Radio players on the Music page. When audio stops, the album animation stops. The Now Playing screen also has a quick mode-cycle button.
-- **3D interface depth** also gives the Music page panels the same Soft/Deep/Crystal shadows as Home's widgets.
-- **3D interface depth**: Flat, Soft 3D, Deep 3D, Crystal glass. Crystal adds edges, layering, reflection and refraction effects without moving the widget grid.
-- **Background animation**: Off, Ambient glow, 3D orbit rings, Perspective laser grid. Rendered **behind** the Home widgets and, since v2.8.9, behind the Music players (Spotify, TIDAL, YouTube Music, Radio) and Now Playing; never on top of buttons. (It was called *Home dashboard animation* before v2.8.9.)
-- **3D glass finish**: Clear glass, Frosted glass, Prismatic edges. Available independently of the motion setting. Use with Style → Glass for the strongest effect.
-- **Animation speed**: Off, Calm, Cinematic. Off disables decorative animation but keeps the static glass treatment.
-- **16 appearance presets**: Cyber Neon, Ocean Glass, Vinyl Lounge, Aurora 3D, Night Racer, AMOLED Eclipse, Sunset GT, Focus HUD, Crystal Palace, Liquid Chrome, Emerald Matrix, Galaxy Purple, Arctic Ice, Ruby Glass, Copper Retro, Hyperdrive.
+| Setting | Where | Choices |
+| --- | --- | --- |
+| **Effects** | Settings → 3D effects | Minimal (no blur, no animation) · Balanced (one soft blur, gentle motion; the default) · Full (frosted glass and moving scenes) |
+| **Motion intensity** | Settings → 3D effects | Off · Calm · Lively · Cinematic |
+| **Album glow** | Settings → 3D effects | The coloured light behind the cover, on or off |
+| **Background motion** | Settings → 3D effects | Freezes the wallpaper and scene when off, keeping everything else |
+| **Particle effects** | Settings → 3D effects | A quick switch for the *Particles* scene |
+| **Artwork style** | Settings → 3D effects, or the chips under the player on Now Playing | 15 styles (below) |
+| **Page transition** | Settings → 3D effects | Instant · Fade · Slide · Rise · Zoom · Flip · Depth · Swing |
+| **When you touch** | Settings → 3D effects | None · Ripple · Glow · Pop |
+| **Depth** | Settings → Cards & depth | Flat · Soft · Deep · Crystal · Floating · Bevel · Layered |
+| **Glass finish** | Settings → Cards & depth | Clear · Frosted · Prismatic · Iridescent · Smoked · Liquid |
+| **Animated scene** | Settings → Background | 19 scenes behind the Home widgets, and how busy they are |
+| **Navigation style** | Settings → Navigation → Edit navigation… → Look | 10 styles; the highlight slides between buttons and the album or mascot medallion turns |
 
-Presets are combinations of existing color palettes, backgrounds, surfaces, and new 3D controls. Users can customize every parameter afterward.
+Every featured look, signature look and 3D scene sets these together so they match (see [themes.md](themes.md)); any of them can be
+changed on its own afterwards.
 
-## Hardware and safety
+## Artwork styles
 
-- Animations are CSS based and run on the graphics compositor. No WebGL/Three.js dependency and no additional hardware.
-- A moving car automatically hides the Home background scene and stops the animated glass/album choreography (with the earlier slow-vinyl exception). The Home dashboard does not move the actual widget boxes: drag/resize hit-testing remains in the original grid coordinates.
-- OS `prefers-reduced-motion` disables decorative motion. Selecting Effects → Minimal removes the animated dashboard scene. Motion → Off disables animation as well.
-- On Raspberry Pi 5, start with **Effects → Balanced**, **Motion → Calm**, **Dashboard → Ambient glow**, and **Glass → Frosted**. Use **Cinematic / Orbit / Crystal** only if graphics performance is acceptable in your setup.
-- Screenshots of an older version do not verify these effects. Test this new UI on the actual Pi 5 after installation.
+Used on Home, Now Playing and the Music players. The cover only moves while something plays.
 
-## Verifying this release
+| Style | | Style | |
+| --- | --- | --- | --- |
+| Classic | the plain cover | Compact disc | a shiny disc |
+| Spinning vinyl | a record that turns while it plays | Cassette | a tape with turning reels |
+| Floating 3D | the cover hovers and tilts | Parallax tilt | leans as it plays |
+| Hologram | projected above a glowing ring | Stack | a pile of sleeves |
+| Glass 3D | the cover behind glass | Breathe | swells with the music |
+| Orbit | rings circle the cover | Polaroid | an instant photo |
+| Prism | rainbow edges | Glitch | digital tears |
+| | | Flip | turns over now and then |
 
-This ZIP contains the v2.3.0 source project, not a precompiled `dist` folder. The head unit updater must install dependencies and build the UI on its target system. The shared settings typecheck and a round-trip test of all 1,008 combinations of the five 3D settings were successful during packaging. The full UI build was **not** possible in the packaging environment because npm package downloads failed (DNS error). Always make a backup and retain a rollback copy.
+![Now Playing with the spinning vinyl](screenshots/nowplaying.jpg)
 
-## FM transmitter
+## Safety and the Pi
 
-The existing **Apps → FM transmitter** implementation and all its source files are retained without changes. See [fm.md](fm.md) for the supported second-Pi FM helper and safety notes. **Raspberry Pi 5 cannot use `fm_transmitter`'s GPIO FM technique directly.**
+* Only `transform` and `opacity` animate, so the GPU does the work and nothing is laid out again. A test (`styles/policy.test.ts`)
+  fails the build if any stylesheet breaks that rule.
+* **While the car moves** (above 8 km/h), the scenes, the mascot, the glass sheen and every other decorative animation stop. Only the
+  turning record or CD and the music equaliser keep going, because they show that music is playing. Widgets never move.
+* *Effects → Minimal*, *Motion intensity → Off* and the system's *reduce motion* setting each stop all decorative motion.
+* The real frosted `backdrop-filter` is used only at *Full*; *Balanced* fakes glass over one blurred background layer.
+* On a Pi 5, start with **Balanced** and **Calm**. Try **Full** and **Cinematic** once you have seen how your screen copes.
+
+This was built and checked in a browser at 800×480, 1024×600 and 1280×400, not on a Pi. How smooth it is on the real screen is the
+first thing to look at.

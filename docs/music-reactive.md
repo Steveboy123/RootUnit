@@ -1,25 +1,26 @@
-# Music-reactive backgrounds • v2.4.0
+# Music-reactive light
 
-The **background** and the **beat overlay** are TWO INDEPENDENT controls. Choose a background under Settings → Appearance → Customise → Background; choose the music reaction under Effects.
+The **background** and the **beat overlay** are TWO INDEPENDENT controls. Choose a background under **Settings → Background**; choose the music reaction under **Settings → Music reactive**.
 
-## Background options
+## Backgrounds
 
-- None / standard palette; album blur; sharp album artwork; ambient colours sampled from album art
-- Aurora, gradient, grid and weave
-- Built-in wallpapers; your own wallpapers uploaded from the head-unit browser or from a phone connected to the same local UI
-- Blur (for album blur), dim, and transparent glass panel settings remain separate
-
-Use **Add your own picture** under the Wallpaper picker. The upload uses a limited same-origin `/api/wallpapers/upload` endpoint; only actual PNG/JPEG/WebP/AVIF image files up to 12 MiB are accepted, and existing files are never overwritten. Uploaded files are stored under the existing `data/wallpapers` directory, retained on updates. No cloud account is required.
+Any background works with it: album art, a built-in or uploaded wallpaper, an animated scene, or none. The full list is in
+[themes.md](themes.md). The light is drawn above the background and below every button, and never catches a touch.
 
 ## Reaction options
 
-- **Off** — keep any chosen backdrop with no music pulse (default)
-- **Bass glow** — soft light spreading around the middle and edges
-- **Colour wash** — colour illuminates the existing backdrop
-- **3D beat rings** — perspective rings throb on detected bass transients
-- **Spectrum bars** — decorative bars responding to the real loudness/bass meter (not a true 15-band FFT)
+Settings → **Music reactive**:
 
-Colour: theme accent, album cover dominant colour, cycling rainbow, or a picked custom colour. Strength 0–100%; sensitivity 0–100%. This is a visual overlay underneath the widgets and controls, not a replacement for any background, and will never intercept a touchscreen touch.
+| Style | | Style | |
+| --- | --- | --- | --- |
+| Off | nothing reacts (the default) | Halo | a halo round the artwork |
+| Glow | the screen edges breathe | Burst | a flash on every hit |
+| Wash | a colour wash on the beat | Wave | a waveform line |
+| Rings | rings pulse out | Radial | a circular spectrum |
+| Spectrum | bars along the bottom | Edges | light runs round the edges |
+
+**Colour:** Accent · Album (from the cover) · Rainbow · Custom (one you choose) · Heat (blue to red with the volume).
+**Intensity** and **Sensitivity** 0–100%. The mascot can pulse with the same meter (Settings → Mascot).
 
 ## Making it respond to REAL audio
 
@@ -31,13 +32,13 @@ Spotify and TIDAL APIs provide playback metadata and controls, **not raw audio s
 2. Arrange for a *copy* of the real playback audio to reach an ALSA **capture** device (for example through PipeWire's monitor, an ALSA loopback, or an external USB audio capture device). **Do not move your primary speaker output just to enable the lights.**
 3. Find the capture device: `arecord -l`. Verify that your chosen device actually receives the playing music, not silence.
 4. In the head unit's existing `.env`, add `HEADUNIT_BEAT_DEVICE=plughw:Loopback,1,0` (replace this example with your actual working device).
-5. Restart the head-unit service; under Effects select **Pi audio monitor** and choose a reactive style. The status message reports whether samples are available. It returns quiet (not made-up pulses) when there is no captured sound.
+5. Restart the head-unit service; in Settings → Music reactive choose a style and set **Listen to** to **Head unit sound**. The line under it says whether the monitor is listening. It returns quiet (not made-up pulses) when there is no captured sound.
 
 The ALSA loopback only works if the playback path is mirrored to it; merely loading `snd-aloop` does not automatically capture Spotify/Bluetooth audio. When no device is configured, the head unit runs normally but the visual effect stays quiet. The meter polls its own local API at about 8 Hz, with no audio recording, cloud transmission, or audio-file storage.
 
 ### Option 2: Microphone (easy test)
 
-Select **Microphone**, then **Start microphone**. The browser will request audio permission. A microphone picks up cabin sound/music, not isolated system music, so voices and road noise can also affect the pulse. `getUserMedia` normally requires HTTPS or localhost; it may not work when opening the Pi from a phone by plain HTTP. **Stop microphone** immediately closes the capture tracks. For privacy, the microphone must be restarted manually after a reload. It is not connected to speaker output.
+Set **Listen to** to **Microphone**, then tap **Start microphone**. The browser will request audio permission. A microphone picks up cabin sound/music, not isolated system music, so voices and road noise can also affect the pulse. `getUserMedia` normally requires HTTPS or localhost; it may not work when opening the Pi from a phone by plain HTTP. **Stop** closes the capture at once. For privacy, the microphone must be restarted manually after a reload. It is not connected to speaker output.
 
 ## Performance & driving behaviour
 
