@@ -23,6 +23,7 @@ import type {
   TouchFx,
 } from './appearance';
 import type { ServiceMap, ServiceMessage } from './features';
+import type { SavedLook } from './looks';
 import { DEFAULT_LAUNCHER, DEFAULT_NAV, DEFAULT_PANEL, type LauncherConfig, type NavConfig, type NavPatch, type PanelConfig } from './nav';
 
 // ---------------------------------------------------------------------------
@@ -393,6 +394,10 @@ export interface Settings {
   albumGlow: boolean;
   /** Let the background itself move: drifting colours, a slow wallpaper pan. Off keeps the background still. */
   bgMotion: boolean;
+  /** Looks the owner saved under a name (Settings → Looks & layouts → My looks), at most SAVED_LOOK_LIMITS.count. */
+  myLooks: SavedLook[];
+  /** The WLED lights take the interface's accent colour (and the album's, when the accent follows the album art). */
+  lightsFollowAccent: boolean;
   units: 'metric' | 'imperial';
   clock24h: boolean;
   /** Switch between dayTheme and nightTheme on a schedule (overrides `theme`). */
@@ -486,6 +491,8 @@ export const DEFAULT_SETTINGS: Settings = {
   dockStyle: 'island',
   albumGlow: true,
   bgMotion: true,
+  myLooks: [],
+  lightsFollowAccent: false,
   sceneIntensity: 60,
   weatherFx: false,
   units: 'metric',

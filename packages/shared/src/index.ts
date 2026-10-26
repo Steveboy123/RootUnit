@@ -7,3 +7,4 @@ export * from './fm';
 export * from './nav';
 export * from './sun';
 export * from './boot';
+export * from './looks';

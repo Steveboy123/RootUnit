@@ -43,6 +43,7 @@ import {
   type NavItem,
   type PanelConfig,
   type Settings,
+  lookOf,
 } from '@headunit/shared';
 import { createBackup, restoreBackup, settingsToRestore, type BackupSinks, type CarriedArrangements } from './features/backup';
 
@@ -1320,6 +1321,12 @@ const VARIANT: { [K in keyof Settings]: Variant<K> } = {
   weatherFx: { valid: true, expected: true, invalid: 'on' },
   albumGlow: { valid: false, expected: false, invalid: 'yes' },
   bgMotion: { valid: false, expected: false, invalid: 1 },
+  myLooks: {
+    valid: [{ id: 'night-1', name: '  Night\nrun  ', look: { theme: 'toxic', surface: 'brutal', units: 'imperial', myLooks: [{ id: 'x' }] } }],
+    expected: [{ id: 'night-1', name: 'Night run', look: { ...lookOf(DEFAULT_SETTINGS), theme: 'toxic', surface: 'brutal' } }],
+    invalid: 'all of them',
+  },
+  lightsFollowAccent: { valid: true, expected: true, invalid: 'on' },
   shape: { valid: 'round', expected: 'round', invalid: 'pointy' },
   bgBlur: { valid: 33.6, expected: 34, invalid: '33' },
   bgDim: { valid: 80, expected: 80, invalid: NaN },

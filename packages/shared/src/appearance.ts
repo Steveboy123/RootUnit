@@ -35,6 +35,12 @@ export const THEME_IDS = [
   'lunar',
   'velvet',
   'blueprint',
+  'neonoir',
+  'miami',
+  'toxic',
+  'rosegold',
+  'abyss',
+  'holo',
   // light
   'daylight',
   'sand',
@@ -44,6 +50,8 @@ export const THEME_IDS = [
   'arctic',
   'latte',
   'concrete',
+  'paper',
+  'peach',
   // high visibility
   'contrast',
   'sunlit',
@@ -51,7 +59,7 @@ export const THEME_IDS = [
 export type ThemeId = (typeof THEME_IDS)[number];
 
 /** How cards and panels are drawn. */
-export const SURFACES = ['solid', 'glass', 'outline', 'neon', 'clay', 'hud', 'chrome', 'aero'] as const;
+export const SURFACES = ['solid', 'glass', 'outline', 'neon', 'clay', 'hud', 'chrome', 'aero', 'brutal', 'holo', 'terminal', 'lumen'] as const;
 export type Surface = (typeof SURFACES)[number];
 
 /** What is drawn behind the app. `none` is the palette gradient only. */
@@ -75,6 +83,10 @@ export const BACKGROUNDS = [
   'synthsun',
   'bokeh',
   'scanlines',
+  'halftone',
+  'lowpoly',
+  'rays',
+  'plasma',
 ] as const;
 export type Background = (typeof BACKGROUNDS)[number];
 
@@ -99,6 +111,9 @@ export const ALBUM_MOTIONS = [
   'polaroid',
   'glitch',
   'flip',
+  'cube',
+  'mirror',
+  'sleeve',
 ] as const;
 export type AlbumMotion = (typeof ALBUM_MOTIONS)[number];
 
@@ -131,6 +146,12 @@ export const DASH_SCENES = [
   'tunnel',
   'synthsun',
   'circuit',
+  'highway',
+  'sakura',
+  'embers',
+  'radar',
+  'skyline',
+  'lightning',
 ] as const;
 export type DashScene = (typeof DASH_SCENES)[number];
 
@@ -153,9 +174,9 @@ export type Shape = (typeof SHAPES)[number];
 /** Mascot artwork, motion and the light around it. */
 export const MASCOT_VARIANTS = ['original', 'transparent', 'armored'] as const;
 export type MascotVariant = (typeof MASCOT_VARIANTS)[number];
-export const MASCOT_MOTIONS = ['still', 'float', 'hologram', 'tilt', 'breathe', 'glitch', 'orbit', 'scan', 'peek', 'sway', 'pulse'] as const;
+export const MASCOT_MOTIONS = ['still', 'float', 'hologram', 'tilt', 'breathe', 'glitch', 'orbit', 'scan', 'peek', 'sway', 'pulse', 'bounce', 'drift'] as const;
 export type MascotMotion = (typeof MASCOT_MOTIONS)[number];
-export const MASCOT_AURAS = ['none', 'glow', 'halo', 'sparks', 'smoke'] as const;
+export const MASCOT_AURAS = ['none', 'glow', 'halo', 'sparks', 'smoke', 'rings', 'aurora'] as const;
 export type MascotAura = (typeof MASCOT_AURAS)[number];
 
 /** Typeface of the whole interface. Every one is bundled with the app (no web fonts are fetched). */
@@ -163,28 +184,29 @@ export const FONTS = ['inter', 'system', 'grotesk', 'outfit', 'rounded', 'tech',
 export type FontId = (typeof FONTS)[number];
 
 /** How one screen hands over to the next. */
-export const PAGE_TRANSITIONS = ['none', 'fade', 'slide', 'rise', 'zoom', 'flip', 'depth', 'swing'] as const;
+export const PAGE_TRANSITIONS = ['none', 'fade', 'slide', 'rise', 'zoom', 'flip', 'depth', 'swing', 'cube', 'drop', 'tilt', 'portal'] as const;
 export type PageTransition = (typeof PAGE_TRANSITIONS)[number];
 
 /** What a press looks like on buttons and tiles. */
-export const TOUCH_FX = ['none', 'ripple', 'glow', 'pop'] as const;
+export const TOUCH_FX = ['none', 'ripple', 'glow', 'pop', 'sparkle', 'ring', 'press'] as const;
 export type TouchFx = (typeof TOUCH_FX)[number];
 
 /** How the speedometer and tachometer are drawn (Drive screen and gauge widgets). */
-export const GAUGE_STYLES = ['arc', 'needle', 'digital', 'ring', 'bar', 'sport'] as const;
+export const GAUGE_STYLES = ['arc', 'needle', 'digital', 'ring', 'bar', 'sport', 'led', 'hud'] as const;
 export type GaugeStyle = (typeof GAUGE_STYLES)[number];
 
 /** What the standby screen shows. */
-export const STANDBY_STYLES = ['clock', 'analog', 'flip', 'mascot', 'orbit', 'minimal'] as const;
+export const STANDBY_STYLES = ['clock', 'analog', 'flip', 'mascot', 'orbit', 'minimal', 'nixie', 'words', 'binary'] as const;
 export type StandbyStyle = (typeof STANDBY_STYLES)[number];
 
 /**
  * How the navigation bar is drawn. Each works at the bottom and on either side:
  * island (classic dock), pill (floating pill), rail (edge rail), ghost (minimal icons), curve (glowing curve under the current button),
  * glass3d (raised 3D glass keys), split (two halves around a centre medallion with the album art), tabs (text tabs, no icons),
- * wave (a wave-shaped backing), mascot (the centre medallion is your mascot).
+ * wave (a wave-shaped backing), mascot (the centre medallion is your mascot), neon (a glowing neon tube round the bar),
+ * bubbles (every button its own floating bubble).
  */
-export const DOCK_STYLES = ['island', 'rail', 'pill', 'ghost', 'curve', 'glass3d', 'split', 'tabs', 'wave', 'mascot'] as const;
+export const DOCK_STYLES = ['island', 'rail', 'pill', 'ghost', 'curve', 'glass3d', 'split', 'tabs', 'wave', 'mascot', 'neon', 'bubbles'] as const;
 export type DockStyle = (typeof DOCK_STYLES)[number];
 
 /** Wallpapers drawn by the app itself (inline SVG scenes). Files the user drops in data/wallpapers/ are `user:<filename>`. */
@@ -209,6 +231,12 @@ export const BUILTIN_WALLPAPERS = [
   'eclipse',
   'vinyl-lounge',
   'sunset-gt',
+  'cherry-road',
+  'cyber-alley',
+  'miami-beach',
+  'deep-sea',
+  'holo-waves',
+  'paper-hills',
 ] as const;
 export type BuiltinWallpaper = (typeof BUILTIN_WALLPAPERS)[number];
 

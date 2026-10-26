@@ -36,6 +36,7 @@ import {
   type Settings,
   type WidgetConfig,
 } from './types';
+import { cleanLookName, LOOK_KEYS, lookOf, SAVED_LOOK_ID_RE, SAVED_LOOK_LIMITS, type LookValues, type SavedLook } from './looks';
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -158,7 +159,34 @@ export function mergeSettings(current: Settings, patch: unknown): Settings {
   if (typeof patch.weatherFx === 'boolean') next.weatherFx = patch.weatherFx;
   if (typeof patch.albumGlow === 'boolean') next.albumGlow = patch.albumGlow;
   if (typeof patch.bgMotion === 'boolean') next.bgMotion = patch.bgMotion;
+  if (Array.isArray(patch.myLooks)) next.myLooks = sanitizeSavedLooks(patch.myLooks);
+  if (typeof patch.lightsFollowAccent === 'boolean') next.lightsFollowAccent = patch.lightsFollowAccent;
   return next;
+}
+
+/**
+ * A complete, valid look from anything: each look setting it carries is checked like any setting, the rest are the defaults. Only the
+ * look's own keys are read, so a look can never carry saved looks (or anything else) inside it.
+ */
+export function lookFromUntrusted(raw: unknown): LookValues {
+  const picked: Record<string, unknown> = {};
+  if (isObj(raw)) for (const k of LOOK_KEYS) if (Object.prototype.hasOwnProperty.call(raw, k)) picked[k] = raw[k];
+  return lookOf(mergeSettings(DEFAULT_SETTINGS, picked));
+}
+
+/** The saved looks as they are kept: valid ids (the first of any repeat wins), clean non-empty names, valid looks, at most the limit. */
+export function sanitizeSavedLooks(list: readonly unknown[]): SavedLook[] {
+  const out: SavedLook[] = [];
+  const ids = new Set<string>();
+  for (const item of list.slice(0, SAVED_LOOK_LIMITS.count * 4)) {
+    if (out.length >= SAVED_LOOK_LIMITS.count) break;
+    if (!isObj(item) || typeof item.id !== 'string' || !SAVED_LOOK_ID_RE.test(item.id) || ids.has(item.id)) continue;
+    const name = cleanLookName(item.name);
+    if (!name || !isObj(item.look)) continue;
+    ids.add(item.id);
+    out.push({ id: item.id, name, look: lookFromUntrusted(item.look) });
+  }
+  return out;
 }
 
 export function sanitizeSettings(raw: unknown): Settings {

@@ -119,7 +119,7 @@ describe('appearance vocabulary', () => {
 
   it('lists every palette once: dark, then light, then the two high-visibility ones last', () => {
     expect(new Set(THEME_IDS).size).toBe(THEME_IDS.length);
-    expect(THEME_IDS.length).toBe(36);
+    expect(THEME_IDS.length).toBe(44);
     expect(THEME_IDS.slice(-2)).toEqual(['contrast', 'sunlit']);
     for (const id of V2.themes) expect(THEME_IDS).toContain(id);
   });
