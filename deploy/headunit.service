@@ -1,0 +1,26 @@
+# Backend service. Install:
+#   sudo cp deploy/headunit.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now headunit
+# Adjust User and the paths if your checkout isn't /home/pi/rpi-head-unit.
+[Unit]
+Description=Head unit backend
+After=network.target sound.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/rpi-head-unit
+ExecStart=/usr/bin/node --env-file-if-exists=/home/pi/rpi-head-unit/.env apps/server/dist/index.js
+Restart=always
+# /dev/rfcomm0 (Bluetooth OBD-II) belongs to the dialout group
+SupplementaryGroups=dialout
+RestartSec=2
+Environment=NODE_ENV=production
+# wpctl (volume) talks to the user's PipeWire session:
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+Environment=WAYLAND_DISPLAY=wayland-0
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+Environment=HOME=/home/pi
+
+[Install]
+WantedBy=multi-user.target

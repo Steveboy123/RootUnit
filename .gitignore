@@ -1,0 +1,16 @@
+node_modules/
+dist/
+data/
+data-demo/
+.env
+*.log
+.DS_Store
+*.zip
+.vitest/
+
+# Python caches (the FM helper has Python tests)
+__pycache__/
+*.pyc
+
+# Owner-private app provisioning: never commit or publish
+private/

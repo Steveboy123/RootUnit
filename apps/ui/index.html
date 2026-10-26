@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-theme="midnight" data-scheme="dark" data-surface="solid" data-bg="none" data-effects="balanced" data-shape="soft">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#070a12" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2307090f'/%3E%3Cpath d='M6 22a10 10 0 1 1 20 0' fill='none' stroke='%233dd5f3' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M16 22l5-8' stroke='%233dd5f3' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <title>Head Unit</title>
+  </head>
+  <body style="margin:0;font-family:system-ui,-apple-system,sans-serif;overflow:hidden">
+    <div id="root" style="min-height:100vh">
+      <div id="boot-fallback" style="min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;background:radial-gradient(ellipse at 50% 50%,#300b2d 0%,#08040f 65%);color:white">
+        <img src="/mascot/armored.webp" alt="" style="width:min(55vw,65vh,540px);object-fit:contain;filter:drop-shadow(0 0 18px #a13);" />
+        <div style="font-size:24px;font-weight:800;letter-spacing:.25em;margin-top:-20px">HEAD UNIT</div>
+        <div id="boot-status" style="margin-top:10px;color:#ff94c2">Loading dashboard…</div>
+      </div>
+    </div>
+    <script>
+      (() => {
+        const show = (message) => {
+          const el = document.getElementById('boot-status');
+          if (el) el.textContent = message;
+        };
+        window.addEventListener('error', (event) => {
+          const msg = event && (event.message || (event.error && event.error.message));
+          show('UI startup error: ' + (msg || 'script failed to load'));
+        });
+        window.addEventListener('unhandledrejection', (event) => {
+          const reason = event && event.reason;
+          show('UI startup error: ' + (reason && reason.message ? reason.message : String(reason || 'unknown error')));
+        });
+        setTimeout(() => {
+          if (document.getElementById('boot-fallback')) show('UI did not start. Backend is running — check Chromium log.');
+        }, 12000);
+      })();
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+# FM transmitter helper for the head unit. Installed by deploy/setup-fm.sh (sudo ./deploy/setup-fm.sh local|node).
+# Runs as root because the transmitter program has to open /dev/mem and /dev/vcio, but nothing else: no new privileges, only the one
+# capability /dev/mem needs, a read-only file system, no home directories, only the two devices it uses, and only IP networking.
+[Unit]
+Description=Head unit FM transmitter helper
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python3 -B -I /usr/local/lib/headunit-fm/fm_node.py --config /etc/headunit-fm-node.conf
+Restart=on-failure
+RestartSec=5
+# On stop (or a crash of the helper) systemd sends SIGTERM to the transmitter program too, which makes it switch the carrier off.
+KillMode=control-group
+KillSignal=SIGTERM
+TimeoutStopSec=15
+SyslogIdentifier=headunit-fm-node
+
+NoNewPrivileges=yes
+CapabilityBoundingSet=CAP_SYS_RAWIO
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+DevicePolicy=closed
+DeviceAllow=/dev/mem rw
+DeviceAllow=/dev/vcio rw
+RestrictAddressFamilies=AF_INET AF_INET6
+LockPersonality=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native
+UMask=0077
+TasksMax=64
+LimitNOFILE=256
+
+[Install]
+WantedBy=multi-user.target

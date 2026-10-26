@@ -1,0 +1,34 @@
+# Settings for the FM transmitter helper (deploy/fm-node/fm_node.py).
+# One KEY=VALUE per line. Lines that start with # are comments. No quotes needed.
+#
+# deploy/setup-fm.sh installs this as /etc/headunit-fm-node.conf (owner root, mode 0600) and fills in TOKEN.
+# After changing it: sudo systemctl restart headunit-fm-node
+
+# The password the head unit must send with every request. At least 16 characters, no spaces.
+# setup-fm.sh makes a long random one. Keep it secret: anyone who knows it and can reach the helper can switch the transmitter on.
+TOKEN=
+
+# Which network address to listen on.
+#   127.0.0.1  only this Pi (use it when the head unit and the transmitter are the same Pi)
+#   0.0.0.0    every network (use it on a second Pi that the head unit reaches over Wi-Fi or Ethernet)
+BIND=127.0.0.1
+CONTROL_PORT=8788
+AUDIO_PORT=8789
+
+# The transmitter program, built by setup-fm.sh from the source in vendor/fm_transmitter.
+BIN=/usr/local/lib/headunit-fm/fm_transmitter
+
+# DMA channel the transmitter program uses (0 to 15). 0 is its default.
+DMA=0
+
+# The band the helper will accept, in MHz. Whatever is written here, it never goes outside 76.0 to 108.0.
+# Narrow it to the part of the band that is free where you drive, for example FREQ_MIN=88.1 and FREQ_MAX=90.1.
+FREQ_MIN=87.5
+FREQ_MAX=108.0
+
+# The widest swing the helper will accept, in kHz (never more than 150, which is +-75 kHz). 100 is the usual setting.
+BANDWIDTH_MAX=150
+
+# If nothing from the head unit is heard for this many seconds, the transmitter is switched off.
+# The head unit asks for the status every 2 seconds, so the default is generous.
+DEADMAN_S=30

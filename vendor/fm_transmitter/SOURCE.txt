@@ -1,0 +1,23 @@
+fm_transmitter, vendored unmodified.
+
+  Upstream   https://github.com/markondej/fm_transmitter
+  Commit     322500ed9cbe6252a640e566a68596215b9a3ba5  (2026-06-12, "Fixed integer ranges, issue #209"), version 0.9.7
+  Copied     the eight files below, byte for byte. Nothing else from the repository (no sample .wav, no README).
+  Licence    BSD 3-clause. See NOTICE. Marcin Kondej wrote it; mailbox.c/h are Broadcom's.
+
+Why it is here: the head unit's FM helper builds it ON the Pi it will run on (deploy/setup-fm.sh), from exactly this source, with no
+download. setup-fm.sh checks these checksums before it compiles; if one differs it stops. To update, copy the new upstream files, read
+the diff, replace the commit and the sums below, and re-run the helper's tests.
+
+It only runs on Raspberry Pi boards up to the Pi 4 (BCM2835/2836/2837/2711). The Pi 5 is NOT supported by upstream and the helper
+refuses to start it there.
+
+SHA-256
+a6453c634b569961650eafdee6fa69111f6f622028169cff9a4b998c10f12abc  Makefile
+245d522fb005a111fe83058a2bcdbd29d3689199dfc5dd9c228ad4d45b68097a  fm_transmitter.cpp
+8dc4126822e6dcc25453a785af2fabaadef7197eb02f16ab8e41eb371c606eb2  mailbox.c
+863e34051e5a5f696ab0dae07b4c7fc07e44b691e6e2af08c2882397932e6e8a  mailbox.h
+84c5fb9512e1c63f5f37db388052a90723fad9db7e6f43bfc920833e5d9f97f3  transmitter.cpp
+66eebb1ef3989924dc0cffbc5f890069dcb70bceb3141fa8146e56f30aac9814  transmitter.hpp
+a442074728d0bbd0cca0a00645a0de16c9db5624b5abec6340bb4a0112741568  wave_reader.cpp
+206df96ee5722e5bad1f73cd88a663901ed860e7d42e6803a3123de42314d207  wave_reader.hpp

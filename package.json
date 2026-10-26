@@ -1,0 +1,27 @@
+{
+  "name": "rpi-head-unit",
+  "private": true,
+  "version": "3.0.0",
+  "description": "RootUnit — a themeable, animated car head unit for Raspberry Pi 5: web UI + Node backend",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n server,ui -c blue,magenta \"npm run dev -w @headunit/server\" \"npm run dev -w @headunit/ui\"",
+    "build": "node deploy/fetch-librespot.mjs && npm run build -w @headunit/ui && npm run build -w @headunit/server",
+    "start": "npm run start -w @headunit/server",
+    "typecheck": "npm run typecheck -w @headunit/shared && npm run typecheck -w @headunit/server && npm run typecheck -w @headunit/ui",
+    "test": "npm run test -w @headunit/server && npm run test -w @headunit/ui",
+    "setup": "npm run setup -w @headunit/server --",
+    "android-auto:install": "bash deploy/install-livi-wired.sh",
+    "package": "bash deploy/package-zip.sh"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
