@@ -1,4 +1,4 @@
-import { Car, Coffee, Eye, Lightbulb, Mountain, Moon, PartyPopper, ParkingSquare, Route, Star, Sun, Sunrise, Users, Zap, type LucideIcon } from 'lucide-react';
+import { Bell, Coffee, DoorOpen, Fan, House, Lightbulb, Lock, Mountain, Moon, PartyPopper, ParkingSquare, Power, Route, Star, Sun, Zap, type LucideIcon } from 'lucide-react';
 import type { ActionIcon, SceneIcon } from '@headunit/shared';
 
 export const SCENE_GLYPHS: Record<SceneIcon, LucideIcon> = { moon: Moon, sun: Sun, road: Route, coffee: Coffee, party: PartyPopper, parking: ParkingSquare, mountain: Mountain, star: Star };
@@ -10,4 +10,9 @@ export function SceneGlyph({ icon, size = 20 }: { icon: SceneIcon; size?: number
 }
 
 /** The picture for a quick action (the server stores only the name). */
-export const ACTION_GLYPHS: Record<ActionIcon, LucideIcon> = { zap: Zap, door: Car, home: Sunrise, lightbulb: Lightbulb, lock: Eye, bell: Users, fan: Sun, power: Zap };
+export const ACTION_GLYPHS: Record<ActionIcon, LucideIcon> = { zap: Zap, door: DoorOpen, home: House, lightbulb: Lightbulb, lock: Lock, bell: Bell, fan: Fan, power: Power };
+
+export function ActionGlyph({ icon, size = 20 }: { icon: ActionIcon; size?: number }) {
+  const Icon = ACTION_GLYPHS[icon] ?? Zap;
+  return <Icon size={size} />;
+}

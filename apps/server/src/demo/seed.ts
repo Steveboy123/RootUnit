@@ -81,7 +81,7 @@ export async function seedDemoData(store: JsonStore, now = Date.now()): Promise<
       const movingS = Math.round((t.km / avg) * 3600);
       const durationS = movingS + Math.round(rand() * 240);
       trips.push({
-        id: `demo${trips.length}`.padEnd(8, '0'),
+        id: `demo${String(trips.length).padStart(4, '0')}`,
         startedAt: start,
         endedAt: start + durationS * 1000,
         distanceKm: Math.round(t.km * 10) / 10,

@@ -16,7 +16,7 @@ export function Page({ title, subtitle, actions, children, className, fixed }: {
         <header className="page-head">
           <div className="grow">
             {title && <h2>{title}</h2>}
-            {subtitle && <div className="dim" style={{ fontSize: '0.86rem' }}>{subtitle}</div>}
+            {subtitle && <div className="page-sub">{subtitle}</div>}
           </div>
           {actions && <div className="row">{actions}</div>}
         </header>

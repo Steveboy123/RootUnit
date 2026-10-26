@@ -17,7 +17,7 @@ const AppTile = memo(function AppTile({ app, badge, hidden, onNav, canHold, onHo
   const Icon = app.icon;
   const hue = app.hue ?? 260;
   return (
-    <button type="button" className="card app-tile" onClick={() => openAppDef(app)} data-tone={badge?.tone} data-hidden={hidden || undefined} style={{ ['--i' as string]: index, ['--h' as string]: hue }} {...gesture}>
+    <button type="button" className="card app-tile" onClick={() => openAppDef(app)} data-tone={badge?.tone} data-hidden={hidden || undefined} data-nav={onNav || undefined} style={{ ['--i' as string]: index, ['--h' as string]: hue }} {...gesture}>
       <span className="app-icon">
         <Icon />
       </span>
@@ -26,7 +26,7 @@ const AppTile = memo(function AppTile({ app, badge, hidden, onNav, canHold, onHo
         <small>{app.description}</small>
       </span>
       {onNav && (
-        <span className="app-pin" role="img" aria-label="On the navigation">
+        <span className="app-pin app-nav-mark" role="img" aria-label="On the navigation">
           <Pin size={13} aria-hidden="true" />
         </span>
       )}
@@ -67,7 +67,7 @@ export function AppsPage() {
     <Page
       actions={
         hiddenCount > 0 ? (
-          <button type="button" className="chip" data-active={revealed} aria-pressed={revealed} onClick={() => setShowHidden(!revealed)}>
+          <button type="button" className="chip apps-hidden-chip" data-active={revealed} aria-pressed={revealed} onClick={() => setShowHidden(!revealed)}>
             <EyeOff />
             Hidden ({hiddenCount})
           </button>

@@ -156,7 +156,7 @@
   background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.24), rgba(var(--accent-2-rgb), 0.14));
   box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.35), 0 0 22px rgba(var(--accent-rgb), 0.18);
   transform: translateY(var(--y, 0px));
-  transition: transform 420ms var(--ease-spring), height 300ms var(--ease-out), opacity var(--dur-2);
+  transition: transform 420ms var(--ease-spring), opacity var(--dur-2);
   pointer-events: none;
 }
 .dock-ind::before {
@@ -557,8 +557,14 @@
   padding-left: calc(var(--dock-inset) + 4px);
   padding-right: 14px;
 }
+.page > * {
+  flex-shrink: 0; /* a scrolling page grows; cards with overflow: hidden would otherwise be squashed to nothing */
+}
 .page.fixed {
   overflow: hidden;
+}
+.page.fixed > * {
+  flex-shrink: 1;
 }
 .page-head {
   display: flex;
@@ -571,6 +577,10 @@
   font-weight: var(--weight-display);
   letter-spacing: var(--tracking-display);
   font-size: 1.25rem;
+}
+.page-sub {
+  color: var(--dim);
+  font-size: 0.86rem;
 }
 .keepalive[data-visible='false'] {
   visibility: hidden;

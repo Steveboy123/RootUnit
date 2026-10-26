@@ -14,7 +14,8 @@ beforeEach(() => {
 
 const withHidden = (hidden: string[]): Settings => ({ ...DEFAULT_SETTINGS, launcher: { version: 1, hidden } });
 const page = () => renderToStaticMarkup(<AppsPage />);
-const tiles = (html: string) => [...html.matchAll(/<button[^>]*class="app-tile"[^>]*>.*?<b>(.*?)<\/b>/g)].map((m) => m[1]);
+const tiles = (html: string) => [...html.matchAll(/<button[^>]*class="card app-tile"[^>]*>.*?<b[^>]*>(.*?)<\/b>/g)].map((m) => m[1]);
+const heading = (group: string) => `<div class="section-title">${group}</div>`;
 const names = (...ids: string[]) => ids.map((id) => APPS.find((a) => a.id === id)!.name);
 /** Garage has an overdue service: the "1 overdue" danger badge. */
 const overdueGarage = { garage: { due: [{ status: 'overdue' }] } } as never;
@@ -26,7 +27,7 @@ describe('Apps launcher: hidden apps', () => {
     expect(tiles(html)).toHaveLength(APPS.length);
     expect(html).not.toContain('apps-hidden-chip');
     expect(html).not.toContain('data-hidden');
-    for (const g of APP_GROUPS) expect(html).toContain(`<h3>${g}</h3>`);
+    for (const g of APP_GROUPS) expect(html).toContain(heading(g));
   });
 
   it('does not draw a hidden app, and says how many are hidden on a 48px Hidden button', () => {
@@ -34,7 +35,7 @@ describe('Apps launcher: hidden apps', () => {
     const html = page();
     expect(tiles(html)).toHaveLength(APPS.length - 2);
     for (const n of names('notes', 'weather')) expect(tiles(html)).not.toContain(n);
-    expect(html).toMatch(/<button type="button" class="chip apps-hidden-chip"[^>]*aria-pressed="false"[^>]*>.*Hidden \((<!-- -->)?2(<!-- -->)?\)/);
+    expect(html).toMatch(/<button type="button" class="chip apps-hidden-chip"[^>]*aria-pressed="false"[^>]*>.*?Hidden \((<!-- -->)?2(<!-- -->)?\)/);
   });
 
   it('an app that needs a look stays on screen even when hidden, and still counts as hidden', () => {
@@ -55,8 +56,8 @@ describe('Apps launcher: hidden apps', () => {
   it('a group with nothing left to show has no heading', () => {
     put({ settings: withHidden(['arcade']) });
     const html = page();
-    expect(html).not.toContain('<h3>Play</h3>');
-    expect(html).toContain('<h3>Car</h3>');
+    expect(html).not.toContain(heading('Play'));
+    expect(html).toContain(heading('Car'));
   });
 
   it('an id that is not an app (from a newer build) hides nothing and does not make a Hidden button', () => {
@@ -67,8 +68,7 @@ describe('Apps launcher: hidden apps', () => {
   });
 
   it('with every app hidden the page says so, and the Hidden button is there to undo it', () => {
-    // the cap is 16 and there are 16 apps
-    put({ settings: withHidden(APPS.map((a) => a.id)) });
+        put({ settings: withHidden(APPS.map((a) => a.id)) });
     const html = page();
     expect(tiles(html)).toHaveLength(0);
     expect(html).toContain('Every app is hidden');
@@ -78,7 +78,7 @@ describe('Apps launcher: hidden apps', () => {
   it('every tile is a plain button (a tap opens the app) with no edit mode anywhere on the page', () => {
     put({ settings: withHidden([]) });
     const html = page();
-    expect(html.match(/<button[^>]*class="app-tile"/g)).toHaveLength(APPS.length);
+    expect(html.match(/<button[^>]*class="card app-tile"/g)).toHaveLength(APPS.length);
     expect(html.toLowerCase()).not.toContain('edit');
   });
 
@@ -95,7 +95,7 @@ describe('Apps launcher: which apps are on the navigation', () => {
     const html = page();
     expect(html.match(/app-nav-mark/g)).toHaveLength(1);
     expect(html).toContain('role="img" aria-label="On the navigation"');
-    const gps = html.match(/<button[^>]*class="app-tile"[^>]*data-nav="true"[^>]*>.*?<b>(.*?)<\/b>/);
+    const gps = html.match(/<button[^>]*class="card app-tile"[^>]*data-nav="true"[^>]*>.*?<b[^>]*>(.*?)<\/b>/);
     expect(gps?.[1]).toBe(names('gps')[0]);
   });
 

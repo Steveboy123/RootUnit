@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bearingAndDistance, celsiusToDisplay, compassPoint, displayToKm, displayToLiters, economyToDisplay, economyUnit, gallonKind, humanDuration, kmToDisplay, litersToDisplay, shortDistance, volumeUnit } from './units';
+import { bearingAndDistance, celsiusToDisplay, compassPoint, displayToKm, displayToLiters, economyFromDisplay, economyToDisplay, economyUnit, gallonKind, humanDuration, kmToDisplay, litersToDisplay, shortDistance, volumeUnit } from './units';
 
 describe('distance, volume, temperature', () => {
   it('metric is unchanged; imperial converts and round-trips', () => {
@@ -85,5 +85,14 @@ describe('bearingAndDistance', () => {
     expect(r.km).toBeLessThan(348);
     expect(r.bearing).toBeGreaterThan(145);
     expect(r.bearing).toBeLessThan(160);
+  });
+});
+
+describe('economyFromDisplay', () => {
+  it('undoes economyToDisplay in both unit systems', () => {
+    for (const u of ['metric', 'imperial'] as const) {
+      for (const g of ['us', 'uk'] as const) expect(economyFromDisplay(economyToDisplay(6.4, u, g)!, u, g)).toBeCloseTo(6.4, 9);
+    }
+    expect(economyFromDisplay(0, 'imperial')).toBeNull();
   });
 });

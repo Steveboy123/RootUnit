@@ -116,8 +116,8 @@ export function HomePage() {
               const live = drag?.id === w.id;
               const box = rectToPx(live && drag?.mode === 'resize' && ghost ? ghost : w, m);
               const style = {
-                left: box.left,
-                top: box.top,
+                // Placed with `translate` (composited, and separate from the drag's `transform`); only the size is layout.
+                translate: `${box.left}px ${box.top}px`,
                 width: box.width,
                 height: box.height,
                 ['--i' as string]: i,
@@ -152,7 +152,7 @@ export function HomePage() {
                 </div>
               );
             })}
-            {ghost && <div className="widget-ghost" data-ok={ghostOk} style={rectToPx(ghost, m)} />}
+            {ghost && <Ghost box={rectToPx(ghost, m)} ok={ghostOk} />}
             {editing && page.widgets.length === 0 && (
               <div className="home-empty">
                 <b>This page is empty</b>
@@ -171,4 +171,9 @@ export function HomePage() {
       )}
     </div>
   );
+}
+
+/** Where the widget being dragged will land: green when it fits, red when it would overlap. */
+function Ghost({ box, ok }: { box: { left: number; top: number; width: number; height: number }; ok: boolean }) {
+  return <div className="widget-ghost" data-ok={ok} style={{ translate: `${box.left}px ${box.top}px`, width: box.width, height: box.height }} />;
 }

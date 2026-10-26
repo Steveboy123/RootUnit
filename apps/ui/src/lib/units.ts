@@ -29,6 +29,11 @@ export function economyToDisplay(lPer100: number, u: Units, gallon = gallonKind(
   // 100 km is 100/1.609 miles; `lPer100` litres is lPer100 / litersPerGallon gallons.
   return u === 'metric' ? lPer100 : (100 / KM_PER_MILE) * (litersPerGallon(gallon) / lPer100);
 }
+/** The reverse: what the user typed (L/100 km, or mpg) back to the litres per 100 km the server stores. */
+export function economyFromDisplay(v: number, u: Units, gallon = gallonKind()): number | null {
+  if (!(v > 0)) return null;
+  return u === 'metric' ? v : (100 / KM_PER_MILE) * (litersPerGallon(gallon) / v);
+}
 export const economyUnit = (u: Units, gallon = gallonKind()) => (u === 'metric' ? 'L/100 km' : gallon === 'uk' ? 'mpg (UK)' : 'mpg (US)');
 
 export const celsiusToDisplay = (c: number, u: Units) => (u === 'metric' ? c : (c * 9) / 5 + 32);

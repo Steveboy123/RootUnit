@@ -30,8 +30,10 @@ html[data-calm='true'] .home-page > .widget {
 }
 .widget {
   position: absolute;
+  left: 0;
+  top: 0;
   container-type: size;
-  transition: left var(--dur-3) var(--ease-out), top var(--dur-3) var(--ease-out), width var(--dur-3) var(--ease-out), height var(--dur-3) var(--ease-out);
+  transition: translate var(--dur-3) var(--ease-out);
 }
 .widget[data-dragging='true'] {
   z-index: 5;
@@ -116,8 +118,10 @@ html[data-calm='true'] .home[data-editing='true'] .widget {
   border-radius: var(--r-lg);
   border: 2px dashed var(--ok);
   background: rgba(var(--ok-rgb), 0.12);
+  left: 0;
+  top: 0;
   pointer-events: none;
-  transition: left 120ms, top 120ms, width 120ms, height 120ms;
+  transition: translate 120ms var(--ease-out);
 }
 .widget-ghost[data-ok='false'] {
   border-color: var(--danger);
@@ -162,14 +166,15 @@ html[data-calm='true'] .home[data-editing='true'] .widget {
 }
 .home-dots button::before {
   content: '';
-  width: 7px;
+  width: 20px;
   height: 7px;
   border-radius: 7px;
   background: rgba(var(--ink-rgb), 0.3);
-  transition: width var(--dur-3) var(--ease-spring), background var(--dur-2);
+  transform: scaleX(0.35);
+  transition: transform var(--dur-3) var(--ease-spring), background var(--dur-2);
 }
 .home-dots button[data-active='true']::before {
-  width: 20px;
+  transform: scaleX(1);
   background: var(--accent);
 }
 
@@ -467,6 +472,7 @@ html[data-calm='true'] .home[data-editing='true'] .widget {
   height: 24px;
 }
 .tp-main {
+  position: relative;
   width: 60px;
   height: 60px;
   background: var(--accent);
@@ -477,16 +483,29 @@ html[data-calm='true'] .home[data-editing='true'] .widget {
   width: 26px;
   height: 26px;
 }
-.tp-main[data-playing='true'] {
+/* While playing, a soft halo breathes around the button: a pseudo-element's opacity and scale, never the shadow itself. */
+.tp-main[data-playing='true']::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.7);
+  pointer-events: none;
   animation: tp-glow 2.4s ease-in-out infinite;
+}
+html[data-calm='true'] .tp-main::after {
+  animation: none;
+  opacity: 0.6;
 }
 @keyframes tp-glow {
   0%,
   100% {
-    box-shadow: 0 8px 22px rgba(var(--accent-rgb), 0.4);
+    opacity: 0.25;
+    transform: scale(0.96);
   }
   50% {
-    box-shadow: 0 8px 30px rgba(var(--accent-rgb), 0.65);
+    opacity: 1;
+    transform: scale(1.04);
   }
 }
 .transport[data-size='lg'] .tp-btn {

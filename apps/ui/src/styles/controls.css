@@ -401,7 +401,7 @@ label.lbl {
   display: flex;
   flex-direction: column;
 }
-.list > .list-row + .list-row {
+.list > * + * {
   border-top: var(--bw-min) solid var(--border);
 }
 .list-row {
