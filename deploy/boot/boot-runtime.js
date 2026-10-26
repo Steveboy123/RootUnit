@@ -3,7 +3,15 @@
   var stage=document.getElementById('stage'),mascot=document.getElementById('mascot'),status=document.getElementById('status');
   var title=document.getElementById('boot-title'), wallpaper=document.getElementById('wallpaper'),note=document.getElementById('timeout');
   var preview=location.pathname.indexOf('/api/boot-studio/preview')!==-1;
-  var presets={neon:{bg:'#08040f',bg2:'#310c2f',accent:'#ff2a93',accent2:'#56d8ff'},glass:{bg:'#030b17',bg2:'#12385a',accent:'#74ddff',accent2:'#cf8bff'},matrix:{bg:'#010b05',bg2:'#063e24',accent:'#44ff88',accent2:'#18dcc7'},sunset:{bg:'#15070c',bg2:'#663019',accent:'#ff9a46',accent2:'#ff438e'},minimal:{bg:'#08090c',bg2:'#24272e',accent:'#eeeeee',accent2:'#9899a9'}};
+  var presets={neon:{bg:'#08040f',bg2:'#310c2f',accent:'#ff2a93',accent2:'#56d8ff'},glass:{bg:'#030b17',bg2:'#12385a',accent:'#74ddff',accent2:'#cf8bff'},matrix:{bg:'#010b05',bg2:'#063e24',accent:'#44ff88',accent2:'#18dcc7'},sunset:{bg:'#15070c',bg2:'#663019',accent:'#ff9a46',accent2:'#ff438e'},minimal:{bg:'#08090c',bg2:'#24272e',accent:'#eeeeee',accent2:'#9899a9'},
+    hyperdrive:{bg:'#02040c',bg2:'#0b1f4a',accent:'#38e7ff',accent2:'#8b5cff'},vapor:{bg:'#12052e',bg2:'#4a0f5c',accent:'#ff2bd6',accent2:'#3ce8ff'},blueprint:{bg:'#061a33',bg2:'#0a2a5e',accent:'#7fe3ff',accent2:'#ffffff'},
+    ember:{bg:'#0d0504',bg2:'#4a1608',accent:'#fb923c',accent2:'#ffd166'},plague:{bg:'#050206',bg2:'#3a0a2a',accent:'#ff2a93',accent2:'#c218ff'}};
+  /* Every choice Boot Studio offers (packages/shared/src/boot.ts); bootStudio.test.ts keeps these lists and loading.html in step with it. */
+  var BG=['solid','gradient','aurora','grid','image','stars','warp','mesh','synthsun'];
+  var MOTION=['none','float','pulse','tilt','orbit','hologram','glitch','breathe','spin3d'];
+  var LOADER=['bar','ring','dots','scanner','none','pulse','wave','segments','orbit','heartbeat'];
+  var FONT=['wide','clean','mono','neon','glitch','outline','future'];
+  var TRANSITION=['none','fade','zoom','slide','iris','warp','shutter'];
   function clamp(x,a,b){return Math.max(a,Math.min(b,Number(x)||0))}
   function imagePath(name,slot){
     if(slot==='mascot') return name==='custom'?'art/mascot.png':['original','transparent','armored'].includes(name)?'art/'+name+'.webp':'art/armored.webp';
@@ -22,11 +30,12 @@
     stage.style.setProperty('--size',clamp(c.size,10,90)+'vw');stage.style.setProperty('--opacity',String(clamp(c.opacity,0,100)/100));
     stage.style.setProperty('--mirror',c.mirror===true?'-1':'1');stage.style.setProperty('--speed',(7-clamp(c.motionSpeed,0,100)*.055).toFixed(2)+'s');
     stage.style.setProperty('--title-size',clamp(c.titleSize,14,55)+'px');stage.style.setProperty('--fade',String(clamp(c.dim,0,90)/100));
-    stage.dataset.bg=['solid','gradient','aurora','grid','image'].includes(c.bg)?c.bg:'aurora';
-    stage.dataset.motion=['none','float','pulse','tilt','orbit','hologram'].includes(c.motion)?c.motion:'float';
-    stage.dataset.loader=['bar','ring','dots','scanner','none'].includes(c.loader)?c.loader:'bar';
-    stage.dataset.font=['wide','clean','mono'].includes(c.textStyle)?c.textStyle:'wide';
-    stage.dataset.transition=['none','fade','zoom'].includes(c.transition)?c.transition:'fade';
+    stage.dataset.bg=BG.includes(c.bg)?c.bg:'aurora';
+    stage.dataset.motion=MOTION.includes(c.motion)?c.motion:'float';
+    stage.dataset.loader=LOADER.includes(c.loader)?c.loader:'bar';
+    stage.dataset.font=FONT.includes(c.textStyle)?c.textStyle:'wide';
+    stage.dataset.transition=TRANSITION.includes(c.transition)?c.transition:'fade';
+    title.dataset.text=typeof c.title==='string'?c.title.slice(0,38):'HEAD UNIT';
     stage.dataset.transitionMs=clamp(c.transitionMs,0,1200);
     stage.classList.toggle('hide-mascot',c.showMascot===false);
     stage.classList.toggle('no-status',c.showStatus===false);
@@ -58,7 +67,7 @@
     image.onload=function(){if(settled)return;settled=true;clearTimeout(timeout);status.textContent=stage.dataset.readyText;
       var wait=Number(stage.dataset.transitionMs)||0;
       if(stage.dataset.transition==='none'||wait===0)location.replace(target);
-      else {stage.style.transitionDuration=wait+'ms';stage.classList.add('is-leaving');setTimeout(function(){location.replace(target)},wait)};
+      else {stage.style.transitionDuration=wait+'ms';stage.style.setProperty('--leave',wait+'ms');stage.classList.add('is-leaving');setTimeout(function(){location.replace(target)},wait)};
     };
     image.onerror=function(){if(settled)return;settled=true;clearTimeout(timeout);retry()};
     image.src='http://127.0.0.1:8787/api/kiosk-ready.svg?d='+Date.now();

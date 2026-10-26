@@ -1,5 +1,36 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { BOOT_PRESET_COLOURS } from '@headunit/shared';
 import { BOOT_CHOICES, BOOT_DEFAULTS, configScript, sanitizeBoot } from './bootStudio';
+
+const bootFile = (name: string) => readFileSync(new URL(`../../../deploy/boot/${name}`, import.meta.url), 'utf8');
+
+describe('the boot page draws every Boot Studio choice', () => {
+  const runtime = bootFile('boot-runtime.js');
+  const page = bootFile('loading.html');
+  const listIn = (name: string) => {
+    const m = runtime.match(new RegExp(`var ${name}=\\[([^\\]]*)\\]`));
+    return m ? m[1]!.split(',').map((v) => v.trim().replace(/^'|'$/g, '')) : [];
+  };
+  it('accepts exactly the shared choices', () => {
+    expect(listIn('BG')).toEqual([...BOOT_CHOICES.bg]);
+    expect(listIn('MOTION')).toEqual([...BOOT_CHOICES.motion]);
+    expect(listIn('LOADER')).toEqual([...BOOT_CHOICES.loader]);
+    expect(listIn('FONT')).toEqual([...BOOT_CHOICES.textStyle]);
+    expect(listIn('TRANSITION')).toEqual([...BOOT_CHOICES.transition]);
+  });
+  it('knows each ready-made theme with the same colours', () => {
+    for (const [name, c] of Object.entries(BOOT_PRESET_COLOURS))
+      expect(runtime).toContain(`${name}:{bg:'${c.bgColor}',bg2:'${c.bgColor2}',accent:'${c.accent}',accent2:'${c.accent2}'}`);
+  });
+  it('has styles for every look, motion, loader, lettering and hand-over', () => {
+    const attrs = { bg: BOOT_CHOICES.bg, motion: BOOT_CHOICES.motion, loader: BOOT_CHOICES.loader, font: BOOT_CHOICES.textStyle, transition: BOOT_CHOICES.transition };
+    // The aurora background and wide lettering are the page's base styles; 'none' needs no rule except to hide the loader.
+    const base = new Set(['aurora', 'wide', 'none']);
+    for (const [attr, values] of Object.entries(attrs))
+      for (const value of values) if (!base.has(value) || attr === 'loader') expect(page, `${attr}=${value}`).toContain(`[data-${attr}="${value}"]`);
+  });
+});
 
 describe('Boot Studio settings', () => {
   it('starts with the safe original mascot theme', () => {
