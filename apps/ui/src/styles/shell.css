@@ -108,7 +108,7 @@
   border-radius: 3px;
   background: var(--bg2);
 }
-.app[data-nav-size='compact'] .dock-brand,
+[data-nav-size='compact'] .dock-brand,
 .app[data-dock='pill'] .dock-brand {
   display: none;
 }
@@ -247,27 +247,27 @@
 .dock-btn .dock-badge[data-tone='ok'] {
   background: var(--ok);
 }
-.app[data-nav-labels='never'] .dock-btn > span,
-.app[data-nav-labels='active'] .dock-btn:not([data-active='true']) > span {
+[data-nav-labels='never'] .dock-btn > span,
+[data-nav-labels='active'] .dock-btn:not([data-active='true']) > span {
   display: none;
 }
-.app[data-nav-labels='never'] .dock-btn,
-.app[data-nav-labels='active'] .dock-btn:not([data-active='true']) {
+[data-nav-labels='never'] .dock-btn,
+[data-nav-labels='active'] .dock-btn:not([data-active='true']) {
   min-height: 56px;
 }
-.app[data-nav-size='compact'] .dock-btn {
+[data-nav-size='compact'] .dock-btn {
   min-height: 52px;
   font-size: 0.64rem;
 }
-.app[data-nav-size='compact'] .dock-btn svg {
+[data-nav-size='compact'] .dock-btn svg {
   width: 22px;
   height: 22px;
 }
-.app[data-nav-size='large'] .dock-btn {
+[data-nav-size='large'] .dock-btn {
   min-height: 74px;
   font-size: 0.8rem;
 }
-.app[data-nav-size='large'] .dock-btn svg {
+[data-nav-size='large'] .dock-btn svg {
   width: 30px;
   height: 30px;
 }
