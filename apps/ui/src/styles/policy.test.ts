@@ -105,6 +105,12 @@ describe('motion stays on the compositor', () => {
     expect(bad).toEqual([]);
   });
 
+  it('every @keyframes name is defined once (a second one would silently replace the first everywhere)', () => {
+    const seen = new Map<string, number>();
+    for (const k of keyframes) seen.set(k.name, (seen.get(k.name) ?? 0) + 1);
+    expect([...seen].filter(([, n]) => n > 1).map(([name]) => name)).toEqual([]);
+  });
+
   it('calm mode and driving stop the decorative motion', () => {
     expect(CSS['motion.css']).toMatch(/html\[data-calm='true'\] \.fx[^{]*\{[^}]*animation: none/);
     expect(CSS['motion.css']).toMatch(/html\[data-moving='true'\] \.fx:not\(\.fx-drive\)/);

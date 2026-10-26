@@ -110,6 +110,7 @@ export function Mascot({ editing = false, className = '' }: { editing?: boolean;
           <div className="mascot-aura fx" aria-hidden="true">
             {s.mascotAura === 'sparks' && Array.from({ length: 10 }, (_, i) => <i key={i} style={{ ['--i' as string]: i }} />)}
             {s.mascotAura === 'smoke' && Array.from({ length: 5 }, (_, i) => <i key={i} style={{ ['--i' as string]: i }} />)}
+            {(s.mascotAura === 'rings' || s.mascotAura === 'aurora') && Array.from({ length: 3 }, (_, i) => <i key={i} style={{ ['--i' as string]: i }} />)}
           </div>
           <div className="mascot-motion fx">
             <img src={src} alt="" draggable={false} />

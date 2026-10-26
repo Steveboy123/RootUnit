@@ -1,10 +1,11 @@
 /*
  * Surfaces: how every card, widget, panel and sheet is drawn. One class (.card) everywhere; the look comes from attributes on <html>
  * (or on any ancestor, so a preview tile can show another combination):
- *   data-surface  solid · glass · outline · neon · clay · hud · chrome · aero
+ *   data-surface  solid · glass · outline · neon · clay · hud · chrome · aero · brutal · holo · terminal · lumen
  *   data-depth    flat · soft · deep · crystal · float · bevel · layered
  *   data-glass    clear · frosted · prismatic · iridescent · smoked · liquid   (glass and aero surfaces)
- * ::before belongs to the surface (HUD corners, chrome rim, aero gloss); ::after to the depth / glass finish.
+ * ::before belongs to the surface (HUD corners, chrome rim, aero gloss, holo foil, terminal scan lines); ::after to the depth / glass
+ * finish (and the holo surface's sheen, which stops with every other .card::after animation while driving).
  */
 
 .card {
@@ -167,11 +168,77 @@
   border-radius: inherit;
 }
 
+/* Brutalist: a flat panel, a thick ink border and a hard shadow in the accent, offset like a sticker. */
+[data-surface='brutal'] {
+  --surface-fill: var(--bg2);
+  --surface-fill-hi: var(--card-hi);
+  --surface-border: rgba(var(--ink-rgb), 0.88);
+  --surface-shadow: 6px 6px 0 rgba(var(--accent-rgb), 0.9);
+}
+[data-surface='brutal'] .card {
+  border-width: 2.5px;
+  border-radius: var(--r-xs);
+}
+[data-surface='brutal'] .card .card {
+  --surface-border: rgba(var(--ink-rgb), 0.55);
+  border-width: 2px;
+}
+
+/* Holographic: glass with a rainbow foil edge, and a pastel sheen that turns slowly inside (the ::after, so it rests while driving). */
+[data-surface='holo'] {
+  --surface-fill: rgba(var(--glass-rgb), calc(var(--glass-alpha) * (0.45 + var(--glass-a) * 1.5)));
+  --surface-fill-hi: rgba(var(--glass-rgb), calc(var(--glass-alpha) * (0.7 + var(--glass-a) * 1.8)));
+  --surface-border: transparent;
+}
+[data-surface='holo'] .card::before {
+  z-index: 1;
+  padding: 1.5px;
+  background: linear-gradient(115deg, #ff9ad5, #9ef0ff 25%, #b5ffd9 45%, #ffe69e 65%, #c4b5fd 85%, #ff9ad5);
+  opacity: 0.85;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+[data-surface='holo'] .card::after {
+  inset: -70%;
+  border-radius: 0;
+  background: conic-gradient(from 0deg, rgba(255, 154, 213, 0.1), rgba(158, 240, 255, 0.1), rgba(181, 255, 217, 0.08), rgba(196, 181, 253, 0.1), rgba(255, 154, 213, 0.1));
+  animation: spin calc(30s * var(--tempo)) linear infinite;
+}
+
+/* Terminal: a green-screen panel. Square corners, a phosphor border and scan lines over the fill. */
+[data-surface='terminal'] {
+  --surface-fill: rgba(var(--bg-rgb), 0.86);
+  --surface-fill-hi: rgba(var(--accent-rgb), 0.1);
+  --surface-border: rgba(var(--accent-rgb), 0.5);
+}
+[data-surface='terminal'] .card {
+  border-radius: var(--r-xs);
+}
+[data-surface='terminal'] .card::before {
+  background: repeating-linear-gradient(0deg, rgba(var(--accent-rgb), 0.06) 0 1px, transparent 1px 3px), linear-gradient(180deg, rgba(var(--accent-rgb), 0.08), transparent 30%);
+}
+[data-surface='terminal'] .card .card::before {
+  background: none;
+}
+
+/* Lumen: panels lit from within, brightest at the top, with the light spilling out underneath. */
+[data-surface='lumen'] {
+  --surface-fill: radial-gradient(120% 90% at 50% 0%, rgba(var(--accent-rgb), 0.18), rgba(var(--glass-rgb), calc(var(--glass-alpha) * 1.1)) 65%);
+  --surface-fill-hi: rgba(var(--accent-rgb), 0.14);
+  --surface-border: rgba(var(--accent-rgb), 0.28);
+}
+[data-surface='lumen'] .card .card {
+  --surface-fill: rgba(var(--accent-rgb), 0.08);
+}
+
 /* Full effects + a see-through surface: a real frosted backdrop blur (the only backdrop-filter in the app). */
 [data-effects='full'][data-surface='glass'],
 [data-effects='full'][data-surface='aero'],
+[data-effects='full'][data-surface='holo'],
 [data-effects='full'] [data-surface='glass'],
-[data-effects='full'] [data-surface='aero'] {
+[data-effects='full'] [data-surface='aero'],
+[data-effects='full'] [data-surface='holo'] {
   --surface-blur: blur(18px) saturate(140%);
 }
 [data-effects='full'][data-glass='clear'],
@@ -226,6 +293,18 @@
 [data-surface='outline'] .card,
 [data-surface='hud'] .card {
   box-shadow: none;
+}
+[data-surface='brutal'] .card {
+  box-shadow: 6px 6px 0 rgba(var(--accent-rgb), 0.9);
+}
+[data-surface='brutal'] .card .card {
+  box-shadow: 3px 3px 0 rgba(var(--accent-rgb), 0.55);
+}
+[data-surface='terminal'] .card {
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.12), inset 0 0 22px rgba(var(--accent-rgb), 0.07);
+}
+[data-surface='lumen'] .card {
+  box-shadow: 0 14px 36px -14px rgba(var(--accent-rgb), 0.55), inset 0 1px 0 rgba(var(--accent-rgb), 0.35);
 }
 [data-surface='neon'] .card {
   box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.35), inset 0 0 18px rgba(var(--accent-rgb), 0.1);

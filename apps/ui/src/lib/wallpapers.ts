@@ -1,7 +1,7 @@
 import type { BuiltinWallpaper } from '@headunit/shared';
 
 /**
- * Built-in wallpapers: twenty scenes drawn as inline SVG (nothing to ship or download, no text). Every scene is 1600×900 with
+ * Built-in wallpapers: twenty-six scenes drawn as inline SVG (nothing to ship or download, no text). Every scene is 1600×900 with
  * `preserveAspectRatio="xMidYMid slice"`, so it fills any screen like `object-fit: cover`. Repeated details (stars, windows, trees) come
  * from a seeded random generator, so a scene is the same picture on every boot and its analysis can be cached.
  */
@@ -27,6 +27,12 @@ export const WALLPAPER_LABELS: Record<BuiltinWallpaper, string> = {
   eclipse: 'Eclipse',
   'vinyl-lounge': 'Vinyl lounge',
   'sunset-gt': 'Sunset GT',
+  'cherry-road': 'Cherry road',
+  'cyber-alley': 'Cyber alley',
+  'miami-beach': 'Miami beach',
+  'deep-sea': 'Deep sea',
+  'holo-waves': 'Holo waves',
+  'paper-hills': 'Paper hills',
 };
 
 /** Mulberry32: a tiny deterministic PRNG. */
@@ -125,6 +131,47 @@ function car(cx: number, baseY: number, w: number, body: string, light: string):
     `<rect x="${r1(cx + w * 0.2)}" y="${r1(baseY - h * 0.5)}" width="${r1(w * 0.26)}" height="${r1(h * 0.1)}" rx="3" fill="${light}"/>` +
     `<ellipse cx="${cx}" cy="${r1(baseY + 4)}" rx="${r1(w * 0.55)}" ry="8" fill="${light}" opacity="0.25"/>`
   );
+}
+
+/** A blossom tree: a dark trunk with two branches and clusters of pink blooms. */
+function blossomTree(seed: number, x: number, baseY: number, h: number, trunk: string, blooms: readonly string[]): string {
+  const rand = rng(seed);
+  const top = baseY - h;
+  let out = `<path d="M${x - h * 0.03} ${baseY} Q${x - h * 0.05} ${r1(baseY - h * 0.5)} ${x} ${r1(top + h * 0.35)} L${r1(x - h * 0.28)} ${r1(top + h * 0.12)} L${r1(x - h * 0.25)} ${r1(top + h * 0.09)} L${r1(x + h * 0.01)} ${r1(top + h * 0.3)} L${r1(x + h * 0.3)} ${r1(top + h * 0.08)} L${r1(x + h * 0.32)} ${r1(top + h * 0.11)} L${r1(x + h * 0.04)} ${r1(top + h * 0.36)} Q${x + h * 0.05} ${r1(baseY - h * 0.5)} ${r1(x + h * 0.03)} ${baseY} Z" fill="${trunk}"/>`;
+  for (let i = 0; i < 46; i++) {
+    const a = rand() * Math.PI * 2;
+    const d = Math.sqrt(rand());
+    out += `<circle cx="${r1(x + Math.cos(a) * d * h * 0.42)}" cy="${r1(top + h * 0.12 + Math.sin(a) * d * h * 0.2)}" r="${r1(h * (0.035 + rand() * 0.05))}" fill="${blooms[i % blooms.length]}" opacity="${r1(0.55 + rand() * 0.4)}"/>`;
+  }
+  return out;
+}
+
+/** Scattered petals: small tilted ellipses. */
+function petals(seed: number, n: number, fill: string): string {
+  const rand = rng(seed);
+  let out = '';
+  for (let i = 0; i < n; i++) {
+    const cx = r1(rand() * 1600);
+    const cy = r1(rand() * 900);
+    out += `<ellipse cx="${cx}" cy="${cy}" rx="${r1(3 + rand() * 4)}" ry="${r1(1.6 + rand() * 2)}" transform="rotate(${Math.round(rand() * 180)} ${cx} ${cy})" fill="${fill}" opacity="${r1(0.45 + rand() * 0.5)}"/>`;
+  }
+  return out;
+}
+
+/** A jellyfish: a glowing bell and trailing tentacles. */
+function jelly(x: number, y: number, s: number, colour: string): string {
+  let out = `<ellipse cx="${x}" cy="${r1(y + s * 0.2)}" rx="${r1(s * 1.6)}" ry="${r1(s * 1.2)}" fill="${colour}" opacity="0.1"/>`;
+  out += `<path d="M${x - s} ${y} Q${x - s} ${r1(y - s * 0.95)} ${x} ${r1(y - s * 0.95)} Q${x + s} ${r1(y - s * 0.95)} ${x + s} ${y} Q${x + s * 0.5} ${r1(y + s * 0.16)} ${x} ${y} Q${x - s * 0.5} ${r1(y + s * 0.16)} ${x - s} ${y} Z" fill="${colour}" opacity="0.55"/>`;
+  for (let i = 0; i < 6; i++) {
+    const tx = x - s * 0.8 + (i * s * 1.6) / 5;
+    out += `<path d="M${r1(tx)} ${y} q${r1(s * 0.25)} ${r1(s * 0.7)} 0 ${r1(s * 1.4)} t0 ${r1(s * 1.4)}" stroke="${colour}" stroke-width="${r1(1 + s * 0.03)}" fill="none" opacity="0.45"/>`;
+  }
+  return out;
+}
+
+/** A neon sign with a glow: a wide faint stroke under a thin bright one. */
+function neonRect(x: number, y: number, w: number, h: number, colour: string): string {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="none" stroke="${colour}" stroke-width="16" opacity="0.18"/>` + `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="none" stroke="${colour}" stroke-width="4" opacity="0.95"/>`;
 }
 
 /** A neon perspective grid floor from the horizon at `y` down to the bottom. */
@@ -402,6 +449,133 @@ const SCENES: Record<BuiltinWallpaper, () => string> = {
           return `<rect x="${r1(800 - w / 2)}" y="${r1(y)}" width="${r1(w)}" height="${r1(5 + t * 30)}" fill="#ffd27a" opacity="0.85"/>`;
         }).join('') +
         car(800, 840, 380, '#0a0508', '#ff3a3a'),
+    ),
+  'cherry-road': () =>
+    svg(
+      lin('s', [[0, '#2b1a3d'], [0.45, '#8a4f7d'], [0.7, '#f4a6b8'], [0.82, '#ffd6c9']]) + lin('r', [[0, '#5a3d5c'], [1, '#2a1a2e']]),
+      `<rect width="1600" height="900" fill="url(#s)"/>${stars(171, 50, 260)}` +
+        ridge(172, 640, 110, 90, '#7a5578', 0.7) +
+        ridge(173, 660, 60, 60, '#5e3f5e') +
+        `<rect y="660" width="1600" height="240" fill="#3d2a40"/>` +
+        `<path d="M770 660 L830 660 L1300 900 L300 900 Z" fill="url(#r)"/>` +
+        Array.from({ length: 8 }, (_, i) => {
+          const t = i / 8;
+          const y = 666 + t * t * 230;
+          const w = 2 + t * 12;
+          return `<rect x="${r1(800 - w / 2)}" y="${r1(y)}" width="${r1(w)}" height="${r1(4 + t * 26)}" fill="#ffe3ec" opacity="0.8"/>`;
+        }).join('') +
+        blossomTree(174, 620, 670, 150, '#3a2233', ['#f7b6c8', '#f48fb1', '#fce4ec']) +
+        blossomTree(175, 990, 672, 160, '#3a2233', ['#f7b6c8', '#f48fb1', '#fce4ec']) +
+        blossomTree(176, 330, 760, 330, '#2a1626', ['#f48fb1', '#f7b6c8', '#ffd1dc', '#ec7fa6']) +
+        blossomTree(177, 1290, 770, 360, '#2a1626', ['#f48fb1', '#f7b6c8', '#ffd1dc', '#ec7fa6']) +
+        blossomTree(178, 40, 900, 520, '#1e0f1b', ['#ec7fa6', '#f48fb1', '#f7b6c8']) +
+        blossomTree(179, 1580, 900, 540, '#1e0f1b', ['#ec7fa6', '#f48fb1', '#f7b6c8']) +
+        petals(180, 90, '#ffd1dc'),
+    ),
+  'cyber-alley': () =>
+    svg(
+      lin('s', [[0, '#05060d'], [0.6, '#1a0f2e'], [1, '#2a1240']]) + lin('g', [[0, '#141629'], [1, '#04050a']]) + lin('rl', [[0, '#ff2e63'], [1, '#05060b']]),
+      `<rect width="1600" height="900" fill="url(#s)"/>` +
+        skyline(181, 640, 14, 160, 420, '#0d0f1c', '#7fe3ff', 0.18) +
+        `<path d="M0 0 L620 0 L740 640 L0 900 Z" fill="#0a0c15"/><path d="M1600 0 L980 0 L860 640 L1600 900 Z" fill="#090b13"/>` +
+        Array.from({ length: 14 }, (_, i) => `<rect x="${40 + (i % 4) * 130}" y="${60 + Math.floor(i / 4) * 150}" width="70" height="44" fill="#151a2c" opacity="0.9"/>`).join('') +
+        Array.from({ length: 12 }, (_, i) => `<rect x="${1090 + (i % 3) * 150}" y="${80 + Math.floor(i / 3) * 140}" width="80" height="40" fill="#141828" opacity="0.9"/>`).join('') +
+        neonRect(160, 140, 52, 320, '#ff2e63') +
+        neonRect(300, 520, 220, 60, '#00e5ff') +
+        neonRect(1180, 200, 260, 70, '#c6ff00') +
+        neonRect(1360, 360, 48, 260, '#ff6ec7') +
+        neonRect(640, 300, 60, 120, '#00e5ff') +
+        `<path d="M0 120 Q400 220 800 150 T1600 140" stroke="#05060a" stroke-width="5" fill="none"/><path d="M0 60 Q500 160 900 90 T1600 70" stroke="#05060a" stroke-width="4" fill="none"/>` +
+        `<path d="M0 900 L740 640 L860 640 L1600 900 Z" fill="url(#g)"/>` +
+        `<rect x="150" y="660" width="70" height="240" fill="url(#rl)" opacity="0.35"/><rect x="1340" y="660" width="70" height="240" fill="url(#rl)" opacity="0.3"/>` +
+        `<rect x="300" y="700" width="220" height="10" fill="#00e5ff" opacity="0.25"/><rect x="1180" y="720" width="260" height="12" fill="#c6ff00" opacity="0.2"/>` +
+        (() => {
+          const rand = rng(182);
+          let out = '';
+          for (let i = 0; i < 140; i++) {
+            const x = r1(rand() * 1700 - 50);
+            const y = r1(rand() * 900);
+            out += `<path d="M${x} ${y} l-6 26" stroke="#b8c8ff" stroke-width="1.2" opacity="${r1(0.12 + rand() * 0.2)}"/>`;
+          }
+          return out;
+        })(),
+    ),
+  'miami-beach': () =>
+    svg(
+      lin('s', [[0, '#1a0b3a'], [0.35, '#6b2a7a'], [0.58, '#ff6ec7'], [0.66, '#ffb38a']]) +
+        rad('sun', [[0, '#fff2d6'], [0.55, '#ffc48a'], [1, '#ff6ec7', 0]], 0.5, 0.5, 0.5) +
+        lin('sea', [[0, '#0b4f6c'], [1, '#06243a']]),
+      `<rect width="1600" height="900" fill="url(#s)"/>${stars(191, 40, 240)}` +
+        `<circle cx="800" cy="600" r="190" fill="url(#sun)"/>` +
+        `<rect y="600" width="1600" height="190" fill="url(#sea)"/>` +
+        Array.from({ length: 12 }, (_, i) => `<rect x="${r1(800 - (140 - i * 9))}" y="${612 + i * 14}" width="${r1(2 * (140 - i * 9))}" height="3" fill="#ffb3d9" opacity="${r1(0.7 - i * 0.05)}"/>`).join('') +
+        Array.from({ length: 8 }, (_, i) => `<path d="M${(i * 230) % 1600} ${640 + i * 18} h${60 + (i % 3) * 40}" stroke="#7fe8ff" stroke-width="2" opacity="0.35"/>`).join('') +
+        wave(790, 14, 160, 0, '#1a1028') +
+        palm(210, 800, 360, 50, '#0a0614') +
+        palm(330, 820, 250, -30, '#0a0614') +
+        palm(1390, 810, 400, -60, '#0a0614') +
+        palm(1520, 830, 280, 30, '#0a0614'),
+    ),
+  'deep-sea': () =>
+    svg(
+      lin('s', [[0, '#05405a'], [0.45, '#021a2c'], [1, '#010812']]),
+      `<rect width="1600" height="900" fill="url(#s)"/>` +
+        Array.from({ length: 7 }, (_, i) => `<path d="M${420 + i * 130} 0 L${560 + i * 130} 0 L${280 + i * 210} 900 L${180 + i * 210} 900 Z" fill="#bff6ff" opacity="${r1(0.025 + (i % 3) * 0.015)}"/>`).join('') +
+        stars(201, 120, 900, '#c9fff2') +
+        jelly(1180, 300, 70, '#5effc1') +
+        jelly(420, 420, 46, '#9ef0ff') +
+        jelly(900, 560, 30, '#c4a8ff') +
+        jelly(1420, 620, 26, '#5effc1') +
+        (() => {
+          const rand = rng(202);
+          let out = '';
+          for (let i = 0; i < 16; i++) {
+            const x = r1(rand() * 1600);
+            const h = 120 + rand() * 220;
+            out += `<path d="M${x} 900 q${r1(30 - rand() * 60)} ${r1(-h / 2)} 0 ${r1(-h)}" stroke="#03241e" stroke-width="${r1(6 + rand() * 8)}" fill="none" stroke-linecap="round"/>`;
+          }
+          return out;
+        })() +
+        ridge(203, 860, 50, 70, '#010509'),
+    ),
+  'holo-waves': () =>
+    svg(
+      lin('s', [[0, '#14121f'], [1, '#2a2140']]) +
+        lin('h1', [[0, '#c4b5fd'], [0.35, '#9ef0ff'], [0.7, '#a7f3d0'], [1, '#f9a8d4']], false) +
+        lin('h2', [[0, '#f9a8d4'], [0.5, '#c4b5fd'], [1, '#9ef0ff']], false) +
+        lin('h3', [[0, '#a7f3d0'], [0.5, '#9ef0ff'], [1, '#c4b5fd']], false),
+      `<rect width="1600" height="900" fill="url(#s)"/>` +
+        wave(380, 70, 400, 0, 'url(#h1)', 0.22) +
+        wave(470, 90, 520, 1, 'url(#h2)', 0.3) +
+        wave(580, 60, 360, 0, 'url(#h3)', 0.38) +
+        wave(690, 80, 460, 1, 'url(#h1)', 0.5) +
+        wave(800, 50, 300, 0, '#1a1629', 0.85) +
+        (() => {
+          const rand = rng(211);
+          let out = '';
+          for (let i = 0; i < 26; i++) {
+            const x = r1(rand() * 1600);
+            const y = r1(rand() * 520);
+            const s = r1(3 + rand() * 7);
+            out += `<path d="M${x} ${r1(y - s)} L${r1(x + s * 0.25)} ${r1(y - s * 0.25)} L${r1(x + s)} ${y} L${r1(x + s * 0.25)} ${r1(y + s * 0.25)} L${x} ${r1(y + s)} L${r1(x - s * 0.25)} ${r1(y + s * 0.25)} L${r1(x - s)} ${y} L${r1(x - s * 0.25)} ${r1(y - s * 0.25)} Z" fill="#f6f2ff" opacity="${r1(0.4 + rand() * 0.5)}"/>`;
+          }
+          return out;
+        })(),
+    ),
+  'paper-hills': () =>
+    svg(
+      lin('s', [[0, '#f6f3ea'], [1, '#ece6d6']]),
+      `<rect width="1600" height="900" fill="url(#s)"/><circle cx="1220" cy="230" r="110" fill="#d62828"/>` +
+        [
+          [470, 60, 380, '#e4ddc9'],
+          [560, 70, 300, '#d6cdb5'],
+          [650, 50, 420, '#c4b89b'],
+          [740, 60, 340, '#a8997a'],
+          [820, 40, 460, '#7d6f55'],
+        ]
+          .map(([y, amp, len, fill], i) => wave((y as number) + 10, amp as number, len as number, i % 2, '#3b3326', 0.12) + wave(y as number, amp as number, len as number, i % 2, fill as string))
+          .join('') +
+        Array.from({ length: 5 }, (_, i) => `<path d="M${560 + i * 70} ${200 + (i % 2) * 30} q12 -10 24 0 q12 -10 24 0" stroke="#141414" stroke-width="3" fill="none"/>`).join(''),
     ),
 };
 

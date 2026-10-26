@@ -165,6 +165,112 @@
 }
 
 /* orbit */
+/* Nixie: each digit glows orange inside a dark glass tube with a fine mesh. */
+.standby-time.nixie {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.nixie-group {
+  display: flex;
+  gap: 10px;
+}
+.nixie-tube {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(64px, 11vw, 112px);
+  height: clamp(100px, 17vw, 176px);
+  border-radius: 40px 40px 14px 14px;
+  background: repeating-linear-gradient(0deg, rgba(255, 170, 90, 0.05) 0 1px, transparent 1px 6px), repeating-linear-gradient(90deg, rgba(255, 170, 90, 0.05) 0 1px, transparent 1px 6px),
+    radial-gradient(ellipse at 50% 40%, rgba(255, 120, 40, 0.18), rgba(20, 12, 8, 0.85) 70%);
+  border: 1px solid rgba(255, 200, 150, 0.22);
+  box-shadow: inset 0 0 18px rgba(255, 140, 60, 0.18), 0 10px 26px rgba(0, 0, 0, 0.5);
+}
+.nixie-tube::after {
+  content: '';
+  position: absolute;
+  inset: 6px 10px auto 10px;
+  height: 30%;
+  border-radius: 34px 34px 50% 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent);
+}
+.nixie-digit {
+  font-size: clamp(64px, 11vw, 118px);
+  font-weight: 300;
+  line-height: 1;
+  color: #ffb15a;
+  text-shadow: 0 0 6px #ff8a2a, 0 0 18px #ff6a00, 0 0 36px rgba(255, 106, 0, 0.6);
+}
+.nixie-colon {
+  display: grid;
+  gap: 22px;
+}
+.nixie-colon i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffb15a;
+  box-shadow: 0 0 10px #ff6a00;
+}
+
+/* Word clock: a grid of letters, the time lit in the accent. */
+.word-clock {
+  display: grid;
+  gap: clamp(2px, 0.6vh, 8px);
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: clamp(18px, 4.6vh, 36px);
+  font-weight: 700;
+  letter-spacing: clamp(6px, 1.6vw, 18px);
+}
+.word-row {
+  display: flex;
+  justify-content: center;
+}
+.word-row span {
+  width: 1.15em;
+  text-align: center;
+  color: rgba(var(--ink-rgb), 0.12);
+  transition: color 600ms var(--ease-out);
+}
+.word-row span[data-on='true'] {
+  color: var(--accent-text);
+  text-shadow: 0 0 14px rgba(var(--accent-rgb), 0.7);
+}
+
+/* Binary: columns of dots, lit in the accent. */
+.binary-clock {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(10px, 2vw, 20px);
+}
+.binary-col {
+  display: grid;
+  gap: clamp(8px, 1.6vw, 14px);
+}
+.binary-col[data-gap] {
+  margin-left: clamp(14px, 3vw, 28px);
+}
+.binary-col i {
+  width: clamp(26px, 5vw, 46px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--accent-rgb), 0.3);
+  background: rgba(var(--ink-rgb), 0.04);
+  transition: background-color 300ms var(--ease-out);
+}
+.binary-col i[data-on='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.65);
+}
+.standby-time.binary-time {
+  font-size: clamp(28px, 6vh, 44px);
+  opacity: 0.7;
+  margin-top: 10px;
+}
+
 .standby-orbits {
   position: absolute;
   left: 50%;

@@ -1,5 +1,6 @@
 import { Music2 } from 'lucide-react';
 import type { StandbyStyle } from '@headunit/shared';
+import { WORD_GRID, binaryColumns, wordClockCells, wordClockSentence } from '../lib/clockFaces';
 import { formatClock } from '../lib/format';
 import { useNow } from '../lib/hooks';
 import { useNowPlaying } from '../lib/nowPlaying';
@@ -51,7 +52,54 @@ function AnalogClock({ now }: { now: Date }) {
   );
 }
 
-/** Parked and idle: a quiet screen in one of six styles, with the weather and what is playing. Touch anywhere to come back. */
+/** Valve-tube digits: each digit glows inside its own glass tube. */
+function NixieDigits({ value }: { value: string }) {
+  return (
+    <span className="nixie-group">
+      {Array.from(value).map((d, i) => (
+        <span className="nixie-tube" key={i}>
+          <span className="nixie-digit">{d}</span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/** The word clock: a fixed grid of letters, the ones that spell the time lit. */
+function WordClock({ now }: { now: Date }) {
+  const lit = wordClockCells(now.getHours(), now.getMinutes());
+  return (
+    <div className="word-clock" role="img" aria-label={wordClockSentence(now.getHours(), now.getMinutes())}>
+      {WORD_GRID.map((row, r) => (
+        <div key={r} className="word-row" aria-hidden="true">
+          {Array.from(row).map((ch, c) => (
+            <span key={c} data-on={lit.has(`${r}:${c}`)}>
+              {ch}
+            </span>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** The binary clock: each digit of HH MM SS as a column of lit dots (8, 4, 2, 1 from the top). */
+function BinaryClock({ now }: { now: Date }) {
+  const cols = binaryColumns(now.getHours(), now.getMinutes(), now.getSeconds());
+  return (
+    <div className="binary-clock" aria-hidden="true">
+      {cols.map((bits, i) => (
+        <div key={i} className="binary-col" data-gap={i === 2 || i === 4 || undefined}>
+          {bits.map((on, b) => (
+            <i key={b} data-on={on} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Parked and idle: a quiet screen in one of nine styles, with the weather and what is playing. Touch anywhere to come back. */
 export function Standby() {
   const on = useHeadUnit((s) => s.standby);
   return on ? <StandbyBody /> : null;
@@ -110,6 +158,26 @@ function StandbyBody() {
       <div className="standby-body" style={{ transform: `translate(${dx}px, ${dy}px)` }}>
         {style === 'analog' ? (
           <AnalogClock now={now} />
+        ) : style === 'nixie' ? (
+          <div className="standby-time nixie">
+            <NixieDigits value={hh} />
+            <span className="nixie-colon" aria-hidden="true">
+              <i />
+              <i />
+            </span>
+            <NixieDigits value={mm} />
+            {suffix && <small>{suffix}</small>}
+          </div>
+        ) : style === 'words' ? (
+          <WordClock now={now} />
+        ) : style === 'binary' ? (
+          <>
+            <BinaryClock now={now} />
+            <div className="standby-time binary-time">
+              {time}
+              {suffix && <small>{suffix}</small>}
+            </div>
+          </>
         ) : style === 'flip' ? (
           <div className="standby-time flip">
             <FlipDigits value={hh} />

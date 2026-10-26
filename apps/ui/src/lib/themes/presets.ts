@@ -9,12 +9,14 @@ import type { BuiltinWallpaper, Settings } from '@headunit/shared';
  *  · scenes     — v2's 3D scene presets: a look plus album motion, depth, tempo, background animation and glass.
  *  · signature  — new in RootUnit: complete themes that also choose the typeface, the page transition, the gauges and the mascot's mood.
  *  · featured   — the showcase looks: everything matched, down to the wallpaper, the navigation bar and how the mascot moves.
+ *  · styles     — new in 3.1: design styles (brutalist, holographic, terminal, lumen…), each matched end to end like the featured ones.
  * The 3D scenes keep v2's values and add the matching typeface, transition, gauges, bar and mascot mood, so nothing in a scene clashes.
  */
-export type PresetGroup = 'featured' | 'signature' | 'scenes' | 'looks';
+export type PresetGroup = 'featured' | 'styles' | 'signature' | 'scenes' | 'looks';
 
 export const PRESET_GROUPS: ReadonlyArray<{ id: PresetGroup; label: string; blurb: string }> = [
   { id: 'featured', label: 'Featured', blurb: 'Showcase looks, matched from the wallpaper to the navigation bar.' },
+  { id: 'styles', label: 'Styles', blurb: 'Design styles, from brutalist paper to holographic foil, each matched end to end.' },
   { id: 'signature', label: 'Signature', blurb: 'Complete themes: colours, motion, type and transitions together.' },
   { id: 'scenes', label: '3D scenes', blurb: 'A look plus album motion, depth and a moving background.' },
   { id: 'looks', label: 'Looks', blurb: 'Palette, style, background and accent.' },
@@ -44,6 +46,7 @@ export type PresetPatch = Partial<
     | 'dockStyle'
     | 'touchFx'
     | 'mascotGlow'
+    | 'standbyStyle'
   >
 >;
 
@@ -61,6 +64,7 @@ const look = (id: string, label: string, blurb: string, patch: Preset['patch']):
 /** A v2 scene: v2's values, then the RootUnit finish that matches them. */
 const scene = (id: string, label: string, blurb: string, patch: Preset['patch'], finish: PresetPatch, thumb: BuiltinWallpaper): Preset => ({ id, label, blurb, group: 'scenes', patch: { ...patch, ...finish }, thumb });
 const featured = (id: string, label: string, blurb: string, patch: Preset['patch']): Preset => ({ id, label, blurb, group: 'featured', patch, thumb: patch.wallpaper as BuiltinWallpaper | undefined });
+const style = (id: string, label: string, blurb: string, patch: Preset['patch']): Preset => ({ id, label, blurb, group: 'styles', patch, thumb: patch.wallpaper as BuiltinWallpaper | undefined });
 const signature = (id: string, label: string, blurb: string, patch: Preset['patch']): Preset => ({ id, label, blurb, group: 'signature', patch });
 
 export const PRESETS: readonly Preset[] = [
@@ -94,6 +98,78 @@ export const PRESETS: readonly Preset[] = [
     theme: 'forest', accent: '#79e06a', surface: 'glass', background: 'wallpaper', wallpaper: 'pine-forest', shape: 'round', effects: 'balanced',
     albumMotion: 'vinyl', depthStyle: 'soft', motionSpeed: 'calm', dashScene: 'fireflies', glassFinish: 'frosted',
     font: 'rounded', transition: 'rise', gaugeStyle: 'arc', dockStyle: 'pill', touchFx: 'ripple', mascotMotion: 'sway', mascotAura: 'glow', mascotGlow: 35,
+  }),
+
+  // ---- Design styles (3.1) ----
+  style('neo-brutal', 'Neo Brutal', 'Newsprint, thick black lines and hard red shadows.', {
+    theme: 'paper', accent: '#d62828', surface: 'brutal', background: 'halftone', shape: 'sharp', effects: 'balanced',
+    albumMotion: 'polaroid', depthStyle: 'flat', motionSpeed: 'calm', dashScene: 'off', glassFinish: 'clear',
+    font: 'grotesk', transition: 'drop', gaugeStyle: 'bar', dockStyle: 'tabs', touchFx: 'press', mascotMotion: 'bounce', mascotAura: 'none', mascotGlow: 15, standbyStyle: 'words',
+  }),
+  style('holo-foil', 'Holo Foil', 'Holographic foil edges over pastel waves.', {
+    theme: 'holo', accent: '#9ef0ff', surface: 'holo', background: 'wallpaper', wallpaper: 'holo-waves', shape: 'round', effects: 'full',
+    albumMotion: 'prism', depthStyle: 'float', motionSpeed: 'lively', dashScene: 'bubbles', glassFinish: 'iridescent',
+    font: 'outfit', transition: 'portal', gaugeStyle: 'ring', dockStyle: 'bubbles', touchFx: 'sparkle', mascotMotion: 'drift', mascotAura: 'aurora', mascotGlow: 60,
+  }),
+  style('toxic-lab', 'Toxic Lab', 'A green-screen terminal, a radar and acid lime.', {
+    theme: 'toxic', accent: '#c6ff00', surface: 'terminal', background: 'lowpoly', shape: 'sharp', effects: 'full',
+    albumMotion: 'glitch', depthStyle: 'flat', motionSpeed: 'lively', dashScene: 'radar', glassFinish: 'smoked',
+    font: 'mono', transition: 'tilt', gaugeStyle: 'hud', dockStyle: 'neon', touchFx: 'ring', mascotMotion: 'scan', mascotAura: 'rings', mascotGlow: 70, standbyStyle: 'binary',
+  }),
+  style('neon-noir', 'Neon Noir', 'Rain, a red neon sign and lit glass in a dark alley.', {
+    theme: 'neonoir', accent: '#ff2e63', surface: 'lumen', background: 'wallpaper', wallpaper: 'cyber-alley', shape: 'soft', effects: 'full',
+    albumMotion: 'mirror', depthStyle: 'float', motionSpeed: 'calm', dashScene: 'lightning', glassFinish: 'smoked',
+    font: 'grotesk', transition: 'cube', gaugeStyle: 'led', dockStyle: 'neon', touchFx: 'ring', mascotMotion: 'drift', mascotAura: 'smoke', mascotGlow: 60, standbyStyle: 'nixie',
+  }),
+  style('miami-nights', 'Miami Nights', 'Palms, a pink sunset and records in their sleeves.', {
+    theme: 'miami', accent: '#ff6ec7', surface: 'glass', background: 'wallpaper', wallpaper: 'miami-beach', shape: 'round', effects: 'full',
+    albumMotion: 'sleeve', depthStyle: 'soft', motionSpeed: 'lively', dashScene: 'waves', glassFinish: 'prismatic',
+    font: 'outfit', transition: 'slide', gaugeStyle: 'sport', dockStyle: 'pill', touchFx: 'glow', mascotMotion: 'sway', mascotAura: 'glow', mascotGlow: 55,
+  }),
+  style('rose-gold', 'Rose Gold', 'Polished rose-gold metal and soft bokeh.', {
+    theme: 'rosegold', accent: '#f2b8c6', surface: 'chrome', background: 'bokeh', shape: 'round', effects: 'balanced',
+    albumMotion: 'mirror', depthStyle: 'bevel', motionSpeed: 'calm', dashScene: 'fireflies', glassFinish: 'liquid',
+    font: 'inter', transition: 'fade', gaugeStyle: 'needle', dockStyle: 'glass3d', touchFx: 'pop', mascotMotion: 'breathe', mascotAura: 'halo', mascotGlow: 40,
+  }),
+  style('deep-dive', 'Deep Dive', 'The deep sea: jellyfish light and rising bubbles.', {
+    theme: 'abyss', accent: '#5effc1', surface: 'glass', background: 'wallpaper', wallpaper: 'deep-sea', shape: 'round', effects: 'full',
+    albumMotion: 'float', depthStyle: 'layered', motionSpeed: 'calm', dashScene: 'bubbles', glassFinish: 'frosted',
+    font: 'rounded', transition: 'depth', gaugeStyle: 'hud', dockStyle: 'bubbles', touchFx: 'ripple', mascotMotion: 'drift', mascotAura: 'rings', mascotGlow: 50,
+  }),
+  style('paper-cut', 'Paper Cut', 'Layered paper hills under a red sun.', {
+    theme: 'paper', accent: '#d62828', surface: 'solid', background: 'wallpaper', wallpaper: 'paper-hills', shape: 'soft', effects: 'balanced',
+    albumMotion: 'polaroid', depthStyle: 'layered', motionSpeed: 'calm', dashScene: 'off', glassFinish: 'clear',
+    font: 'system', transition: 'rise', gaugeStyle: 'arc', dockStyle: 'pill', touchFx: 'press', mascotMotion: 'sway', mascotAura: 'none', mascotGlow: 10, standbyStyle: 'words',
+  }),
+  style('peach-blossom', 'Peach Blossom', 'A cherry-blossom road and falling petals.', {
+    theme: 'peach', accent: '#c2410c', surface: 'aero', background: 'wallpaper', wallpaper: 'cherry-road', shape: 'round', effects: 'balanced',
+    albumMotion: 'flip', depthStyle: 'soft', motionSpeed: 'calm', dashScene: 'sakura', glassFinish: 'frosted',
+    font: 'rounded', transition: 'swing', gaugeStyle: 'ring', dockStyle: 'island', touchFx: 'ripple', mascotMotion: 'float', mascotAura: 'glow', mascotGlow: 30,
+  }),
+  style('night-highway', 'Night Highway', 'Road lines and street lamps rushing past.', {
+    theme: 'midnight', accent: '#ffb000', surface: 'outline', background: 'none', shape: 'soft', effects: 'full',
+    albumMotion: 'cd', depthStyle: 'soft', motionSpeed: 'lively', dashScene: 'highway', glassFinish: 'clear',
+    font: 'tech', transition: 'tilt', gaugeStyle: 'led', dockStyle: 'curve', touchFx: 'glow', mascotMotion: 'float', mascotAura: 'none', mascotGlow: 40,
+  }),
+  style('storm-chaser', 'Storm Chaser', 'Smoked glass, rain and distant lightning.', {
+    theme: 'nord', accent: '#88c0d0', surface: 'glass', background: 'gradient', shape: 'soft', effects: 'full',
+    albumMotion: 'float', depthStyle: 'deep', motionSpeed: 'calm', dashScene: 'lightning', glassFinish: 'smoked',
+    font: 'grotesk', transition: 'fade', gaugeStyle: 'needle', dockStyle: 'rail', touchFx: 'ripple', mascotMotion: 'breathe', mascotAura: 'smoke', mascotGlow: 35,
+  }),
+  style('campfire', 'Campfire', 'Warm clay, sun rays and rising embers.', {
+    theme: 'ember', accent: '#fb923c', surface: 'clay', background: 'rays', shape: 'round', effects: 'balanced',
+    albumMotion: 'vinyl', depthStyle: 'soft', motionSpeed: 'calm', dashScene: 'embers', glassFinish: 'frosted',
+    font: 'rounded', transition: 'rise', gaugeStyle: 'arc', dockStyle: 'pill', touchFx: 'pop', mascotMotion: 'sway', mascotAura: 'sparks', mascotGlow: 55, standbyStyle: 'nixie',
+  }),
+  style('mission-control', 'Mission Control', 'HUD panels and circuit traces over a city at night.', {
+    theme: 'cobalt', accent: '#ffc600', surface: 'hud', background: 'circuit', shape: 'sharp', effects: 'full',
+    albumMotion: 'hologram', depthStyle: 'flat', motionSpeed: 'lively', dashScene: 'skyline', glassFinish: 'clear',
+    font: 'tech', transition: 'flip', gaugeStyle: 'hud', dockStyle: 'rail', touchFx: 'ring', mascotMotion: 'scan', mascotAura: 'rings', mascotGlow: 50, standbyStyle: 'binary',
+  }),
+  style('arcade', 'Arcade', 'Bold blocks on molten plasma, a spinning cube and sparks on every tap.', {
+    theme: 'velvet', accent: '#ff8fb1', surface: 'brutal', background: 'plasma', shape: 'soft', effects: 'full',
+    albumMotion: 'cube', depthStyle: 'flat', motionSpeed: 'lively', dashScene: 'comets', glassFinish: 'clear',
+    font: 'tech', transition: 'cube', gaugeStyle: 'led', dockStyle: 'bubbles', touchFx: 'sparkle', mascotMotion: 'bounce', mascotAura: 'rings', mascotGlow: 60,
   }),
 
   // --- Signature (RootUnit) ---------------------------------------------------------------------------------------------------

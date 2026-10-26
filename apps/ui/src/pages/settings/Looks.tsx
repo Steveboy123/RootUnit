@@ -1,41 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Check, LayoutDashboard, Palette, RotateCcw, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Check, Dices, LayoutDashboard, Palette, RotateCcw, Sparkles } from 'lucide-react';
 import type { Settings } from '@headunit/shared';
 import { ConfirmButton, Segment, SliderRow, SwitchRow } from '../../components/ui';
 import { ACCENT_HUE, ACCENT_LIGHTNESS, hexToHsl, pickAccent, ratioText } from '../../lib/accentPicker';
 import { appearanceResetPatch } from '../../lib/appearanceReset';
+import { surpriseLook } from '../../lib/surprise';
 import { useNow } from '../../lib/hooks';
 import { usePlace } from '../../lib/place';
 import { effectiveTheme } from '../../lib/theme';
 import { LAYOUT_PRESETS, layoutOf, type LayoutPreset } from '../../lib/layoutPresets';
-import { ACCENT_SWATCHES, PRESETS, PRESET_GROUPS, accentFor, activePreset, contrastRatio, paletteOf, presetPatch, previewOf, type Preset, type PresetGroup } from '../../lib/themes';
-import { wallpaperUrl } from '../../lib/wallpapers';
+import { ACCENT_SWATCHES, PRESETS, PRESET_GROUPS, accentFor, activePreset, contrastRatio, paletteOf, presetPatch, type PresetGroup } from '../../lib/themes';
 import { useHeadUnit } from '../../store';
+import { LookThumb } from './LookThumb';
+import { MyLooksSection } from './MyLooks';
 import { SetSection, Swatches } from './parts';
-
-/**
- * A look's gallery tile: its wallpaper (or its palette's colours), with a small card and a dock drawn in the look's own colours on top,
- * so the tile shows what the screen will look like rather than a name.
- */
-function LookThumb({ preset }: { preset: Preset }) {
-  const { vars, attrs } = useMemo(() => previewOf(preset.patch), [preset]);
-  const pal = paletteOf(preset.patch.theme);
-  const url = preset.thumb ? wallpaperUrl(preset.thumb) : null;
-  const bg = url ? `center / cover no-repeat url("${url}")` : `linear-gradient(135deg, ${pal.preview[0]}, ${pal.preview[1]} 60%, ${pal.preview[2]})`;
-  return (
-    <span className="look-thumb" style={{ ...vars, background: bg }} {...attrs}>
-      <span className="look-thumb-dock" />
-      <span className="look-thumb-card card">
-        <i />
-        <span>
-          <b />
-          <em />
-        </span>
-      </span>
-      <span className="look-thumb-dot" />
-    </span>
-  );
-}
 
 /** A layout's tile: its first page drawn as boxes on the 12 × 6 grid. */
 function LayoutThumb({ preset }: { preset: LayoutPreset }) {
@@ -62,7 +40,23 @@ export function LooksSection() {
 
   return (
     <>
-      <SetSection title="Looks" icon={Sparkles} blurb="One tap sets everything to match: colours, background, motion, type, gauges, the navigation bar and the mascot. You can change any part afterwards.">
+      <SetSection
+        title="Looks"
+        icon={Sparkles}
+        blurb="One tap sets everything to match: colours, background, motion, type, gauges, the navigation bar and the mascot. You can change any part afterwards."
+        aside={
+          <button
+            type="button"
+            className="btn small"
+            onClick={() => {
+              patch(surpriseLook());
+              toast('A surprise look. Tap again for another, or save it under My looks');
+            }}
+          >
+            <Dices size={16} /> Surprise me
+          </button>
+        }
+      >
         <Segment<PresetGroup> label="Kind of look" value={group} onChange={setGroup} options={PRESET_GROUPS.map((g) => ({ value: g.id, label: g.label }))} />
         <p className="set-blurb">{PRESET_GROUPS.find((g) => g.id === group)?.blurb}</p>
         <div className="look-grid stagger" key={group} role="radiogroup" aria-label="Looks">
@@ -89,6 +83,8 @@ export function LooksSection() {
           ))}
         </div>
       </SetSection>
+
+      <MyLooksSection />
 
       <SetSection title="Accent colour" icon={Palette} blurb="The highlight on buttons, gauges and the navigation. Any colour is made readable on the palette you have.">
         <Swatches label="Accent colour" value={settings.accent} colours={ACCENT_SWATCHES} onChange={(accent) => patch({ accent })} />

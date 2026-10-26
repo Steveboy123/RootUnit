@@ -212,6 +212,27 @@ html[data-transition='swing'] .page-enter {
   animation-duration: var(--dur-4);
   transform-origin: 50% 0;
 }
+html[data-transition='cube'] .page-enter {
+  animation-name: pt-cube;
+  animation-duration: var(--dur-4);
+  transform-origin: calc(50% - var(--dir, 1) * 50%) 50%;
+}
+html[data-transition='drop'] .page-enter {
+  animation-name: pt-drop;
+  animation-duration: var(--dur-4);
+  animation-timing-function: linear;
+}
+html[data-transition='tilt'] .page-enter {
+  animation-name: pt-tilt;
+  animation-duration: var(--dur-4);
+  transform-origin: 50% 100%;
+}
+html[data-transition='portal'] .page-enter {
+  animation-name: pt-portal;
+  animation-duration: var(--dur-4);
+  animation-timing-function: var(--ease-spring);
+  transform-origin: 50% 50%;
+}
 
 @keyframes pt-fade {
   from {
@@ -254,6 +275,57 @@ html[data-transition='swing'] .page-enter {
     transform: perspective(1200px) rotateX(-12deg) translateY(-10px);
   }
 }
+/* The new screen turns in like the next face of a cube, hinged on the side it comes from. */
+@keyframes pt-cube {
+  from {
+    opacity: 0.2;
+    transform: perspective(1200px) rotateY(calc(var(--dir, 1) * 38deg)) translateX(calc(var(--dir, 1) * 18%));
+  }
+}
+/* Falls in from just above and settles with two small bounces (the easing is written out, so it reads the same everywhere). */
+@keyframes pt-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-46px);
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+  }
+  72% {
+    transform: translateY(-9px);
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+  86% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+  }
+  93% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+/* Tips forward into place from lying back, hinged at the bottom. */
+@keyframes pt-tilt {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) rotateX(24deg) scale(0.96);
+  }
+}
+/* Spins out of a point of light in the middle. */
+@keyframes pt-portal {
+  from {
+    opacity: 0;
+    transform: scale(0.2) rotate(calc(var(--dir, 1) * -10deg));
+  }
+  60% {
+    opacity: 1;
+  }
+}
 
 /* ---- Touch feedback ---------------------------------------------------------------------------------------------------- */
 
@@ -294,6 +366,70 @@ html[data-transition='swing'] .page-enter {
   pointer-events: none;
   box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.85), 0 0 22px rgba(var(--accent-rgb), 0.55);
   animation: fade-out 520ms var(--ease-out) forwards;
+}
+
+.touch-sparks,
+.touch-ring {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.touch-sparks > i {
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.9);
+  animation: touch-spark 520ms var(--ease-out) forwards;
+}
+.touch-sparks > i:nth-child(odd) {
+  background: var(--accent-2);
+}
+@keyframes touch-spark {
+  from {
+    transform: rotate(var(--a)) translateX(4px) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: rotate(var(--a)) translateX(var(--r)) scale(0.2);
+    opacity: 0;
+  }
+}
+.touch-ring::before {
+  content: '';
+  position: absolute;
+  left: -70px;
+  top: -70px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--accent-rgb), 0.85);
+  box-shadow: 0 0 16px rgba(var(--accent-rgb), 0.5), inset 0 0 16px rgba(var(--accent-rgb), 0.35);
+  animation: ring-out 560ms var(--ease-out) forwards;
+}
+@keyframes ring-out {
+  from {
+    transform: scale(0.1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* 3D press: the button sinks in like a real key (a little down, a little smaller, shaded inside), and springs back. */
+html[data-touch='press'] :is(button, .tap):not(:disabled):active {
+  transform: translateY(2px) scale(0.97);
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.35);
+  transition: transform 60ms var(--ease-out);
+}
+html[data-touch='press'] :is(button, .tap) {
+  transition: transform 220ms var(--ease-spring);
 }
 
 html[data-touch='pop'] :is(button, .tap):not(:disabled):active {

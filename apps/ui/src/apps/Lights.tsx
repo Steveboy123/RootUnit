@@ -4,7 +4,7 @@ import type { LightingMode } from '@headunit/shared';
 import { Badge, Banner, Cols, Empty, Page, Panel, Row, Segment, Slider, Stat, Stats, TextField, Toggle, useAction } from '../components/ui';
 import { apiRequest } from '../lib/api';
 import { briToPercent, checkLightsHost, COLOR_PRESETS, listEffects, MODE_INFO, normalizeHex, percentToBri } from '../lib/lights';
-import { useSvc } from '../store';
+import { useHeadUnit, useSvc } from '../store';
 
 const SHOWN_EFFECTS = 36;
 
@@ -38,6 +38,8 @@ export function LightsApp() {
   const [hex, setHex] = useState('');
   const [query, setQuery] = useState('');
   const [all, setAll] = useState(false);
+  const follow = useHeadUnit((s) => s.settings?.lightsFollowAccent ?? false);
+  const patchSettings = useHeadUnit((s) => s.patchSettings);
 
   // Follow the controller: it is the truth, and it may also be changed from its own app or button.
   const reportedBri = lights?.brightness;
@@ -109,6 +111,12 @@ export function LightsApp() {
 
         {lights.mode === 'manual' && (
           <Panel title="Colour" icon={Palette}>
+            <label className="check-row">
+              <Toggle on={follow} onChange={(lightsFollowAccent) => patchSettings({ lightsFollowAccent })} label="Match the screen" />
+              <span>
+                <b>Match the screen.</b> The lights take the interface’s accent colour, and the album’s colour while the accent follows the album art.
+              </span>
+            </label>
             <div className="lt-swatches" role="radiogroup" aria-label="Colour">
               {COLOR_PRESETS.map((p) => (
                 <button key={p.hex} type="button" role="radio" aria-checked={color === p.hex} aria-label={p.name} className="lt-swatch" data-on={color === p.hex} style={{ background: p.hex }} onClick={() => changeHex(p.hex)} />

@@ -39,6 +39,10 @@ export const SURFACE_INFO: Record<Surface, Info> = {
   hud: { label: 'HUD', blurb: 'Corner brackets, like a head-up display' },
   chrome: { label: 'Chrome', blurb: 'Polished metal rims' },
   aero: { label: 'Aero', blurb: 'Glossy glass with a sheen' },
+  brutal: { label: 'Brutalist', blurb: 'Thick borders and a hard offset shadow' },
+  holo: { label: 'Holographic', blurb: 'A foil edge that shifts colour' },
+  terminal: { label: 'Terminal', blurb: 'A green-screen panel with scan lines' },
+  lumen: { label: 'Lumen', blurb: 'Panels lit softly from within' }
 };
 
 export const BACKGROUND_INFO: Record<Background, Info & { art: boolean }> = {
@@ -61,6 +65,10 @@ export const BACKGROUND_INFO: Record<Background, Info & { art: boolean }> = {
   synthsun: { label: 'Synth sun', blurb: 'Striped sun over a grid', art: false },
   bokeh: { label: 'Bokeh', blurb: 'Out-of-focus city lights', art: false },
   scanlines: { label: 'Scanlines', blurb: 'An old CRT screen', art: false },
+  halftone: { label: 'Halftone', blurb: 'Comic-book dots that fade across', art: false },
+  lowpoly: { label: 'Low poly', blurb: 'Faceted triangles of colour', art: false },
+  rays: { label: 'Sun rays', blurb: 'Light bursting from below', art: false },
+  plasma: { label: 'Plasma', blurb: 'Swirls of molten colour', art: false }
 };
 
 export const EFFECTS_INFO: Record<Effects, Info> = {
@@ -106,6 +114,12 @@ export const SCENE_INFO: Record<DashScene, Info> = {
   tunnel: { label: 'Tunnel', blurb: 'Driving into light' },
   synthsun: { label: 'Synth sun', blurb: 'A sun setting over a grid' },
   circuit: { label: 'Circuit', blurb: 'Pulses along traces' },
+  highway: { label: 'Highway', blurb: 'Road lines rushing towards you' },
+  sakura: { label: 'Sakura', blurb: 'Blossom petals drifting down' },
+  embers: { label: 'Embers', blurb: 'Sparks rising from a fire' },
+  radar: { label: 'Radar', blurb: 'A sweeping scope with blips' },
+  skyline: { label: 'Skyline', blurb: 'A city at night, windows flickering' },
+  lightning: { label: 'Storm', blurb: 'Distant lightning in the clouds' }
 };
 
 export const GLASS_INFO: Record<GlassFinish, Info> = {
@@ -162,6 +176,8 @@ export const MASCOT_MOTION_INFO: Record<MascotMotion, Info> = {
   peek: { label: 'Peek', blurb: 'Leans in from the edge' },
   sway: { label: 'Sway', blurb: 'Rocks side to side' },
   pulse: { label: 'Pulse', blurb: 'Glows in time' },
+  bounce: { label: 'Bounce', blurb: 'Hops on the spot' },
+  drift: { label: 'Drift', blurb: 'Wanders slowly across its space' }
 };
 
 export const MASCOT_AURA_INFO: Record<MascotAura, Info> = {
@@ -170,6 +186,8 @@ export const MASCOT_AURA_INFO: Record<MascotAura, Info> = {
   halo: { label: 'Halo', blurb: 'A ring of light' },
   sparks: { label: 'Sparks', blurb: 'Rising sparks' },
   smoke: { label: 'Smoke', blurb: 'Drifting smoke' },
+  rings: { label: 'Rings', blurb: 'Rings of light pulse outwards' },
+  aurora: { label: 'Aurora', blurb: 'Northern lights behind it' }
 };
 
 export const FONT_INFO: Record<FontId, Info & { family: string }> = {
@@ -192,6 +210,10 @@ export const TRANSITION_INFO: Record<PageTransition, Info> = {
   flip: { label: 'Flip', blurb: 'Flips like a card' },
   depth: { label: 'Depth', blurb: 'Comes forward from behind' },
   swing: { label: 'Swing', blurb: 'Swings open like a door' },
+  cube: { label: 'Cube', blurb: 'Turns like the side of a cube' },
+  drop: { label: 'Drop', blurb: 'Drops in and settles' },
+  tilt: { label: 'Tilt', blurb: 'Tips forward into place' },
+  portal: { label: 'Portal', blurb: 'Spins out of a point of light' }
 };
 
 export const TOUCH_INFO: Record<TouchFx, Info> = {
@@ -199,6 +221,9 @@ export const TOUCH_INFO: Record<TouchFx, Info> = {
   ripple: { label: 'Ripple', blurb: 'A ripple where you tap' },
   glow: { label: 'Glow', blurb: 'A soft flash of light' },
   pop: { label: 'Pop', blurb: 'Buttons spring when pressed' },
+  sparkle: { label: 'Sparkle', blurb: 'A burst of sparks where you tap' },
+  ring: { label: 'Ring', blurb: 'A ring of light spreads out' },
+  press: { label: '3D press', blurb: 'Buttons sink in like real keys' }
 };
 
 export const GAUGE_INFO: Record<GaugeStyle, Info> = {
@@ -208,6 +233,8 @@ export const GAUGE_INFO: Record<GaugeStyle, Info> = {
   ring: { label: 'Ring', blurb: 'A full circle' },
   bar: { label: 'Bar', blurb: 'A segmented bar' },
   sport: { label: 'Sport', blurb: 'A race-car dial' },
+  led: { label: 'LED', blurb: 'Lit segments, like a race dash' },
+  hud: { label: 'HUD', blurb: 'A sci-fi readout with ticks and brackets' }
 };
 
 export const STANDBY_INFO: Record<StandbyStyle, Info> = {
@@ -217,6 +244,9 @@ export const STANDBY_INFO: Record<StandbyStyle, Info> = {
   mascot: { label: 'Mascot', blurb: 'Your mascot and the time' },
   orbit: { label: 'Orbit', blurb: 'Time in turning rings' },
   minimal: { label: 'Minimal', blurb: 'Small, dim and quiet' },
+  nixie: { label: 'Nixie', blurb: 'Glowing valve-tube digits' },
+  words: { label: 'Word clock', blurb: 'The time spelled out in words' },
+  binary: { label: 'Binary', blurb: 'The time in lit dots, for the curious' }
 };
 
 export const DOCK_INFO: Record<DockStyle, Info> = {
@@ -230,6 +260,8 @@ export const DOCK_INFO: Record<DockStyle, Info> = {
   tabs: { label: 'Text tabs', blurb: 'Names only, in tabs' },
   wave: { label: 'Wave', blurb: 'A bar shaped like a wave' },
   mascot: { label: 'Mascot', blurb: 'Your mascot in the middle' },
+  neon: { label: 'Neon tube', blurb: 'A glowing neon tube round the bar' },
+  bubbles: { label: 'Bubbles', blurb: 'Every button its own floating bubble' }
 };
 
 export const ALBUM_MOTION_INFO: Record<AlbumMotion, Info> = {
@@ -248,6 +280,9 @@ export const ALBUM_MOTION_INFO: Record<AlbumMotion, Info> = {
   polaroid: { label: 'Polaroid', blurb: 'An instant photo' },
   glitch: { label: 'Glitch', blurb: 'Digital tears' },
   flip: { label: 'Flip', blurb: 'Turns over now and then' },
+  cube: { label: 'Cube', blurb: 'The cover on a turning cube' },
+  mirror: { label: 'Mirror floor', blurb: 'Standing on a glossy reflection' },
+  sleeve: { label: 'Sleeve', blurb: 'The record slides out of its sleeve' }
 };
 
 /** `{ value, label }` options for a ChoiceChips / Segment from a table. */

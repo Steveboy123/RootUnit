@@ -1,4 +1,4 @@
-import type { LightingMode } from '@headunit/shared';
+import type { LightingMode, LightingState } from '@headunit/shared';
 
 /** WLED brightness is 1-255; people think in percent. 1 is the floor: 0 would be "off", which has its own switch. */
 export const briToPercent = (bri: number) => Math.max(1, Math.min(100, Math.round((bri / 255) * 100)));
@@ -62,3 +62,16 @@ export const MODE_INFO: Record<LightingMode, { label: string; hint: string }> = 
   'esp-audio': { label: 'ESP mic', hint: 'The ESP32’s own microphone moves the lights to the sound in the car.' },
   'pi-audio': { label: 'Music', hint: 'The head unit’s own audio drives the lights. Needs the Pi’s audio monitor (parec).' },
 };
+
+/**
+ * "Match the screen": the colour to send to the lights now, or null to send nothing. Only in the plain-colour mode (an effect or a
+ * music mode is the owner's choice and is left alone), only to lights that are set up and on, and never the colour they already have
+ * or the one sent last (so a quiet screen sends nothing at all).
+ */
+export function followColor(input: { on: boolean; lights: Pick<LightingState, 'configured' | 'enabled' | 'mode' | 'color'> | null | undefined; accent: string; lastSent: string }): string | null {
+  const { on, lights, accent, lastSent } = input;
+  if (!on || !lights || !lights.configured || !lights.enabled || lights.mode !== 'manual') return null;
+  const hex = normalizeHex(accent);
+  if (!hex || hex === lastSent || hex === normalizeHex(lights.color)) return null;
+  return hex;
+}

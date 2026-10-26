@@ -1,4 +1,4 @@
-/* Album artwork in fifteen styles (components/AlbumArt.tsx). Turns and drifts only while playing; pause freezes it. */
+/* Album artwork in eighteen styles (components/AlbumArt.tsx). Turns and drifts only while playing; pause freezes it. */
 
 .art {
   --art-r: var(--r-lg);
@@ -485,4 +485,112 @@ html[data-calm='true'] .art-flip .art-cover {
 /* Album glow off (Appearance → 3D effects): no light behind the artwork. */
 html[data-album-glow='off'] .art-glow {
   display: none;
+}
+
+/* cube: the cover on four faces of a cube that turns a quarter at a time */
+.art[data-mode='cube'] {
+  container-type: inline-size;
+}
+.art-cube {
+  inset: 9%;
+  transform-style: preserve-3d;
+  animation: art-cube calc(16s * var(--tempo)) var(--ease-in-out) infinite;
+}
+.art-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  transform: rotateY(calc(var(--i) * 90deg)) translateZ(41cqi);
+  box-shadow: none;
+}
+.art-face-shade {
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35), transparent 40%, rgba(255, 255, 255, 0.12));
+}
+@keyframes art-cube {
+  0%,
+  20% {
+    transform: translateZ(-41cqi) rotateX(-12deg) rotateY(-20deg);
+  }
+  25%,
+  45% {
+    transform: translateZ(-41cqi) rotateX(-12deg) rotateY(-110deg);
+  }
+  50%,
+  70% {
+    transform: translateZ(-41cqi) rotateX(-12deg) rotateY(-200deg);
+  }
+  75%,
+  95% {
+    transform: translateZ(-41cqi) rotateX(-12deg) rotateY(-290deg);
+  }
+  100% {
+    transform: translateZ(-41cqi) rotateX(-12deg) rotateY(-380deg);
+  }
+}
+
+/* mirror floor: the cover stands on a glossy floor and bobs gently over its own reflection */
+.art[data-mode='mirror'] .art-mirrored {
+  inset: 0 10% 24% 10%;
+  animation: bob calc(6s * var(--tempo)) ease-in-out infinite;
+}
+.art-reflection {
+  /* The bottom of the cover, flipped under it and fading into the floor. The picture is sized like the cover (76% of the box tall). */
+  left: 10%;
+  right: 10%;
+  top: 77%;
+  height: 23%;
+  border-radius: 0 0 var(--art-r) var(--art-r);
+  background-size: 100% 330%;
+  background-position: center bottom;
+  transform: scaleY(-1);
+  opacity: 0.55;
+  mask-image: linear-gradient(to top, #000 10%, transparent 95%);
+  animation: bob-mirror calc(6s * var(--tempo)) ease-in-out infinite;
+}
+.art[data-mode='mirror']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 76%;
+  height: 24%;
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.12), transparent);
+  border-top: 1px solid rgba(var(--ink-rgb), 0.12);
+  pointer-events: none;
+}
+@keyframes bob-mirror {
+  0%,
+  100% {
+    transform: scaleY(-1) translateY(0);
+  }
+  50% {
+    transform: scaleY(-1) translateY(8px);
+  }
+}
+
+/* sleeve: the record half out of its sleeve, turning */
+.art-sleeve {
+  /* Both square: the sleeve 72% of the box, the record 70%, a third of it out on the right. */
+  inset: 14% 28% 14% 0;
+  z-index: 1;
+}
+.art-sleeve-disc {
+  inset: 15% -6% 15% 36%;
+  animation: art-slide 1.4s var(--ease-out) both;
+}
+/* The slide-out happens once per track whether or not it is playing (only the turning waits for the music). */
+.art[data-mode='sleeve'] .art-sleeve-disc {
+  animation-play-state: running !important;
+}
+.art-sleeve-disc > .art-record {
+  position: absolute;
+  display: block;
+  inset: 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), inset 0 0 0 2px rgba(255, 255, 255, 0.12), 0 0 0 1px rgba(var(--accent-rgb), 0.35);
+}
+@keyframes art-slide {
+  from {
+    transform: translateX(-50%);
+  }
 }

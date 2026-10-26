@@ -32,10 +32,32 @@ describe('presets', () => {
     expect(PRESETS.find((p) => p.id === 'classic')?.patch).toEqual({ theme: 'midnight', surface: 'solid', background: 'none', shape: 'soft', accent: '#3dd5f3' });
   });
 
-  it('every palette new in RootUnit is shown off by at least one signature theme', () => {
+  it('every palette new in RootUnit is shown off by at least one signature theme or design style', () => {
     const v2 = new Set(['midnight', 'carbon', 'amoled', 'ember', 'ocean', 'forest', 'aurora', 'synthwave', 'nord', 'mocha', 'crimson', 'royal', 'daylight', 'sand', 'mint', 'contrast', 'sunlit']);
-    const used = new Set(PRESETS.filter((p) => p.group === 'signature').map((p) => p.patch.theme));
+    const used = new Set(PRESETS.filter((p) => p.group === 'signature' || p.group === 'styles').map((p) => p.patch.theme));
     for (const id of THEME_IDS) if (!v2.has(id)) expect(used.has(id), id).toBe(true);
+  });
+
+  it('every option added in 3.1 is shown off by at least one look', () => {
+    const fresh = {
+      theme: ['neonoir', 'miami', 'toxic', 'rosegold', 'abyss', 'holo', 'paper', 'peach'],
+      surface: ['brutal', 'holo', 'terminal', 'lumen'],
+      background: ['halftone', 'lowpoly', 'rays', 'plasma'],
+      wallpaper: ['cherry-road', 'cyber-alley', 'miami-beach', 'deep-sea', 'holo-waves', 'paper-hills'],
+      dashScene: ['highway', 'sakura', 'embers', 'radar', 'skyline', 'lightning'],
+      transition: ['cube', 'drop', 'tilt', 'portal'],
+      touchFx: ['sparkle', 'ring', 'press'],
+      gaugeStyle: ['led', 'hud'],
+      standbyStyle: ['nixie', 'words', 'binary'],
+      albumMotion: ['cube', 'mirror', 'sleeve'],
+      dockStyle: ['neon', 'bubbles'],
+      mascotMotion: ['bounce', 'drift'],
+      mascotAura: ['rings', 'aurora'],
+    } as const;
+    const missing: string[] = [];
+    for (const [key, values] of Object.entries(fresh))
+      for (const v of values) if (!PRESETS.some((p) => (p.patch as Record<string, unknown>)[key] === v)) missing.push(`${key}=${v}`);
+    expect(missing).toEqual([]);
   });
 
   it('the RootUnit signature preset is exactly the default look', () => {

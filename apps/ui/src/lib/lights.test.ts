@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { briToPercent, checkLightsHost, COLOR_PRESETS, listEffects, normalizeHex, percentToBri } from './lights';
+import { briToPercent, checkLightsHost, COLOR_PRESETS, followColor, listEffects, normalizeHex, percentToBri } from './lights';
 
 describe('brightness', () => {
   it('maps the ends of WLED’s 1-255 scale to 1-100 %', () => {
@@ -65,5 +65,24 @@ describe('listEffects', () => {
   it('searches by part of the name, ignoring case and surrounding spaces', () => {
     expect(listEffects(names, '  FIRE ')).toEqual([{ index: 6, name: 'Fire 2012' }]);
     expect(listEffects(names, 'zzz')).toEqual([]);
+  });
+});
+
+describe('match the screen', () => {
+  const lights = { configured: true, enabled: true, mode: 'manual' as const, color: '#30a5ff' };
+  it('sends the accent to lights that are set up, on and showing a plain colour', () => {
+    expect(followColor({ on: true, lights, accent: '#FF2E63', lastSent: '' })).toBe('#ff2e63');
+  });
+  it('sends nothing when it is off, the lights are not ready, or an effect or music mode is running', () => {
+    expect(followColor({ on: false, lights, accent: '#ff2e63', lastSent: '' })).toBeNull();
+    expect(followColor({ on: true, lights: null, accent: '#ff2e63', lastSent: '' })).toBeNull();
+    expect(followColor({ on: true, lights: { ...lights, configured: false }, accent: '#ff2e63', lastSent: '' })).toBeNull();
+    expect(followColor({ on: true, lights: { ...lights, enabled: false }, accent: '#ff2e63', lastSent: '' })).toBeNull();
+    expect(followColor({ on: true, lights: { ...lights, mode: 'pi-audio' }, accent: '#ff2e63', lastSent: '' })).toBeNull();
+  });
+  it('never repeats itself: not the colour the lights have, not the one it just sent, not a broken colour', () => {
+    expect(followColor({ on: true, lights, accent: '#30A5FF', lastSent: '' })).toBeNull();
+    expect(followColor({ on: true, lights, accent: '#ff2e63', lastSent: '#ff2e63' })).toBeNull();
+    expect(followColor({ on: true, lights, accent: 'red', lastSent: '' })).toBeNull();
   });
 });

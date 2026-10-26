@@ -1,4 +1,4 @@
-import { Component, memo, useCallback, useLayoutEffect, useMemo, useRef, useState, type ErrorInfo, type ReactNode, type Ref } from 'react';
+import { Component, memo, useCallback, useLayoutEffect, useMemo, useState, type ErrorInfo, type ReactNode, type Ref } from 'react';
 import { Car, Check, Gauge, House, LayoutGrid, Music2, Settings, type LucideIcon } from 'lucide-react';
 import type { DockStyle, NavLabelMode, NavPosition, NavSize } from '@headunit/shared';
 import { useAttentionBadges } from '../apps/badges';

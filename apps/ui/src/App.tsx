@@ -31,6 +31,7 @@ import { QuickPanel } from './shell/QuickPanel';
 import { RadioPlayer } from './shell/RadioPlayer';
 import { SpotifyPlaybackBridge } from './shell/SpotifyPlaybackBridge';
 import { StatusBar } from './shell/StatusBar';
+import { LightsFollow } from './shell/LightsFollow';
 import { Standby } from './shell/Standby';
 import { Toast } from './shell/Toast';
 import { TouchFx } from './shell/TouchFx';
@@ -297,6 +298,7 @@ export function App() {
       <GlobalEffects />
       <Standby />
       <TouchFx />
+      <LightsFollow accent={accent} />
       {softDim > 0 && <div className="dim-overlay" style={{ opacity: softDim }} />}
     </div>
   );

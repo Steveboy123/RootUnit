@@ -98,6 +98,43 @@ export function AlbumArt({ artUrl, playing, size = 'md', mode: forced, fallback,
         </span>
       );
       break;
+    case 'cube':
+      body =
+        size === 'sm' ? (
+          cover('fx')
+        ) : (
+          <span className="art-cube fx">
+            {[0, 1, 2, 3].map((i) => (
+              <span key={i} className="art-cover art-face" style={{ ...bg(artUrl), ['--i' as string]: i }}>
+                {!artUrl && (fallback ?? <Music2 />)}
+                <i className="art-face-shade" />
+              </span>
+            ))}
+          </span>
+        );
+      break;
+    case 'mirror':
+      body = (
+        <>
+          {cover('fx art-mirrored')}
+          {size !== 'sm' && <span className="art-reflection fx" style={bg(artUrl)} />}
+        </>
+      );
+      break;
+    case 'sleeve':
+      // The record slides out of its sleeve once per track (keyed on the picture), then turns while the music plays.
+      body = (
+        <>
+          <span className="art-sleeve-disc" key={artUrl ?? 'none'}>
+            <span className="art-record fx fx-drive">
+              <span className="art-label" style={bg(artUrl)} />
+              <i className="art-hole" />
+            </span>
+          </span>
+          {cover('art-sleeve')}
+        </>
+      );
+      break;
     case 'orbit':
     case 'prism':
       body = (

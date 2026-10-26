@@ -151,6 +151,66 @@
 .g-bar .g-number {
   font-size: 54px;
 }
+/* LED race dash: shift lights over an LCD panel. */
+.g-shift {
+  fill: rgba(var(--ink-rgb), 0.1);
+}
+.g-shift[data-on='true'] {
+  fill: var(--ok);
+}
+.g-shift[data-on='true'][data-zone='warn'] {
+  fill: var(--warn);
+}
+.g-shift[data-on='true'][data-zone='danger'] {
+  fill: var(--danger);
+}
+.g-lcd {
+  fill: rgba(var(--accent-rgb), 0.07);
+  stroke: rgba(var(--accent-rgb), 0.35);
+  stroke-width: 1.2;
+}
+.g-ledbar .g-number {
+  font-size: 58px;
+  font-family: 'JetBrains Mono Variable', monospace;
+  fill: var(--accent-text);
+}
+
+/* HUD: fine ticks, a thin arc, brackets. */
+.g-hud-tick {
+  stroke: rgba(var(--ink-rgb), 0.14);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.g-hud-tick[data-on='true'] {
+  stroke: var(--accent);
+}
+.g-hud-tick[data-on='true'][data-zone='warn'] {
+  stroke: var(--warn);
+}
+.g-hud-tick[data-on='true'][data-zone='danger'] {
+  stroke: var(--danger);
+}
+.g-hud-track {
+  fill: none;
+  stroke: rgba(var(--ink-rgb), 0.1);
+  stroke-width: 2;
+}
+.g-hud-value {
+  fill: none;
+  stroke: var(--accent-2);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.g-bracket {
+  fill: none;
+  stroke: rgba(var(--accent-rgb), 0.7);
+  stroke-width: 2;
+}
+.g-hud .g-number {
+  font-size: 44px;
+  letter-spacing: 0.04em;
+}
+
 /* The shift light: the gauge glows red while the revs are high (a steady glow, not a strobe). */
 .gauge[data-shift='true'] .g-track,
 .gauge[data-shift='true'] .g-dial {
@@ -1154,5 +1214,153 @@
   .w-car-stats {
     margin-top: auto;
     margin-bottom: auto;
+  }
+}
+
+/* Calendar: the month as a grid; a small cell shows just today, big. */
+.w-cal {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+}
+.w-cal-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.w-cal-head b {
+  font-size: clamp(0.9rem, 9cqh, 1.2rem);
+}
+.w-cal-head span {
+  white-space: nowrap;
+  font-size: 0.78rem;
+}
+@container (max-width: 260px) {
+  .w-cal-head span {
+    display: none;
+  }
+}
+.w-cal-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: center;
+  text-align: center;
+  font-size: clamp(0.6rem, 6.5cqh, 0.95rem);
+}
+.w-cal-dow {
+  color: var(--dim);
+  font-weight: 700;
+  font-size: 0.85em;
+}
+.w-cal-day[data-out] {
+  opacity: 0.3;
+}
+.w-cal-day[data-today] {
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 800;
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.45);
+}
+.w-cal-big {
+  display: none;
+  font-size: clamp(2rem, 40cqh, 4rem);
+  font-weight: 800;
+  line-height: 1;
+}
+.w-cal-big small {
+  display: block;
+  font-size: 0.3em;
+  color: var(--dim);
+  font-weight: 650;
+}
+@container (max-height: 170px) {
+  .w-cal-grid,
+  .w-cal-head span {
+    display: none;
+  }
+  .w-cal-big {
+    display: block;
+  }
+}
+
+/* My looks: chips in each saved look's accent. */
+.w-looks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+}
+.w-looks-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.w-looks-head .small {
+  margin-left: auto;
+}
+.w-looks-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-content: flex-start;
+  overflow: hidden;
+}
+.w-looks-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  box-shadow: 0 0 0 1.5px rgba(var(--ink-rgb), 0.3);
+}
+@container (max-height: 90px) {
+  .w-looks-head {
+    display: none;
+  }
+}
+
+/* Sound meter: loudness history as bars, the bass as a swelling dot. */
+.w-meter {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  height: 100%;
+}
+.w-meter-bars {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+.w-meter-bars i {
+  flex: 1;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(to top, var(--accent), var(--accent-2));
+  transform-origin: 50% 100%;
+  transition: transform 140ms linear;
+}
+.w-meter-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: clamp(40px, 22cqw, 72px);
+}
+.w-meter-bass {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent), rgba(var(--accent-rgb), 0.15) 70%);
+  transition: transform 140ms linear;
+}
+@container (max-width: 200px) {
+  .w-meter-side {
+    display: none;
   }
 }

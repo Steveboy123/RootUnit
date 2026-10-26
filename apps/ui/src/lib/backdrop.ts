@@ -29,7 +29,7 @@ export interface CssLayer {
   position?: string;
   repeat?: string;
   /** Extra class for shaped layers (the perspective grid floor, the sun). */
-  shape?: 'floor' | 'sun' | 'blob' | 'band';
+  shape?: 'floor' | 'sun' | 'blob' | 'band' | 'rays';
   /** Blob placement, percent of the screen. */
   box?: { x: number; y: number; w: number; h: number };
   opacity?: number;
@@ -362,6 +362,82 @@ function generated(bg: Background, p: Palette, accent: string, accent2: string, 
         ],
         peaks: [over2(p, [accent, 0.16], [ink, 0.05])],
       };
+    case 'halftone': {
+      // Comic-book dots that shrink from the top-left corner to nothing: one stretched SVG, drawn once.
+      const ink2 = p.scheme === 'dark' ? accent : toHex(p.text);
+      let body = '';
+      for (let y = 9; y < 450; y += 18)
+        for (let x = 9; x < 800; x += 18) {
+          const t = 1 - Math.min(1, (x / 800) * 0.7 + (y / 450) * 0.6);
+          if (t > 0.04) body += `<circle cx='${x}' cy='${y}' r='${(t * 8.5).toFixed(1)}'/>`;
+        }
+      return {
+        layers: [
+          { kind: 'css', image: `radial-gradient(90% 70% at 100% 100%, ${rgbaOf(accent2, 0.16)}, transparent 70%)` },
+          { kind: 'css', image: svgUri(`<g fill='${rgbaOf(ink2, 0.24)}'>${body}</g>`, 800, 450), size: 'cover', position: 'top left' },
+        ],
+        peaks: [over2(p, [accent2, 0.16], [ink2, 0.24])],
+      };
+    }
+    case 'lowpoly': {
+      // Faceted triangles: a jittered grid split into two triangles a cell, each a mix of the two accents with its own strength.
+      let a = 7;
+      const rand = () => {
+        a = (a * 1103515245 + 12345) & 0x7fffffff;
+        return a / 0x7fffffff;
+      };
+      const cols = 10;
+      const rows = 6;
+      const pts: Array<Array<[number, number]>> = [];
+      for (let r = 0; r <= rows; r++) {
+        pts.push([]);
+        for (let c = 0; c <= cols; c++) {
+          const edgeX = c === 0 || c === cols;
+          const edgeY = r === 0 || r === rows;
+          pts[r]!.push([c * 80 + (edgeX ? 0 : (rand() - 0.5) * 50), r * 75 + (edgeY ? 0 : (rand() - 0.5) * 46)]);
+        }
+      }
+      let body = '';
+      const tri = (q: Array<[number, number]>, t: number, alpha: number) => {
+        const colour = t < 0.5 ? accent : accent2;
+        body += `<path d='M${q.map(([x, y]) => `${x.toFixed(0)} ${y.toFixed(0)}`).join(' L')} Z' fill='${rgbaOf(colour, alpha)}' stroke='${rgbaOf(colour, alpha)}' stroke-width='0.6'/>`;
+      };
+      for (let r = 0; r < rows; r++)
+        for (let c = 0; c < cols; c++) {
+          const [p00, p01, p10, p11] = [pts[r]![c]!, pts[r]![c + 1]!, pts[r + 1]![c]!, pts[r + 1]![c + 1]!];
+          const t = (c + r * 0.6) / (cols + rows * 0.6);
+          const fade = 0.06 + (1 - r / rows) * 0.12;
+          tri([p00, p01, p10], t + (rand() - 0.5) * 0.3, fade + rand() * 0.12);
+          tri([p01, p11, p10], t + (rand() - 0.5) * 0.3, fade + rand() * 0.12);
+        }
+      return {
+        layers: [{ kind: 'css', image: svgUri(body, 800, 450), size: 'cover', position: 'center' }],
+        peaks: [over(p, accent, 0.32), over(p, accent2, 0.32)],
+      };
+    }
+    case 'rays':
+      return {
+        layers: [
+          { kind: 'css', image: `radial-gradient(70% 55% at 50% 100%, ${rgbaOf(accent, 0.3)}, transparent 70%)` },
+          {
+            kind: 'css',
+            shape: 'rays',
+            image: `repeating-conic-gradient(from 0deg, ${rgbaOf(accent2, 0.13)} 0deg 5deg, transparent 5deg 13deg), radial-gradient(closest-side, transparent 6%, ${rgbaOf(p.bg, 0.9)} 100%)`,
+            drift: drift ? 'spin-slow' : undefined,
+          },
+        ],
+        peaks: [over2(p, [accent, 0.3], [accent2, 0.13])],
+      };
+    case 'plasma': {
+      const list = [
+        { color: accent, alpha: 0.52, x: -20, y: 10, w: 70, h: 80 },
+        { color: third, alpha: 0.42, x: 30, y: -30, w: 70, h: 75 },
+        { color: accent2, alpha: 0.48, x: 55, y: 35, w: 65, h: 75 },
+        { color: fourth, alpha: 0.36, x: 10, y: 55, w: 55, h: 60 },
+        { color: accent, alpha: 0.3, x: 70, y: -15, w: 45, h: 50 },
+      ];
+      return { layers: blobs(list, drift), peaks: [over2(p, [accent, 0.52], [third, 0.42]), over2(p, [accent2, 0.48], [fourth, 0.36]), over2(p, [third, 0.42], [accent2, 0.48])] };
+    }
     default:
       return { layers: [], peaks: [] };
   }

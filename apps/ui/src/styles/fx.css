@@ -337,6 +337,56 @@
     opacity: 0;
   }
 }
+/* Rings: three rings of light pulsing outwards from behind it, one after another. */
+.mascot[data-aura='rings'] .mascot-aura i {
+  left: 20%;
+  top: 20%;
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--accent-rgb), calc(0.35 + var(--mglow) * 0.6));
+  box-shadow: 0 0 calc(8px + var(--mglow) * 18px) rgba(var(--accent-rgb), 0.5);
+  opacity: 0;
+  animation: m-ring calc(4.5s * var(--tempo)) ease-out calc(var(--i) * -1.5s) infinite;
+}
+@keyframes m-ring {
+  0% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+/* Aurora: three soft curtains of light swaying behind it. */
+.mascot[data-aura='aurora'] .mascot-aura i {
+  left: calc(8% + var(--i) * 26%);
+  top: 0;
+  width: 34%;
+  height: 80%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, transparent, rgba(var(--accent-rgb), calc(0.14 + var(--mglow) * 0.3)) 45%, transparent);
+  transform-origin: 50% 0;
+  animation: m-curtain calc((8s + var(--i) * 1.7s) * var(--tempo)) ease-in-out calc(var(--i) * -2.3s) infinite alternate;
+}
+.mascot[data-aura='aurora'] .mascot-aura i:nth-child(2) {
+  background: linear-gradient(180deg, transparent, rgba(var(--accent-2-rgb), calc(0.14 + var(--mglow) * 0.3)) 45%, transparent);
+}
+@keyframes m-curtain {
+  from {
+    transform: skewX(-10deg) scaleY(0.85);
+    opacity: 0.55;
+  }
+  to {
+    transform: skewX(10deg) scaleY(1.08) translateX(8%);
+    opacity: 1;
+  }
+}
+
 /* The beat makes the aura breathe with the music (only when "react to the beat" is on). */
 .mascot[data-beat='true'] .mascot-aura {
   transform: scale(calc(1 + var(--mascot-beat-power, 0) * 0.25));
@@ -374,6 +424,46 @@
 }
 .mascot[data-motion='pulse'] .mascot-aura {
   animation: pulse calc(2.2s * var(--tempo)) ease-in-out infinite;
+}
+.mascot[data-motion='bounce'] .mascot-motion {
+  transform-origin: 50% 100%;
+  animation: m-bounce calc(2.4s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes m-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1.04, 0.96);
+  }
+  12% {
+    transform: translateY(0) scale(0.97, 1.03);
+  }
+  40% {
+    transform: translateY(calc(-9% * var(--amp))) scale(1);
+  }
+  70% {
+    transform: translateY(0) scale(1.05, 0.95);
+  }
+  82% {
+    transform: translateY(0) scale(1);
+  }
+}
+.mascot[data-motion='drift'] .mascot-motion {
+  animation: m-drift calc(34s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes m-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+  25% {
+    transform: translate(9%, -4%) rotate(2deg);
+  }
+  50% {
+    transform: translate(2%, 5%) rotate(-1deg);
+  }
+  75% {
+    transform: translate(-8%, -2%) rotate(-2deg);
+  }
 }
 .mascot[data-motion='sway'] .mascot-motion {
   transform-origin: 50% 100%;

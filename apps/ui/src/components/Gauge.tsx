@@ -55,7 +55,7 @@ function usePeak(value: number, live: boolean, enabled: boolean): number | null 
 const frac = (v: number, min: number, max: number) => Math.min(1, Math.max(0, (v - min) / (max - min || 1)));
 
 /**
- * A responsive SVG gauge in the style chosen in Settings → Appearance → Gauges: arc, needle, digital, ring, bar or sport.
+ * A responsive SVG gauge in the style chosen in Settings → Type & gauges: arc, needle, digital, ring, bar, sport, led or hud.
  * Every style shows the same thing (the number, the unit, the warning zones); only the drawing changes.
  */
 export function Gauge(props: GaugeProps) {
@@ -91,6 +91,67 @@ export function Gauge(props: GaugeProps) {
         })}
         {label && style === 'bar' && (
           <text className="g-label" x={100} y={18} textAnchor="middle">
+            {label}
+          </text>
+        )}
+      </svg>
+    );
+  }
+
+  if (style === 'led') {
+    // A race dash: a row of shift lights (green, then amber, then red, like the real thing) over a big number on an LCD panel.
+    const N = 15;
+    const lit = Math.round(f * N);
+    return (
+      <svg className="gauge g-ledbar" viewBox="0 0 200 130" {...common}>
+        {Array.from({ length: N }, (_, i) => {
+          const v = min + ((i + 0.5) / N) * (max - min);
+          const zone = props.zones?.find((z) => v >= z.from && v <= z.to)?.level ?? (i >= N - 3 ? 'danger' : i >= N - 6 ? 'warn' : 'ok');
+          return <circle key={i} className="g-shift" data-on={i < lit} data-zone={zone} cx={16 + i * 12} cy={14} r={4.6} />;
+        })}
+        <rect className="g-lcd" x={14} y={30} width={172} height={74} rx={8} />
+        <text className="g-number" x={100} y={66} textAnchor="middle" dominantBaseline="central" data-long={display.length >= 4}>
+          {display}
+        </text>
+        {unit && (
+          <text className="g-unit" x={100} y={120} textAnchor="middle">
+            {unit}
+          </text>
+        )}
+        {peak !== null && <rect className="g-peak" x={14 + frac(peak, min, max) * 168} y={106} width={4} height={4} rx={1} />}
+      </svg>
+    );
+  }
+
+  if (style === 'hud') {
+    // A sci-fi readout: a ring of fine ticks that light up to the value, a thin inner arc, corner brackets round the number.
+    const N = 56;
+    const lit = Math.round(f * N);
+    const inner = arcPath(CX, CY, R - 14, SWEEP_START, SWEEP_START + SWEEP);
+    return (
+      <svg className="gauge g-hud" viewBox="0 0 200 200" {...common}>
+        {Array.from({ length: N }, (_, i) => {
+          const a = SWEEP_START + ((i + 0.5) / N) * SWEEP;
+          const v = min + ((i + 0.5) / N) * (max - min);
+          const zone = props.zones?.find((z) => v >= z.from && v <= z.to)?.level ?? 'ok';
+          const [x1, y1] = polar(CX, CY, R - 4, a);
+          const [x2, y2] = polar(CX, CY, R + (i % 7 === 0 ? 10 : 5), a);
+          return <line key={i} className="g-hud-tick" data-on={i < lit} data-zone={zone} x1={x1} y1={y1} x2={x2} y2={y2} />;
+        })}
+        <path className="g-hud-track" d={inner} pathLength={100} />
+        {f > 0.002 && <path className="g-hud-value" d={inner} pathLength={100} strokeDasharray={`${f * 100} 100`} />}
+        {peak !== null && <circle className="g-peak" cx={polar(CX, CY, R - 14, valueToDeg(peak, min, max))[0]} cy={polar(CX, CY, R - 14, valueToDeg(peak, min, max))[1]} r={3.5} />}
+        <path className="g-bracket" d="M58 78 v-10 h10 M142 78 v-10 h-10 M58 120 v10 h10 M142 120 v10 h-10" />
+        <text className="g-number" x={CX} y={CY} textAnchor="middle" dominantBaseline="central" data-long={display.length >= 4}>
+          {display}
+        </text>
+        {unit && (
+          <text className="g-unit" x={CX} y={CY + 42} textAnchor="middle">
+            {unit}
+          </text>
+        )}
+        {label && (
+          <text className="g-label" x={CX} y={CY + 72} textAnchor="middle">
             {label}
           </text>
         )}

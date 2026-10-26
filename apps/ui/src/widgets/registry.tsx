@@ -1,8 +1,9 @@
-import { Activity, CarFront, Clock, CloudSun, Compass, Cpu, Disc3, Gauge, History, Hourglass, LayoutGrid, MapPinned, Music, Navigation, Radio, RadioTower, Route, SlidersHorizontal, Smartphone, Timer, WandSparkles, Wrench, Zap } from 'lucide-react';
+import { Activity, AudioLines, Bookmark, CalendarDays, CarFront, Clock, CloudSun, Compass, Cpu, Disc3, Gauge, History, Hourglass, LayoutGrid, MapPinned, Music, Navigation, Radio, RadioTower, Route, SlidersHorizontal, Smartphone, Timer, WandSparkles, Wrench, Zap } from 'lucide-react';
 import { METRICS } from '../lib/metrics';
 import { GaugeWidget, Speedometer, Tachometer } from './gauges';
 import { ActionsWidget, FindCarWidget, GarageWidget, HealthWidget, ScenesWidget, TimersWidget, TripsTodayWidget, WeatherWidget } from './glance';
 import { NowPlayingWidget, RadioPresets, RecentTiles } from './media';
+import { CalendarWidget, LookSwitcherWidget, SoundMeterWidget } from './extras';
 import { ClockWeather, FmTuner, HeroPlayer, QuickTiles, VehicleCard } from './showcase';
 import { ClockWidget, CompassWidget, DevicesWidget, GpsMini, LauncherWidget, QuickControls, TripWidget } from './simple';
 import type { WidgetDef } from './types';
@@ -40,6 +41,9 @@ export const WIDGETS: WidgetDef[] = [
   },
   { type: 'clockWeather', name: 'Clock & weather', description: 'Big time, date and the weather', icon: CloudSun, group: 'Everyday', size: { w: 3, h: 4 }, min: { w: 3, h: 2 }, Component: ClockWeather },
   { type: 'fmTuner', name: 'FM transmitter', description: 'Frequency, dial and saved stations', icon: RadioTower, group: 'Music', size: { w: 3, h: 2 }, min: { w: 3, h: 2 }, Component: FmTuner },
+  { type: 'calendar', name: 'Calendar', description: 'This month, today lit, the week number', icon: CalendarDays, group: 'Everyday', size: { w: 3, h: 3 }, min: { w: 2, h: 2 }, Component: CalendarWidget },
+  { type: 'lookSwitcher', name: 'My looks', description: 'Your saved looks and a surprise, one tap each', icon: Bookmark, group: 'Everyday', size: { w: 4, h: 2 }, min: { w: 3, h: 1 }, Component: LookSwitcherWidget },
+  { type: 'soundMeter', name: 'Sound meter', description: 'The real music level and bass, live', icon: AudioLines, group: 'Music', size: { w: 4, h: 2 }, min: { w: 2, h: 1 }, Component: SoundMeterWidget },
   { type: 'quickTiles', name: 'Quick tiles', description: 'Six big shortcuts', icon: LayoutGrid, group: 'Everyday', size: { w: 3, h: 2 }, min: { w: 3, h: 2 }, Component: QuickTiles },
   { type: 'vehicleCard', name: 'Vehicle', description: 'Your car, faults and this drive', icon: CarFront, group: 'Car', size: { w: 3, h: 2 }, min: { w: 3, h: 2 }, Component: VehicleCard },
   { type: 'nowPlaying', name: 'Now Playing', description: 'Music controls and animated artwork', icon: Music, group: 'Music', size: { w: 5, h: 4 }, min: { w: 3, h: 1 }, Component: NowPlayingWidget },

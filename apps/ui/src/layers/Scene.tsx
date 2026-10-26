@@ -128,6 +128,64 @@ function sceneBody(scene: DashScene, k: number): ReactNode {
           </div>
         </>
       );
+    case 'highway':
+      return (
+        <>
+          <i className="sc-horizon low" />
+          <div className="sc-road">
+            <i />
+          </div>
+          {scatter(countFor(10, k), 151, (_r, i) => ({ '--side': i % 2 ? 1 : -1, '--delay': `${-(i * 0.37) % 2.2}s` }), 'sc-lamp')}
+        </>
+      );
+    case 'sakura':
+      return scatter(countFor(36, k), 161, (r) => ({ '--x': `${r() * 105 - 5}%`, '--s': `${8 + r() * 9}px`, '--d': `${9 + r() * 10}s`, '--delay': `${-r() * 20}s`, '--sw': `${20 + r() * 50}px`, '--rot': `${r() > 0.5 ? 1 : -1}`, '--o': 0.55 + r() * 0.4 }), 'sc-petal');
+    case 'embers':
+      return (
+        <>
+          <i className="sc-hearth" />
+          {scatter(countFor(40, k), 171, (r) => ({ '--x': `${10 + r() * 80}%`, '--s': `${2 + r() * 4}px`, '--d': `${4 + r() * 6}s`, '--delay': `${-r() * 10}s`, '--sw': `${10 + r() * 40}px`, '--c': r() > 0.35 ? '255, 150, 60' : 'var(--accent-rgb)' }), 'sc-ember')}
+        </>
+      );
+    case 'radar':
+      return (
+        <div className="sc-radar">
+          <i className="sc-radar-grid" />
+          <i className="sc-radar-sweep" />
+          {scatter(countFor(9, k), 181, (r) => {
+            const a = r() * Math.PI * 2;
+            const d = 12 + r() * 34;
+            return { '--bx': `${Math.cos(a) * d}cqmin`, '--by': `${Math.sin(a) * d}cqmin`, '--delay': `${-(((a / (Math.PI * 2)) * 6 + 6) % 6)}s` };
+          }, 'sc-blip')}
+        </div>
+      );
+    case 'skyline': {
+      const r = seeded(191);
+      const n = 22;
+      return (
+        <div className="sc-city">
+          {Array.from({ length: n }, (_, i) => {
+            const h = 14 + r() * 38;
+            return <i key={i} className="sc-tower" style={{ ['--x' as string]: `${(i / n) * 104 - 2}%`, ['--w' as string]: `${3 + r() * 4}%`, ['--h' as string]: `${h}%` }} />;
+          })}
+          {scatter(countFor(30, k), 192, (rr) => ({ '--x': `${rr() * 100}%`, '--y': `${55 + rr() * 38}%`, '--b': `${3 + rr() * 9}s`, '--delay': `${-rr() * 12}s` }), 'sc-window')}
+          <i className="sc-beacon" />
+          <i className="sc-plane" />
+        </div>
+      );
+    }
+    case 'lightning':
+      return (
+        <>
+          <i className="sc-cloud a" />
+          <i className="sc-cloud b" />
+          <i className="sc-flash" />
+          {[0, 1, 2].map((i) => (
+            <i key={i} className="sc-bolt" style={{ ['--x' as string]: `${[22, 64, 82][i]}%`, ['--delay' as string]: `${[-1, -5.5, -9][i]}s`, ['--sc' as string]: [1, 0.7, 0.85][i] }} />
+          ))}
+          {scatter(countFor(50, k), 201, (r) => ({ '--x': `${r() * 110 - 5}%`, '--d': `${0.6 + r() * 0.4}s`, '--delay': `${-r() * 2}s`, '--l': `${24 + r() * 36}px`, '--o': 0.18 + r() * 0.3 }), 'sc-drop')}
+        </>
+      );
     case 'circuit':
       return scatter(countFor(16, k), 131, (r, i) => ({ '--p': `${8 + r() * 84}%`, '--d': `${3 + r() * 5}s`, '--delay': `${-r() * 8}s`, '--w': `${60 + r() * 120}px`, '--c': i % 3 === 0 ? 'var(--accent-2)' : 'var(--accent)' }), 'sc-pulse');
     default:

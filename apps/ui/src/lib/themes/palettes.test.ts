@@ -20,6 +20,7 @@ import { GROUP_B } from './groupB';
 import { GROUP_C } from './groupC';
 import { GROUP_D } from './groupD';
 import { GROUP_E } from './groupE';
+import { GROUP_F } from './groupF';
 
 const STRING_TOKENS = ['label', 'blurb', 'bg', 'bg2', 'nav', 'card', 'cardHi', 'border', 'borderStrong', 'text', 'dim', 'track', 'shadow', 'ok', 'warn', 'danger', 'accentDefault', 'glassFill', 'glassBorder', 'glassHighlight', 'scrim'] as const;
 const OPAQUE_TOKENS = ['bg', 'bg2', 'nav', 'text', 'dim', 'ok', 'warn', 'danger', 'accentDefault', 'scrim'] as const;
@@ -40,10 +41,11 @@ describe('palette registry', () => {
     expect(Object.keys(GROUP_C).sort()).toEqual(['contrast', 'mint', 'sand', 'sunlit']);
     expect(Object.keys(GROUP_D)).toHaveLength(14);
     expect(Object.keys(GROUP_E).sort()).toEqual(['arctic', 'concrete', 'latte', 'lavender', 'sakura']);
-    const owned = [...Object.keys(CORE), ...Object.keys(GROUP_A), ...Object.keys(GROUP_B), ...Object.keys(GROUP_C), ...Object.keys(GROUP_D), ...Object.keys(GROUP_E)];
+    expect(Object.keys(GROUP_F).sort()).toEqual(['abyss', 'holo', 'miami', 'neonoir', 'paper', 'peach', 'rosegold', 'toxic']);
+    const owned = [...Object.keys(CORE), ...Object.keys(GROUP_A), ...Object.keys(GROUP_B), ...Object.keys(GROUP_C), ...Object.keys(GROUP_D), ...Object.keys(GROUP_E), ...Object.keys(GROUP_F)];
     expect(new Set(owned).size).toBe(owned.length); // no id owned twice
     expect(owned.length).toBe(THEME_IDS.length);
-    for (const [group, ids] of [[CORE, Object.keys(CORE)], [GROUP_A, Object.keys(GROUP_A)], [GROUP_B, Object.keys(GROUP_B)], [GROUP_C, Object.keys(GROUP_C)], [GROUP_D, Object.keys(GROUP_D)], [GROUP_E, Object.keys(GROUP_E)]] as const) {
+    for (const [group, ids] of [[CORE, Object.keys(CORE)], [GROUP_A, Object.keys(GROUP_A)], [GROUP_B, Object.keys(GROUP_B)], [GROUP_C, Object.keys(GROUP_C)], [GROUP_D, Object.keys(GROUP_D)], [GROUP_E, Object.keys(GROUP_E)], [GROUP_F, Object.keys(GROUP_F)]] as const) {
       for (const id of ids) expect((group as Record<string, Palette>)[id]?.id).toBe(id);
     }
   });

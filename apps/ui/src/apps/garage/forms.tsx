@@ -179,6 +179,7 @@ export function ServiceForm({ garage, item, onDone }: { garage: GarageState; ite
             </div>
           </>
         )}
+        <TextField label="Note" value={note} onChange={setNote} placeholder="optional: oil grade, garage, part number" maxLength={80} className="wide" />
       </div>
       <div className="form-actions">
         {item && <ConfirmButton label="Delete" icon={Trash2} onConfirm={remove} />}

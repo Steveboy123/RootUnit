@@ -2,7 +2,7 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { Bluetooth, Camera, Car, Eye, House, LayoutGrid, Lightbulb, Moon, PencilLine, Settings, Smartphone, Sun, SunMedium, Sunrise, Users, Volume2, VolumeX, Zap, type LucideIcon } from 'lucide-react';
 import { sanitizePanel, type ActionIcon, type QuickTile, type SceneIcon } from '@headunit/shared';
 import { ACTION_GLYPHS, SceneGlyph } from '../components/glyphs';
-import { Segment, Slider, useAction } from '../components/ui';
+import { Segment, useAction } from '../components/ui';
 import { apiRequest } from '../lib/api';
 import { displayModeOf, displayModePatch, type DisplayMode } from '../lib/displayMode';
 import { useTypingLocked } from '../lib/driving';

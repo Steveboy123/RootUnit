@@ -5,14 +5,15 @@ import { GROUP_B } from './groupB';
 import { GROUP_C } from './groupC';
 import { GROUP_D } from './groupD';
 import { GROUP_E } from './groupE';
+import { GROUP_F } from './groupF';
 import type { Palette } from './types';
 
 /**
  * Every palette, keyed by ThemeId. The compiler enforces that all ids are present (and none extra) because the record type is
  * `Record<ThemeId, Palette>` and ThemeId derives from THEME_IDS in @headunit/shared. Each group file owns its own ids; this
- * file only merges them. Groups A–C and the core four are the v2 palettes, unchanged; D and E are new in RootUnit.
+ * file only merges them. Groups A–C and the core four are the v2 palettes, unchanged; D and E are new in RootUnit, F in 3.1.
  */
-export const PALETTES: Record<ThemeId, Palette> = { ...CORE, ...GROUP_A, ...GROUP_B, ...GROUP_C, ...GROUP_D, ...GROUP_E };
+export const PALETTES: Record<ThemeId, Palette> = { ...CORE, ...GROUP_A, ...GROUP_B, ...GROUP_C, ...GROUP_D, ...GROUP_E, ...GROUP_F };
 
 /** A palette by id. An unknown id (stale data from a different build) falls back to midnight instead of throwing. */
 export function paletteOf(id: ThemeId): Palette {

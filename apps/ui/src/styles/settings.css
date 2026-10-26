@@ -1200,3 +1200,28 @@
   border-radius: var(--r-pill);
   font-weight: 750;
 }
+
+/* My looks: save, wear, share and add. */
+.my-looks-save,
+.my-looks-import {
+  align-items: center;
+  gap: 10px;
+}
+.my-look {
+  cursor: default;
+}
+.my-look-actions {
+  gap: 6px;
+  margin-top: 4px;
+}
+.my-look-code {
+  display: grid;
+  gap: 6px;
+  margin-top: 6px;
+}
+.my-look-code code {
+  font-size: 0.7rem;
+  word-break: break-all;
+  max-height: 72px;
+  overflow: auto;
+}

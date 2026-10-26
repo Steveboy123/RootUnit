@@ -274,10 +274,10 @@ describe('NavEditorView: the Look tab', () => {
     expect(count(html, /role="radiogroup"/g)).toBe(5); // the tabs, where, style, size and names
   });
 
-  it('offers all ten navigation styles, each drawn as a small live preview', () => {
-    for (const name of ['Classic dock', 'Floating pill', 'Edge rail', 'Minimal icons', 'Glowing curve', '3D glass', 'Split', 'Text tabs', 'Wave', 'Mascot']) expect(html, name).toContain(`<b>${name}</b>`);
-    expect(count(html, /class="dock-style"/g)).toBe(10);
-    expect(count(html, /class="dock" aria-hidden="true"/g)).toBe(10);
+  it('offers all twelve navigation styles, each drawn as a small live preview', () => {
+    for (const name of ['Classic dock', 'Floating pill', 'Edge rail', 'Minimal icons', 'Glowing curve', '3D glass', 'Split', 'Text tabs', 'Wave', 'Mascot', 'Neon tube', 'Bubbles']) expect(html, name).toContain(`<b>${name}</b>`);
+    expect(count(html, /class="dock-style"/g)).toBe(12);
+    expect(count(html, /class="dock" aria-hidden="true"/g)).toBe(12);
   });
 
   it('marks the current choice', () => {
