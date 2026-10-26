@@ -96,7 +96,8 @@ To try the simulated car (fake drive, phones and music) instead, run `npm run de
 
 ## Updating
 
-* **Git:** `git pull`, then run `start-windows.cmd rebuild` (in a terminal, or make a shortcut with `rebuild` after it).
+* **Git:** `git pull`, then run `start-windows.cmd rebuild` (in a terminal, or make a shortcut with `rebuild` after it). It installs
+  anything new, then builds again.
 * **ZIP:** download the new ZIP into a new folder, copy your old `data` folder into it, then double-click `start-windows.cmd`.
 
 ## If something goes wrong
@@ -104,6 +105,7 @@ To try the simulated car (fake drive, phones and music) instead, run `npm run de
 | What you see | What to do |
 | --- | --- |
 | `'node' is not recognized` | Install Node.js again with **Add to PATH** ticked, then open a new window. |
+| `'tsc' is not recognized` or `'vite' is not recognized` while building | The install is missing RootUnit's build tools: npm was set to leave out developer tools (`NODE_ENV=production` or `omit=dev`), or the first install was stopped part-way. Double-click `start-windows.cmd` again; it notices and installs them. If the build still fails, delete the `node_modules` folder and double-click it once more. |
 | `INVALID_CLIENT: Invalid redirect URI` (Spotify) | The redirect URI in the Spotify dashboard must match the one RootUnit shows in Settings → Music services → Spotify, step 2, letter for letter. |
 | "You are not registered for this application" | Add your Spotify account under **User Management** in the dashboard. |
 | "Spotify Premium is required" | Playback control needs Premium. Browsing still works. |

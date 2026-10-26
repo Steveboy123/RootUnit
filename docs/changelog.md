@@ -18,6 +18,9 @@ unit can add. *Surprise me* puts together a random look that still matches. *Res
 **More.** The WLED lights can match the screen's colour. Three widgets: Calendar, My looks, and a Sound meter that shows the real
 music level (and says so when there is no meter, rather than inventing one). The garage service form has its Note field back.
 
+**Windows.** Double-click `start-windows.cmd` to install, build and run the real app on a Windows PC, with real Spotify, TIDAL,
+YouTube Music and radio ([windows.md](windows.md)). It repairs an install that ended up without its build tools.
+
 **Checked by tests:** every new palette against the contrast and distinctness rules; every new option used by at least one look; saved
 looks and share codes against damaged and hostile input; the word and binary clocks; and the CSS rules, now including that no
 animation name is defined twice.
