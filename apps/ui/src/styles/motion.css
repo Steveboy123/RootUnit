@@ -1,0 +1,308 @@
+/*
+ * Motion. Every decorative animation lives on an element marked .fx (or inside one), so one rule can stop them all:
+ *   html[data-calm='true']   Motion off, Effects minimal, or the system asks for reduced motion: nothing decorative moves.
+ *   html[data-moving='true'] The car is moving: scenes, the mascot and floating artwork stop; a record keeps turning, slowly.
+ * Only `transform` and `opacity` are ever animated.
+ */
+
+html[data-calm='true'] .fx,
+html[data-calm='true'] .fx *,
+html[data-calm='true'] .fx::before,
+html[data-calm='true'] .fx::after,
+html[data-calm='true'] .card::after {
+  animation: none !important;
+}
+
+html[data-moving='true'] .fx:not(.fx-drive),
+html[data-moving='true'] .fx:not(.fx-drive) *,
+html[data-moving='true'] .fx:not(.fx-drive)::before,
+html[data-moving='true'] .fx:not(.fx-drive)::after,
+html[data-moving='true'] .card::after {
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx,
+  .fx *,
+  .page-enter,
+  .card::after {
+    animation: none !important;
+  }
+}
+
+/* ---- Keyframe library -------------------------------------------------------------------------------------------------- */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spin-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes sheen {
+  0%,
+  55% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  62% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(420%);
+    opacity: 0;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+  }
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.92);
+  }
+}
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(calc(1 + 0.035 * var(--amp)));
+  }
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(calc(-8px * var(--amp)));
+  }
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-0.8deg);
+  }
+  50% {
+    transform: rotate(0.8deg);
+  }
+}
+
+/* Staggered entrance for lists and grids: give children --i (their index). */
+.stagger > * {
+  animation: rise-in var(--dur-3) var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 14) * 28ms);
+}
+html[data-calm='true'] .stagger > * {
+  animation: none;
+}
+
+/* ---- Page transitions -------------------------------------------------------------------------------------------------- */
+
+.page-enter {
+  animation-duration: calc(var(--dur-3) * 1.05);
+  animation-timing-function: var(--ease-out);
+  animation-fill-mode: both;
+  transform-origin: 50% 40%;
+}
+html[data-transition='none'] .page-enter,
+html[data-calm='true'] .page-enter {
+  animation: none;
+}
+html[data-transition='fade'] .page-enter {
+  animation-name: pt-fade;
+  animation-duration: var(--dur-2);
+}
+html[data-transition='slide'] .page-enter {
+  animation-name: pt-slide;
+}
+html[data-transition='rise'] .page-enter {
+  animation-name: pt-rise;
+}
+html[data-transition='zoom'] .page-enter {
+  animation-name: pt-zoom;
+  animation-timing-function: var(--ease-spring);
+}
+html[data-transition='flip'] .page-enter {
+  animation-name: pt-flip;
+  animation-duration: var(--dur-4);
+}
+html[data-transition='depth'] .page-enter {
+  animation-name: pt-depth;
+}
+html[data-transition='swing'] .page-enter {
+  animation-name: pt-swing;
+  animation-duration: var(--dur-4);
+  transform-origin: 50% 0;
+}
+
+@keyframes pt-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pt-slide {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--dir, 1) * 56px));
+  }
+}
+@keyframes pt-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+  }
+}
+@keyframes pt-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+@keyframes pt-flip {
+  from {
+    opacity: 0;
+    transform: perspective(1400px) rotateY(calc(var(--dir, 1) * 16deg)) translateX(calc(var(--dir, 1) * 40px));
+  }
+}
+@keyframes pt-depth {
+  from {
+    opacity: 0;
+    transform: scale(calc(1 - 0.06 * var(--dir, 1)));
+  }
+}
+@keyframes pt-swing {
+  from {
+    opacity: 0;
+    transform: perspective(1200px) rotateX(-12deg) translateY(-10px);
+  }
+}
+
+/* ---- Touch feedback ---------------------------------------------------------------------------------------------------- */
+
+.touch-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-touch);
+  overflow: hidden;
+}
+.touch-ripple {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+}
+.touch-ripple > i {
+  position: absolute;
+  width: var(--d);
+  height: var(--d);
+  left: calc(var(--x) - var(--d) / 2);
+  top: calc(var(--y) - var(--d) / 2);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--accent-rgb), 0.38), rgba(var(--accent-rgb), 0.12) 60%, transparent 70%);
+  animation: ripple 560ms var(--ease-out) forwards;
+}
+@keyframes ripple {
+  from {
+    transform: scale(0.05);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+.touch-glow {
+  position: absolute;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.85), 0 0 22px rgba(var(--accent-rgb), 0.55);
+  animation: fade-out 520ms var(--ease-out) forwards;
+}
+
+html[data-touch='pop'] :is(button, .tap):not(:disabled):active {
+  transform: scale(0.94);
+  transition: transform 80ms var(--ease-out);
+}
+html[data-touch='pop'] :is(button, .tap) {
+  transition: transform 260ms var(--ease-spring);
+}
+html:not([data-touch='none']) :is(.btn, .icon-btn, .chip, .tile):not(:disabled):active {
+  opacity: 0.88;
+}

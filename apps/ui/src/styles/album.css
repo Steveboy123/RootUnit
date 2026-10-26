@@ -1,0 +1,483 @@
+/* Album artwork in fifteen styles (components/AlbumArt.tsx). Turns and drifts only while playing; pause freezes it. */
+
+.art {
+  --art-r: var(--r-lg);
+  --spin: calc(14s * var(--tempo));
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  perspective: 900px;
+  isolation: isolate;
+}
+.art > *,
+.art i {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+.art:not([data-playing='true']) *,
+.art:not([data-playing='true']) {
+  animation-play-state: paused !important;
+}
+
+.art-glow {
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--accent-rgb), 0.5), transparent);
+  transform: scale(1.25);
+  opacity: 0.55;
+  z-index: -1;
+  animation: breathe calc(6s * var(--tempo)) ease-in-out infinite;
+}
+.art[data-mode='still'] .art-glow,
+.art[data-size='sm'] .art-glow {
+  display: none;
+}
+
+.art-cover {
+  inset: 0;
+  border-radius: var(--art-r);
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.85), rgba(var(--accent-2-rgb), 0.8)) center / cover;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  display: grid !important;
+  place-items: center;
+  color: var(--on-accent);
+}
+.art-cover > svg {
+  width: 38%;
+  height: 38%;
+  opacity: 0.85;
+}
+.art-shine {
+  inset: 0;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.22), transparent 38%);
+}
+.art[data-size='sm'] {
+  --art-r: var(--r-sm);
+}
+.art[data-size='sm'] .art-cover {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+/* Floor shadow for floating styles */
+.art-floor {
+  left: 12%;
+  right: 12%;
+  bottom: -9%;
+  height: 10%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.45), transparent);
+  animation: art-floor calc(6s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes art-floor {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(0.8);
+    opacity: 0.45;
+  }
+}
+
+/* vinyl */
+.art[data-size='sm'] .art-record {
+  inset: 2%;
+}
+.art-record {
+  inset: 4% 12% 12% 4%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #111 0 30%, transparent 30.5%),
+    repeating-radial-gradient(circle, #151515 0 2px, #1d1d1d 2px 3px, #111 3px 5px),
+    #111;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55), inset 0 0 0 2px rgba(255, 255, 255, 0.06);
+  animation: spin var(--spin) linear infinite;
+}
+.art-record::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 30deg, transparent 0 20%, rgba(255, 255, 255, 0.1) 25%, transparent 30% 70%, rgba(255, 255, 255, 0.08) 75%, transparent 80%);
+}
+.art-label {
+  position: absolute;
+  inset: 32%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)) center / cover;
+  background-size: cover;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.5);
+}
+.art-hole {
+  left: 50%;
+  top: 50%;
+  width: 4%;
+  height: 4%;
+  margin: -2%;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+.art-tonearm {
+  right: 0;
+  top: 0;
+  width: 14%;
+  height: 62%;
+  transform-origin: 70% 6%;
+  transform: rotate(-26deg);
+  transition: transform 900ms var(--ease-in-out);
+  background: linear-gradient(90deg, transparent 40%, #c9ccd4 40% 60%, transparent 60%) 0 0 / 100% 88% no-repeat,
+    linear-gradient(#9aa0ad, #6b707c) 30% 100% / 50% 16% no-repeat;
+}
+.art-tonearm::before {
+  content: '';
+  position: absolute;
+  left: 40%;
+  top: -4%;
+  width: 40%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #7d828e;
+}
+.art[data-playing='true'] .art-tonearm {
+  transform: rotate(6deg);
+}
+
+/* CD */
+.art-cd {
+  inset: 2%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #cfd4dc;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  animation: spin calc(var(--spin) * 0.35) linear infinite;
+}
+.art-cd-print {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)) center / cover;
+  background-size: cover;
+  mask: radial-gradient(circle, transparent 17%, #000 17.5%, #000 97%, transparent 97.5%);
+}
+.art-cd-rainbow {
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(255, 0, 128, 0.25), rgba(255, 220, 0, 0.22), rgba(0, 255, 160, 0.22), rgba(0, 160, 255, 0.25), rgba(200, 0, 255, 0.22), rgba(255, 0, 128, 0.25));
+  mask: radial-gradient(circle, transparent 17%, #000 18%, #000 60%, transparent 85%);
+}
+.art-cd .art-hole {
+  width: 14%;
+  height: 14%;
+  margin: -7%;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.35);
+}
+
+/* cassette */
+.art-cassette {
+  left: 2%;
+  right: 2%;
+  top: 18%;
+  bottom: 18%;
+  border-radius: calc(var(--art-r) * 0.6);
+  background: linear-gradient(180deg, #2a2a31, #17171c);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.art-cassette-label {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 7%;
+  height: 58%;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)) center / cover;
+  background-size: cover;
+}
+.art-cassette-window {
+  position: absolute;
+  left: 24%;
+  right: 24%;
+  top: 30%;
+  height: 26%;
+  border-radius: 999px;
+  background: rgba(10, 10, 14, 0.85);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 6%;
+}
+.art-reel {
+  position: relative !important;
+  height: 80%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: repeating-conic-gradient(#e8e8ee 0 18deg, transparent 18deg 60deg), radial-gradient(circle, #e8e8ee 0 30%, #3a3a44 31%);
+  animation: spin calc(var(--spin) * 0.25) linear infinite;
+}
+.art-cassette-notch {
+  left: 30%;
+  right: 30%;
+  bottom: 0;
+  height: 16%;
+  background: #0e0e12;
+  clip-path: polygon(10% 100%, 0 0, 100% 0, 90% 100%);
+}
+
+/* float */
+.art[data-mode='float'] .art-cover {
+  animation: art-float calc(7s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes art-float {
+  0%,
+  100% {
+    transform: translateY(0) rotateX(6deg) rotateY(-8deg);
+  }
+  50% {
+    transform: translateY(calc(-14px * var(--amp))) rotateX(-4deg) rotateY(8deg);
+  }
+}
+
+/* hologram */
+.art[data-mode='hologram'] .art-cover {
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.7), 0 0 30px rgba(var(--accent-rgb), 0.5);
+  animation: art-holo calc(8s * var(--tempo)) ease-in-out infinite;
+}
+.art[data-mode='hologram'] .art-shine {
+  background: repeating-linear-gradient(to bottom, rgba(var(--accent-rgb), 0.28) 0 2px, transparent 2px 5px), linear-gradient(125deg, rgba(255, 255, 255, 0.2), transparent 40%);
+  animation: m-scanlines 1.4s linear infinite;
+}
+@keyframes art-holo {
+  0%,
+  100% {
+    transform: rotateY(-12deg) translateY(0);
+    opacity: 0.95;
+  }
+  48% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  52% {
+    opacity: 0.95;
+  }
+  75% {
+    transform: rotateY(12deg) translateY(calc(-8px * var(--amp)));
+  }
+}
+
+/* glass */
+.art[data-mode='glass'] .art-cover {
+  border: 6px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.18);
+  animation: art-float calc(10s * var(--tempo)) ease-in-out infinite;
+}
+.art[data-mode='glass'] .art-shine {
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.35), transparent 30%, transparent 60%, rgba(255, 255, 255, 0.12) 75%, transparent 80%);
+}
+
+/* orbit and prism rings */
+.art-ring {
+  inset: -10%;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--accent-rgb), 0.55);
+  animation: art-ring calc(9s * var(--tempo)) linear infinite;
+}
+.art-ring.r2 {
+  inset: -18%;
+  border-color: rgba(var(--accent-2-rgb), 0.4);
+  animation-duration: calc(14s * var(--tempo));
+  animation-direction: reverse;
+}
+.art-ring::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -5px;
+  width: 9px;
+  height: 9px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+@keyframes art-ring {
+  from {
+    transform: rotateX(68deg) rotateZ(0);
+  }
+  to {
+    transform: rotateX(68deg) rotateZ(360deg);
+  }
+}
+.art[data-mode='orbit'] .art-cover {
+  inset: 10%;
+  border-radius: 50%;
+  animation: spin calc(var(--spin) * 1.6) linear infinite;
+}
+.art[data-mode='prism'] .art-cover {
+  box-shadow: 0 0 0 3px transparent, 0 18px 40px rgba(0, 0, 0, 0.45);
+  animation: art-prism calc(9s * var(--tempo)) ease-in-out infinite;
+}
+.art[data-mode='prism'] .art-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 3px;
+  background: linear-gradient(120deg, #ff5e8a, #ffc75a, #5af2a6, #5ab8ff, #b47bff);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+@keyframes art-prism {
+  0%,
+  100% {
+    transform: rotateY(-10deg) rotateX(4deg);
+  }
+  50% {
+    transform: rotateY(10deg) rotateX(-4deg);
+  }
+}
+.art[data-mode='prism'] .art-ring {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* tilt: slow parallax with a moving glare */
+.art[data-mode='tilt'] .art-cover {
+  animation: art-tilt calc(12s * var(--tempo)) ease-in-out infinite;
+}
+.art[data-mode='tilt'] .art-shine {
+  inset: -50%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.28), transparent 40%);
+  animation: art-glare calc(12s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes art-tilt {
+  0%,
+  100% {
+    transform: rotateX(10deg) rotateY(-14deg);
+  }
+  25% {
+    transform: rotateX(-8deg) rotateY(-6deg);
+  }
+  50% {
+    transform: rotateX(-10deg) rotateY(14deg);
+  }
+  75% {
+    transform: rotateX(8deg) rotateY(6deg);
+  }
+}
+@keyframes art-glare {
+  0%,
+  100% {
+    transform: translate(-18%, -18%);
+  }
+  50% {
+    transform: translate(18%, 18%);
+  }
+}
+
+/* stack */
+.art-stack-back {
+  inset: 0;
+  opacity: 0.55;
+}
+.art-stack-back.b1 {
+  transform: translate(7%, -5%) rotate(5deg) scale(0.94);
+}
+.art-stack-back.b2 {
+  transform: translate(13%, -9%) rotate(10deg) scale(0.88);
+  opacity: 0.3;
+}
+.art[data-mode='stack'] .art-top {
+  animation: bob calc(6s * var(--tempo)) ease-in-out infinite;
+}
+
+/* breathe: with the music when the beat meter is on */
+.art[data-mode='breathe'] .art-cover {
+  animation: breathe calc(4s * var(--tempo)) ease-in-out infinite;
+  transform: scale(calc(1 + var(--mascot-beat-power, 0) * 0.06));
+}
+
+/* polaroid */
+.art-polaroid {
+  inset: 3% 8% 3% 8%;
+  padding: 6% 6% 20%;
+  border-radius: 4px;
+  background: #f6f4ee;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.45);
+  transform: rotate(-3deg);
+  animation: art-sway calc(9s * var(--tempo)) ease-in-out infinite;
+}
+.art-polaroid .art-cover {
+  position: relative !important;
+  inset: auto;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 2px;
+  box-shadow: none;
+}
+.art-polaroid-caption {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 5%;
+  color: #3a3530;
+  font: 600 0.9rem/1.2 'Nunito Variable', system-ui, sans-serif;
+  text-align: center;
+}
+@keyframes art-sway {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+/* glitch */
+.art-glitch {
+  inset: 0;
+}
+.art-ghost {
+  inset: 0;
+  border-radius: var(--art-r);
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+}
+.art-ghost.a {
+  box-shadow: inset 0 0 0 999px rgba(var(--accent-rgb), 0.35);
+  animation: m-ghost-a calc(4s * var(--tempo)) steps(1) infinite;
+}
+.art-ghost.b {
+  box-shadow: inset 0 0 0 999px rgba(var(--accent-2-rgb), 0.35);
+  animation: m-ghost-b calc(4s * var(--tempo)) steps(1) infinite;
+}
+.art-glitch .art-cover {
+  animation: m-glitch calc(4s * var(--tempo)) steps(1) infinite;
+}
+
+/* flip: each new track turns over once */
+.art-flip {
+  inset: 0;
+}
+.art-flip .art-cover {
+  backface-visibility: hidden;
+  animation: art-flip 900ms var(--ease-out) both;
+}
+@keyframes art-flip {
+  from {
+    transform: rotateY(-180deg) scale(0.9);
+    opacity: 0.2;
+  }
+}
+html[data-calm='true'] .art-flip .art-cover {
+  animation: none;
+}

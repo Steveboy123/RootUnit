@@ -1,0 +1,718 @@
+/* Dashboard widgets and the gauges. Widgets are size containers: text and spacing follow the cell, not the screen. */
+
+/* ---- Gauges (all styles) ---------------------------------------------------------------------------------------------- */
+
+.gauge {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.gauge text {
+  fill: var(--text);
+  font-family: var(--font-num);
+}
+.g-number {
+  font-size: 44px;
+  font-weight: 760;
+  letter-spacing: -0.03em;
+}
+.g-number[data-long='true'] {
+  font-size: 34px;
+}
+.g-number.small {
+  font-size: 22px;
+}
+.g-unit {
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--dim) !important;
+  font-family: var(--font-ui) !important;
+}
+.g-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  fill: var(--dim) !important;
+  font-family: var(--font-ui) !important;
+}
+.g-tick-label {
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--dim) !important;
+}
+.g-track {
+  fill: none;
+  stroke: var(--track);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+.g-value {
+  fill: none;
+  stroke: url(#g-arc-grad);
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+.g-glow {
+  fill: none;
+  stroke: rgba(var(--accent-rgb), 0.3);
+  stroke-width: 22;
+  stroke-linecap: round;
+}
+.gauge[data-level='warn'] .g-value,
+.gauge[data-level='warn'] .g-led[data-on='true'] {
+  stroke: var(--warn);
+}
+.gauge[data-level='danger'] .g-value,
+.gauge[data-level='danger'] .g-led[data-on='true'] {
+  stroke: var(--danger);
+}
+.g-tick {
+  stroke: rgba(var(--ink-rgb), 0.55);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.g-tick.minor {
+  stroke: rgba(var(--ink-rgb), 0.25);
+  stroke-width: 1.2;
+}
+.g-zone {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.g-zone-warn {
+  stroke: var(--warn);
+}
+.g-zone-danger {
+  stroke: var(--danger);
+}
+.g-peak {
+  fill: var(--text);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.g-peak-line {
+  stroke: var(--warn);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.g-ring .g-track {
+  stroke-width: 14;
+}
+.g-ring .g-value {
+  stroke: var(--accent);
+  stroke-width: 14;
+}
+.g-dial {
+  fill: rgba(var(--ink-rgb), 0.03);
+  stroke: rgba(var(--ink-rgb), 0.14);
+  stroke-width: 1.5;
+}
+.g-pointer path {
+  fill: var(--accent);
+}
+.g-pointer {
+  transition: transform 260ms var(--ease-out);
+}
+.g-hub {
+  fill: var(--bg2);
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.g-led {
+  fill: none;
+  stroke: rgba(var(--ink-rgb), 0.1);
+  stroke-width: 12;
+}
+.g-led[data-on='true'] {
+  stroke: var(--accent);
+}
+.g-led[data-on='true'][data-zone='warn'] {
+  stroke: var(--warn);
+}
+.g-led[data-on='true'][data-zone='danger'] {
+  stroke: var(--danger);
+}
+.g-seg {
+  fill: rgba(var(--ink-rgb), 0.1);
+}
+.g-seg[data-on='true'] {
+  fill: var(--accent);
+}
+.g-seg[data-on='true'][data-zone='warn'] {
+  fill: var(--warn);
+}
+.g-seg[data-on='true'][data-zone='danger'] {
+  fill: var(--danger);
+}
+.g-digital .g-number {
+  font-size: 64px;
+}
+.g-bar .g-number {
+  font-size: 54px;
+}
+/* The shift light: the gauge glows red while the revs are high (a steady glow, not a strobe). */
+.gauge[data-shift='true'] .g-track,
+.gauge[data-shift='true'] .g-dial {
+  stroke: rgba(var(--danger-rgb), 0.5);
+}
+.w-gauge {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.w-gauge > .gauge {
+  position: absolute;
+  inset: 0;
+}
+
+@container (aspect-ratio > 1.7) {
+  .tall-only {
+    display: none !important;
+  }
+}
+@container (aspect-ratio <= 1.7) {
+  .wide-only {
+    display: none !important;
+  }
+}
+
+.w-meter {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+.w-meter-value {
+  font-size: clamp(1.2rem, 30cqh, 2.4rem);
+  font-weight: 760;
+}
+.w-meter-value small {
+  font-size: 0.5em;
+  color: var(--dim);
+  margin-left: 4px;
+}
+.w-meter-bar {
+  height: 10px;
+  border-radius: 10px;
+  background: var(--track);
+  overflow: hidden;
+}
+.w-meter-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform-origin: 0 50%;
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.w-meter[data-level='warn'] .w-meter-bar i {
+  background: var(--warn);
+}
+.w-meter[data-level='danger'] .w-meter-bar i {
+  background: var(--danger);
+}
+
+/* ---- Shared widget pieces ---------------------------------------------------------------------------------------------- */
+
+.w-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  font-size: clamp(0.7rem, 9cqh, 0.82rem);
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.w-head svg {
+  color: var(--accent-text);
+  flex: none;
+}
+.w-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  font-size: clamp(0.7rem, 8cqh, 0.82rem);
+  color: var(--dim);
+}
+.w-empty {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  color: var(--dim);
+  font-size: 0.86rem;
+}
+.w-empty b {
+  color: var(--text);
+}
+.w-empty-icon {
+  display: grid;
+  place-items: center;
+  width: clamp(36px, 22cqh, 58px);
+  height: clamp(36px, 22cqh, 58px);
+  border-radius: 50%;
+  background: rgba(var(--accent-rgb), 0.14);
+  color: var(--accent-text);
+}
+.w-note {
+  color: var(--dim);
+  font-size: 0.86rem;
+}
+
+/* Glance widgets */
+.w-glance {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4px;
+  text-align: left;
+  min-height: 0;
+  width: 100%;
+}
+.w-glance-body {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  min-height: 0;
+  overflow: hidden;
+}
+.w-big {
+  font-size: clamp(1.4rem, 34cqh, 3.2rem);
+  font-weight: 780;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.w-big small {
+  font-size: 0.42em;
+  color: var(--dim);
+  margin-left: 3px;
+  font-weight: 650;
+}
+.w-big[data-tone='warn'] {
+  color: var(--warn);
+}
+.w-big[data-tone='danger'] {
+  color: var(--danger);
+}
+.w-big-icon {
+  align-self: center;
+  color: var(--accent-text);
+  animation: bob calc(5s * var(--tempo)) ease-in-out infinite;
+}
+.w-big-icon svg {
+  width: clamp(26px, 30cqh, 52px);
+  height: clamp(26px, 30cqh, 52px);
+}
+.w-sub {
+  color: var(--dim);
+  font-size: clamp(0.78rem, 10cqh, 0.95rem);
+}
+.w-arrow {
+  display: inline-grid;
+  color: var(--accent-text);
+  transition: transform var(--dur-4) var(--ease-out);
+  align-self: center;
+}
+.w-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+.w-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.86rem;
+}
+.w-list li span {
+  color: var(--dim);
+}
+.w-list li[data-tone='danger'] b {
+  color: var(--danger);
+}
+.w-list li[data-tone='warn'] b {
+  color: var(--warn);
+}
+.w-chips {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+/* Now Playing widget */
+.w-np {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: clamp(10px, 4cqw, 20px);
+  align-items: center;
+}
+.w-np-art {
+  height: min(100cqh - 32px, 46cqw);
+  aspect-ratio: 1;
+  flex: none;
+}
+.w-np-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(6px, 4cqh, 14px);
+}
+.w-np-meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.w-np-title {
+  font-size: clamp(1rem, 9cqh, 1.45rem);
+  font-weight: 760;
+  font-family: var(--font-display);
+  letter-spacing: var(--tracking-display);
+}
+.w-np-sub {
+  color: var(--dim);
+  font-size: clamp(0.78rem, 6cqh, 0.95rem);
+}
+.w-np-bar {
+  height: 5px;
+  border-radius: 5px;
+  background: var(--track);
+  overflow: hidden;
+}
+.w-np-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform-origin: 0 50%;
+  transition: transform 300ms linear;
+}
+.w-np-times {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  color: var(--dim);
+  margin-top: 4px;
+}
+.w-np-live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--accent-text);
+}
+.w-np .transport {
+  justify-content: flex-start;
+}
+@container (max-height: 150px) {
+  .w-np-art,
+  .w-np-progress,
+  .w-np-live {
+    display: none;
+  }
+  .w-np-body {
+    flex-direction: row;
+    align-items: center;
+  }
+  .w-np-meta {
+    flex: 1;
+    min-width: 0;
+  }
+}
+@container (max-width: 300px) {
+  .w-np-art {
+    display: none;
+  }
+}
+
+/* Recent tiles */
+.w-recent {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  align-items: stretch;
+}
+.w-recent-tile {
+  flex: none;
+  width: clamp(70px, 70cqh, 130px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  font-size: 0.78rem;
+}
+.w-recent-art {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)) center / cover;
+  background-size: cover;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+}
+
+/* Radio presets */
+.w-presets {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  align-content: center;
+}
+.w-preset {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: var(--r-md);
+  background: rgba(var(--ink-rgb), 0.06);
+  border: var(--bw-min) solid var(--border);
+  font-weight: 650;
+  font-size: 0.86rem;
+  text-align: left;
+}
+.w-preset svg {
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+.w-preset-n {
+  font-size: 0.72rem;
+  color: var(--dim);
+}
+.w-preset[data-on='true'] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.w-preset[data-on='true'] .w-preset-n {
+  color: inherit;
+}
+
+/* Clock */
+.w-clock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+}
+.w-clock-time {
+  font-size: clamp(1.6rem, 46cqh, 5rem);
+  font-weight: 720;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.w-clock-time small {
+  font-size: 0.32em;
+  color: var(--dim);
+  margin-left: 4px;
+}
+.w-clock-date {
+  color: var(--dim);
+  font-size: clamp(0.72rem, 11cqh, 1rem);
+  text-align: center;
+}
+.w-clock-sec {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 2px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform-origin: 0 50%;
+  transition: transform 900ms linear;
+  opacity: 0.7;
+}
+
+/* Trip stats */
+.w-stats {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  align-content: center;
+  gap: 8px 14px;
+}
+.w-stats .stat-value {
+  font-size: clamp(1.1rem, 16cqh, 1.8rem);
+}
+
+/* Quick controls */
+.w-quick {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.w-quick-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.w-quick-row b {
+  width: 34px;
+  text-align: right;
+}
+
+/* Launcher */
+.w-launch {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.w-launch-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: var(--r-md);
+  background: rgba(var(--ink-rgb), 0.06);
+  border: var(--bw-min) solid var(--border);
+  font-weight: 650;
+  font-size: clamp(0.7rem, 9cqh, 0.88rem);
+  text-align: center;
+  padding: 6px;
+}
+.w-launch-btn svg {
+  width: clamp(20px, 22cqh, 32px);
+  height: clamp(20px, 22cqh, 32px);
+  transition: transform var(--dur-3) var(--ease-spring);
+}
+.w-launch-btn:active svg {
+  transform: scale(0.85);
+}
+.w-launch-btn[data-primary='true'] {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: var(--on-accent);
+  border-color: transparent;
+}
+
+/* Devices */
+.w-devices {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  text-align: left;
+}
+.w-device {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 650;
+}
+.w-device[data-active='true'] {
+  color: var(--accent-text);
+}
+
+/* GPS */
+.w-gps {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+}
+.w-gps-speed {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.w-gps-speed strong {
+  font-size: clamp(1.6rem, 40cqh, 3.6rem);
+  line-height: 1;
+}
+.w-gps-speed small {
+  color: var(--dim);
+}
+.w-gps-speed em {
+  margin-left: auto;
+  font-style: normal;
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+/* Compass */
+.w-compass {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.w-compass-rose {
+  height: min(100cqh - 30px, 70cqw);
+  aspect-ratio: 1;
+}
+.cr-ring {
+  fill: rgba(var(--ink-rgb), 0.03);
+  stroke: rgba(var(--ink-rgb), 0.15);
+  stroke-width: 2;
+}
+.cr-dial {
+  transition: transform 600ms var(--ease-out);
+}
+.cr-minor {
+  stroke: rgba(var(--ink-rgb), 0.3);
+  stroke-width: 1.2;
+}
+.cr-major {
+  stroke: var(--text);
+  stroke-width: 2.5;
+}
+.cr-n {
+  fill: var(--danger);
+  font: 800 22px var(--font-ui);
+}
+.cr-d {
+  fill: var(--text);
+  font: 700 16px var(--font-ui);
+}
+.cr-car {
+  fill: var(--accent);
+}
+.w-compass-text {
+  display: flex;
+  flex-direction: column;
+}
+.w-compass-text b {
+  font-size: clamp(1.2rem, 22cqh, 2.2rem);
+}
+.w-compass-text span {
+  color: var(--dim);
+}
+@container (max-width: 260px) {
+  .w-compass-text {
+    display: none;
+  }
+}

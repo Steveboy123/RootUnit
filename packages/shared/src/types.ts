@@ -440,7 +440,7 @@ export const MUSIC_SOURCES: MusicSource[] = ['auto', 'spotify', 'tidal'];
 
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'obsidian',
-  accent: '#8b7bff',
+  accent: '#a66bff',
   surface: 'glass',
   background: 'mesh',
   effects: 'balanced',

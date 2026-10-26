@@ -1,0 +1,397 @@
+/* Full-screen overlays: standby, rear camera, the on-screen keyboard, the timer alarm, the crash screen. */
+
+/* ---- Standby ------------------------------------------------------------------------------------------------------------- */
+
+.standby {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-standby);
+  display: grid;
+  place-items: center;
+  background: #000;
+  color: #f2f2f6;
+  animation: fade-in 800ms var(--ease-out);
+  overflow: hidden;
+  container-type: size;
+}
+.standby-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: transform 3s var(--ease-in-out);
+}
+.standby-time {
+  font-family: var(--font-num);
+  font-weight: 200;
+  font-size: min(26cqh, 17cqw);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.standby-time small {
+  font-size: 0.24em;
+  font-weight: 500;
+  margin-left: 0.25em;
+  color: #9a9aa8;
+}
+.standby-date {
+  font-size: 1.25rem;
+  color: #b8b8c6;
+}
+.standby-weather,
+.standby-np {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #b8b8c6;
+  font-size: 1.05rem;
+  max-width: 70cqw;
+}
+.standby-weather b {
+  color: #fff;
+  font-size: 1.3rem;
+}
+.standby-np svg {
+  color: var(--accent);
+}
+.standby-hint {
+  margin-top: 18px;
+  font-size: 0.8rem;
+  color: #55555f;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.standby[data-style='minimal'] .standby-time {
+  font-size: min(12cqh, 9cqw);
+  color: #8a8a96;
+}
+.standby[data-style='minimal'] .standby-date {
+  font-size: 0.95rem;
+  color: #5a5a66;
+}
+
+/* analog */
+.analog {
+  width: min(56cqh, 40cqw);
+  height: min(56cqh, 40cqw);
+}
+.analog-face {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 2;
+}
+.analog .tick {
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 1;
+}
+.analog .tick.major {
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 2.5;
+}
+.analog .hand {
+  stroke-linecap: round;
+}
+.analog .hour {
+  stroke: #fff;
+  stroke-width: 6;
+}
+.analog .minute {
+  stroke: #e8e8f0;
+  stroke-width: 4;
+}
+.analog .second {
+  stroke: var(--accent);
+  stroke-width: 1.6;
+}
+.analog-pin {
+  fill: var(--accent);
+}
+.hand-sweep {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  animation: spin 60s linear infinite;
+}
+
+/* flip */
+.standby-time.flip {
+  display: flex;
+  align-items: center;
+  gap: 1.2cqw;
+  font-weight: 700;
+  font-size: min(22cqh, 13cqw);
+  perspective: 800px;
+}
+.flip-group {
+  display: flex;
+  gap: 0.8cqw;
+}
+.flip-card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 0.78em;
+  height: 1.12em;
+  border-radius: 0.1em;
+  background: linear-gradient(180deg, #1d1d22 0 49.6%, #121216 50.4% 100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.flip-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: #000;
+}
+.flip-face {
+  display: block;
+  animation: flip-in 600ms var(--ease-out);
+  transform-origin: 50% 0;
+}
+@keyframes flip-in {
+  from {
+    transform: rotateX(-90deg);
+    opacity: 0.4;
+  }
+}
+.flip-colon {
+  color: var(--accent);
+  animation: blink 2s steps(1) infinite;
+}
+
+/* orbit */
+.standby-orbits {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+.standby-orbits i {
+  position: absolute;
+  display: block;
+  width: 60cqh;
+  height: 60cqh;
+  margin: -30cqh;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  animation: sc-orbit 30s linear infinite;
+  --i: 0;
+}
+.standby-orbits i:nth-child(2) {
+  width: 84cqh;
+  height: 84cqh;
+  margin: -42cqh;
+  --i: 1;
+  animation-duration: 46s;
+  animation-direction: reverse;
+}
+.standby-orbits i:nth-child(3) {
+  width: 108cqh;
+  height: 108cqh;
+  margin: -54cqh;
+  --i: 2;
+  animation-duration: 70s;
+}
+.standby-orbits i::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 14px var(--accent);
+}
+
+/* mascot */
+.standby-mascot {
+  position: absolute;
+  right: 3cqw;
+  bottom: 0;
+  height: 86cqh;
+  opacity: 0.55;
+  animation: m-float 9s ease-in-out infinite;
+}
+.standby[data-style='mascot'] .standby-body {
+  margin-right: 34cqw;
+}
+
+/* ---- Rear camera --------------------------------------------------------------------------------------------------------- */
+
+.camera {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-camera);
+  background: #000;
+  animation: fade-in var(--dur-2);
+}
+.camera video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cam-guides {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.cam-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, rgba(52, 211, 153, 0.14), transparent);
+  animation: cam-sweep 3s linear infinite;
+  pointer-events: none;
+}
+@keyframes cam-sweep {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(340%);
+  }
+}
+.cam-error {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  color: #ddd;
+  font-size: 1.2rem;
+}
+.cam-tag {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+}
+.cam-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+}
+
+/* ---- On-screen keyboard -------------------------------------------------------------------------------------------------- */
+
+.touch-keyboard {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-keyboard);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 8px 10px;
+  background: rgba(var(--bg2-rgb), 0.97);
+  border-top: var(--bw-min) solid var(--glass-border);
+  box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.45);
+  animation: slide-up var(--dur-3) var(--ease-out);
+}
+.touch-keyboard-row {
+  display: flex;
+  gap: 6px;
+}
+.touch-key {
+  flex: 1 1 0;
+  min-width: 0;
+  height: clamp(40px, 8.4vh, 54px);
+  border-radius: var(--r-sm);
+  background: rgba(var(--ink-rgb), 0.09);
+  border: var(--bw-min) solid var(--border);
+  font-size: 1.15rem;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+}
+.touch-key[data-wide='true'] {
+  flex: 1.6 1 0;
+}
+.touch-key[data-active='true'] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.touch-key:active {
+  background: rgba(var(--accent-rgb), 0.3);
+}
+html.osk-open .page {
+  padding-bottom: 46vh;
+}
+
+/* ---- Timer alarm --------------------------------------------------------------------------------------------------------- */
+
+.alarm {
+  position: fixed;
+  z-index: var(--z-toast);
+  left: 50%;
+  top: 70px;
+  transform: translateX(-50%);
+  width: min(620px, calc(100% - 40px));
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--r-xl);
+  background: var(--bg2);
+  border: 2px solid var(--accent);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), 0 0 0 6px rgba(var(--accent-rgb), 0.18);
+  animation: drop-in var(--dur-3) var(--ease-spring);
+}
+.alarm-bell {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  animation: wiggle 0.25s ease-in-out infinite;
+}
+.alarm-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.alarm-text span {
+  color: var(--dim);
+  font-size: 0.88rem;
+}
+
+/* ---- Crash ---------------------------------------------------------------------------------------------------------------- */
+
+.crash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  max-width: 460px;
+}
+.crash b {
+  font-size: 1.4rem;
+}
