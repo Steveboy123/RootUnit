@@ -144,10 +144,18 @@ export function ChoiceChips<T extends string>({ value, options, onChange, scroll
  * A touch slider: drag anywhere on it. Only transforms move while dragging. `onChange` fires as it moves, `onCommit` once on release
  * (use that for anything sent to the server).
  */
-export function Slider({ value, min = 0, max = 100, step = 1, onChange, onCommit, label, disabled, thick }: { value: number; min?: number; max?: number; step?: number; onChange?: (v: number) => void; onCommit?: (v: number) => void; label: string; disabled?: boolean; thick?: boolean }) {
+export function Slider({ value, min = 0, max = 100, step = 1, onChange: onChangeRaw, onCommit, label, disabled, thick, throttleMs }: { value: number; min?: number; max?: number; step?: number; onChange?: (v: number) => void; onCommit?: (v: number) => void; label: string; disabled?: boolean; thick?: boolean; /** At most one onChange per this many ms while dragging; the release always sends the final value. */ throttleMs?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const [drag, setDrag] = useState<number | null>(null);
+  const lastEmit = useRef(0);
+  const onChange = onChangeRaw && throttleMs ? (v: number) => {
+    const now = performance.now();
+    if (now - lastEmit.current >= throttleMs) {
+      lastEmit.current = now;
+      onChangeRaw(v);
+    }
+  } : onChangeRaw;
   const shown = drag ?? value;
   const frac = max > min ? (Math.min(max, Math.max(min, shown)) - min) / (max - min) : 0;
 
@@ -198,6 +206,7 @@ export function Slider({ value, min = 0, max = 100, step = 1, onChange, onCommit
       }}
       onPointerUp={() => {
         if (drag === null) return;
+        if (throttleMs) onChangeRaw?.(drag);
         onCommit?.(drag);
         setDrag(null);
       }}
@@ -282,9 +291,9 @@ export function Stepper({ value, onChange, min, max, step = 1, format, label }: 
   );
 }
 
-export function Banner({ tone = 'info', icon: Icon, children, action }: { tone?: Tone; icon?: LucideIcon; children: ReactNode; action?: ReactNode }) {
+export function Banner({ tone = 'info', icon: Icon, children, action, role }: { tone?: Tone; icon?: LucideIcon; children: ReactNode; action?: ReactNode; role?: 'alert' | 'status' }) {
   return (
-    <div className="banner" data-tone={tone} role={tone === 'danger' || tone === 'warn' ? 'alert' : undefined}>
+    <div className="banner" data-tone={tone} role={role ?? (tone === 'danger' || tone === 'warn' ? 'alert' : undefined)}>
       {Icon && <Icon />}
       <div className="banner-body">{children}</div>
       {action && <div className="banner-action">{action}</div>}
@@ -442,7 +451,7 @@ export function DrivingGate({ children, what = 'Typing' }: { children: ReactNode
   const setPassenger = useHeadUnit((s) => s.setPassenger);
   if (!locked) return <>{children}</>;
   return (
-    <Banner tone="warn" icon={Lock} action={<button type="button" className="btn small" onClick={() => setPassenger(true)}>I’m a passenger</button>}>
+    <Banner tone="warn" icon={Lock} role="status" action={<button type="button" className="btn small" onClick={() => setPassenger(true)}>I’m a passenger</button>}>
       <b>{what} is locked while driving.</b> Pull over to use it.
     </Banner>
   );

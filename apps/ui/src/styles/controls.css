@@ -14,6 +14,7 @@
   font-size: 0.95rem;
   white-space: nowrap;
   color: var(--text);
+  text-decoration: none;
   transition: background var(--dur-2), border-color var(--dur-2), opacity var(--dur-1);
 }
 .btn svg {
