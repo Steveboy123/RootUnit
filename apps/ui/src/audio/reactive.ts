@@ -55,7 +55,7 @@ export function stopMicrophoneMeter() {
   if (ctx) void ctx.close();
 }
 export function readMicrophoneMeter(): MeterReading {
-  if (!analyser || !spectrum || !context) return { ...QUIET, error: 'Tap Start microphone in Appearance → Effects to grant permission.' };
+  if (!analyser || !spectrum || !context) return { ...QUIET, error: 'Tap Start microphone in Settings → Music reactive to grant permission.' };
   analyser.getByteFrequencyData(spectrum);
   // Frequencies in 60–220 Hz; these are the kick/bass frequencies, not volume metadata.
   const hzPerBin = context.sampleRate / analyser.fftSize;

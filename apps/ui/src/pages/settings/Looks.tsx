@@ -1,8 +1,14 @@
-import { useMemo, useState } from 'react';
-import { Check, LayoutDashboard, Palette, Sparkles } from 'lucide-react';
-import { ConfirmButton, Segment, SwitchRow } from '../../components/ui';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Check, LayoutDashboard, Palette, RotateCcw, Sparkles } from 'lucide-react';
+import type { Settings } from '@headunit/shared';
+import { ConfirmButton, Segment, SliderRow, SwitchRow } from '../../components/ui';
+import { ACCENT_HUE, ACCENT_LIGHTNESS, hexToHsl, pickAccent, ratioText } from '../../lib/accentPicker';
+import { appearanceResetPatch } from '../../lib/appearanceReset';
+import { useNow } from '../../lib/hooks';
+import { usePlace } from '../../lib/place';
+import { effectiveTheme } from '../../lib/theme';
 import { LAYOUT_PRESETS, layoutOf, type LayoutPreset } from '../../lib/layoutPresets';
-import { ACCENT_SWATCHES, PRESETS, PRESET_GROUPS, activePreset, paletteOf, presetPatch, previewOf, type Preset, type PresetGroup } from '../../lib/themes';
+import { ACCENT_SWATCHES, PRESETS, PRESET_GROUPS, accentFor, activePreset, contrastRatio, paletteOf, presetPatch, previewOf, type Preset, type PresetGroup } from '../../lib/themes';
 import { wallpaperUrl } from '../../lib/wallpapers';
 import { useHeadUnit } from '../../store';
 import { SetSection, Swatches } from './parts';
@@ -86,6 +92,7 @@ export function LooksSection() {
 
       <SetSection title="Accent colour" icon={Palette} blurb="The highlight on buttons, gauges and the navigation. Any colour is made readable on the palette you have.">
         <Swatches label="Accent colour" value={settings.accent} colours={ACCENT_SWATCHES} onChange={(accent) => patch({ accent })} />
+        <CustomAccent settings={settings} onPatch={patch} />
         <SwitchRow label="Colour the interface from the album art" hint="While a song plays, its cover’s colour replaces the accent." on={settings.artAccent} onChange={(artAccent) => patch({ artAccent })} />
       </SetSection>
 
@@ -112,6 +119,91 @@ export function LooksSection() {
           ))}
         </div>
       </SetSection>
+
+      <SetSection title="Start again" icon={RotateCcw} blurb="Puts every colour, card, background, motion, type, mascot and navigation-style setting back as it came. Units, music, text size, your navigation buttons and your Home pages stay as they are.">
+        <div className="row">
+          <ConfirmButton
+            className="btn danger"
+            label="Reset the look"
+            confirmLabel="Tap again to reset the look"
+            onConfirm={() => {
+              patch(appearanceResetPatch());
+              toast('The look is back to how it came');
+            }}
+          />
+        </div>
+      </SetSection>
     </>
+  );
+}
+
+const clampInt = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, Math.round(v)));
+
+/**
+ * Any accent at all: hue and lightness. The colour is checked against the palette in force (day or night) and nudged only as far as it
+ * must be to stay readable; the sample below says so when that happens.
+ */
+function CustomAccent({ settings, onPatch }: { settings: Settings; onPatch(patch: Partial<Settings>): void }) {
+  const now = useNow(30_000);
+  const place = usePlace();
+  const palette = paletteOf(effectiveTheme(settings, now, place));
+  const accent = settings.accent;
+  const start = hexToHsl(accent);
+  const [hue, setHue] = useState(clampInt(start.h, ACCENT_HUE.min, ACCENT_HUE.max));
+  const [light, setLight] = useState(clampInt(start.l, ACCENT_LIGHTNESS.min, ACCENT_LIGHTNESS.max));
+  /** The last colour these sliders sent, and whether it had to be nudged. */
+  const sent = useRef<{ accent: string; adjusted: boolean } | null>(null);
+
+  // A swatch, a look or a reset changed the accent from outside: follow it. Our own patches come back equal to what we sent.
+  useEffect(() => {
+    if (accent === sent.current?.accent) return;
+    const hsl = hexToHsl(accent);
+    setHue(clampInt(hsl.h, ACCENT_HUE.min, ACCENT_HUE.max));
+    setLight(clampInt(hsl.l, ACCENT_LIGHTNESS.min, ACCENT_LIGHTNESS.max));
+  }, [accent]);
+
+  const send = (h: number, l: number) => {
+    const picked = pickAccent(palette, h, l);
+    sent.current = { accent: picked.accent, adjusted: picked.adjusted };
+    onPatch({ accent: picked.accent });
+  };
+  const shown = accentFor(palette, accent);
+  const adjusted = accent === sent.current?.accent ? sent.current.adjusted : shown.accent !== accent.toLowerCase();
+
+  return (
+    <div className="accent-custom">
+      <SliderRow
+        label="Hue"
+        min={ACCENT_HUE.min}
+        max={ACCENT_HUE.max}
+        unit="°"
+        value={hue}
+        onCommit={(h) => {
+          setHue(h);
+          send(h, light);
+        }}
+      />
+      <i className="accent-hues" aria-hidden="true" />
+      <SliderRow
+        label="Lightness"
+        min={ACCENT_LIGHTNESS.min}
+        max={ACCENT_LIGHTNESS.max}
+        unit="%"
+        value={light}
+        onCommit={(l) => {
+          setLight(l);
+          send(hue, l);
+        }}
+      />
+      <div className="accent-sample">
+        <span className="accent-chip" style={{ background: shown.accent, color: shown.onAccent }}>
+          Sample
+        </span>
+        <span className="dim small">
+          <b className="num">{shown.accent.toUpperCase()}</b> · {ratioText(contrastRatio(shown.accent, palette.bg))} against the background
+          {adjusted ? ' · adjusted to stay readable' : ''}
+        </span>
+      </div>
+    </div>
   );
 }

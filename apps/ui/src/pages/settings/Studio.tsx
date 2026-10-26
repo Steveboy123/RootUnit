@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { Activity, Box, Cloud, Gauge as GaugeIcon, Image as ImageIcon, Layers, MoonStar, Music4, Palette as PaletteIcon, Sparkles, Type } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Activity, Box, Cloud, Gauge as GaugeIcon, Image as ImageIcon, ImageUp, Layers, Mic, MicOff, MoonStar, Music4, Palette as PaletteIcon, Sparkles, Type } from 'lucide-react';
 import {
   ALBUM_MOTIONS,
   BACKGROUNDS,
@@ -21,6 +21,7 @@ import {
   type Settings,
   type ThemeId,
 } from '@headunit/shared';
+import { enableMicrophoneMeter, microphoneIsOn, stopMicrophoneMeter } from '../../audio/reactive';
 import { AlbumArt } from '../../components/AlbumArt';
 import { Gauge } from '../../components/Gauge';
 import { Banner, ChoiceChips, Segment, SliderRow, SwitchRow, TextField } from '../../components/ui';
@@ -190,7 +191,13 @@ export function BackgroundSection() {
         <ChoiceChips value={s.background} onChange={(background) => patch({ background })} options={BACKGROUNDS.map((b) => ({ value: b, label: BACKGROUND_INFO[b].label }))} />
         {art && !np?.artUrl && <Banner>Made from the album art of what is playing. Until something plays, a soft gradient in your accent is shown.</Banner>}
       </SetSection>
-      <SetSection title="Wallpapers" icon={ImageIcon} blurb="Built-in scenes, and pictures you copy into the head unit’s wallpapers folder.">
+      <SetSection title="Wallpapers" icon={ImageIcon} blurb="Built-in scenes and your own pictures: add one here (from this screen or a phone) or copy it into the head unit’s wallpapers folder.">
+        <WallpaperUpload
+          onSaved={(wallpaper) => {
+            files.reload();
+            patch({ background: 'wallpaper', wallpaper });
+          }}
+        />
         <div className="wp-grid stagger" role="radiogroup" aria-label="Wallpaper">
           {[...builtins, ...mine].map((w, i) => {
             const on = s.background === 'wallpaper' && s.wallpaper === w.id;
@@ -213,6 +220,40 @@ export function BackgroundSection() {
         <SwitchRow label="Real weather in the scene" hint="Rain, snow, fog or stars when the weather has them." on={s.weatherFx} onChange={(weatherFx) => patch({ weatherFx })} disabled={!s.weather} />
       </SetSection>
     </>
+  );
+}
+
+/** Adds a picture straight from the screen and chooses it; the server checks it is a real image and never overwrites a file. */
+function WallpaperUpload({ onSaved }: { onSaved(id: string): void }) {
+  const input = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState('');
+  const upload = async (file: File | undefined) => {
+    if (!file) return;
+    setBusy(true);
+    setNote('Adding the picture…');
+    try {
+      const r = await fetch(`/api/wallpapers/upload?name=${encodeURIComponent(file.name)}`, { method: 'POST', headers: { 'Content-Type': file.type }, body: file });
+      const body = (await r.json().catch(() => ({}))) as { id?: string; error?: string };
+      if (!r.ok || !body.id) throw new Error(body.error ?? 'The picture could not be added.');
+      onSaved(body.id);
+      setNote('Added and chosen as your wallpaper.');
+    } catch (e) {
+      setNote(e instanceof Error ? e.message : 'The picture could not be added.');
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="row wrap">
+      <button type="button" className="btn small" disabled={busy} onClick={() => input.current?.click()}>
+        <ImageUp size={16} /> Add your own picture
+      </button>
+      <input hidden ref={input} type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={(e) => (void upload(e.target.files?.[0]), (e.target.value = ''))} />
+      <span className="dim small" role="status">
+        {note || 'PNG, JPEG, WebP or AVIF, up to 12 MB.'}
+      </span>
+    </div>
   );
 }
 
@@ -325,6 +366,7 @@ export function BeatSection() {
                 ]}
               />
             </Field>
+            <BeatSourceStatus source={s.beatSource} />
             <Field label="Colour" stack>
               <ChoiceChips value={s.beatColorMode} onChange={(beatColorMode) => patch({ beatColorMode })} options={optionsOf(BEAT_COLOR_INFO, BEAT_COLORS)} />
             </Field>
@@ -339,5 +381,70 @@ export function BeatSection() {
         )}
       </SetSection>
     </>
+  );
+}
+
+/**
+ * Whether the chosen source is really listening. The head unit's audio monitor is asked every few seconds; the microphone starts
+ * only from a tap here, so the browser's permission question always follows something the person did.
+ */
+function BeatSourceStatus({ source }: { source: 'system' | 'microphone' }) {
+  const [monitor, setMonitor] = useState('');
+  const [mic, setMic] = useState('');
+  useEffect(() => {
+    if (source !== 'system') return;
+    let live = true;
+    const check = async () => {
+      try {
+        const r = await fetch('/api/audio/meter', { cache: 'no-store' });
+        const m = (await r.json()) as { available?: boolean; error?: string };
+        if (live) setMonitor(m.available ? 'Listening to what the head unit plays.' : (m.error ?? 'The head unit’s audio monitor is not set up.'));
+      } catch {
+        if (live) setMonitor('The head unit’s audio monitor cannot be reached.');
+      }
+    };
+    void check();
+    const timer = window.setInterval(() => void check(), 4000);
+    return () => {
+      live = false;
+      window.clearInterval(timer);
+    };
+  }, [source]);
+  if (source === 'system') {
+    return (
+      <span className="dim small" role="status">
+        {monitor || 'Checking the audio monitor…'}
+      </span>
+    );
+  }
+  const on = microphoneIsOn();
+  const start = async () => {
+    try {
+      await enableMicrophoneMeter();
+      setMic('Listening. Nothing is recorded or sent.');
+    } catch (e) {
+      setMic(e instanceof Error ? e.message : 'The microphone could not be started.');
+    }
+  };
+  return (
+    <div className="row wrap">
+      <button type="button" className="btn small" onClick={() => void start()}>
+        <Mic size={16} /> Start microphone
+      </button>
+      <button
+        type="button"
+        className="btn small"
+        disabled={!on}
+        onClick={() => {
+          stopMicrophoneMeter();
+          setMic('Microphone stopped.');
+        }}
+      >
+        <MicOff size={16} /> Stop
+      </button>
+      <span className="dim small" role="status">
+        {mic || (on ? 'Listening. Nothing is recorded or sent.' : 'Tap Start; the browser asks first.')}
+      </span>
+    </div>
   );
 }

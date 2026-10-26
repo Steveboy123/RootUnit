@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ImageUp, MonitorPlay, Palette, Save, Sparkles, Type, Undo2 } from 'lucide-react';
+import { ImageUp, MonitorPlay, Palette, RotateCcw, Save, Sparkles, Type, Undo2 } from 'lucide-react';
 import { BOOT_CHOICES, BOOT_DEFAULTS, BOOT_PRESET_COLOURS, type BootConfig } from '@headunit/shared';
 import { Banner, ChoiceChips, SliderRow, SwitchRow, TextField } from '../../components/ui';
 import { Field, SetSection } from './parts';
@@ -116,6 +116,9 @@ export function BootStudioSection() {
           <div className="row">
             <button type="button" className="btn small" disabled={busy || !changed} onClick={() => setDraft(saved ?? DEFAULTS)}>
               <Undo2 size={16} /> Undo
+            </button>
+            <button type="button" className="btn small" disabled={busy || JSON.stringify(draft) === JSON.stringify(DEFAULTS)} onClick={() => setDraft({ ...DEFAULTS })} title="The design it came with; save to keep it">
+              <RotateCcw size={16} /> Default look
             </button>
             <button type="button" className="btn small primary" disabled={busy || !changed} onClick={() => void save()}>
               <Save size={16} /> {busy ? 'Saving…' : 'Save'}
