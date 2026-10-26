@@ -29,6 +29,15 @@ export interface SpotifyConnectConfig {
   format?: string;
   normalize: boolean;
   dataDir: string;
+  /** Where this runs: off Linux the receiver does not exist, and the status says what to use instead. */
+  platform?: NodeJS.Platform;
+}
+
+/** Why the native receiver is off, in words the Play on… sheet can show. */
+export function disabledReason(platform: NodeJS.Platform): string {
+  return platform === 'linux'
+    ? 'Turned off (SPOTIFY_CONNECT_DISABLED=1). Use Browser fallback, or play on another device.'
+    : 'Built into the Raspberry Pi version only. On this computer, use Browser fallback (Spotify Premium), or play on another device such as the Spotify app.';
 }
 
 export interface SpotifyConnectReceiver {
@@ -48,9 +57,11 @@ export function createSpotifyConnectReceiver(config: SpotifyConnectConfig): Spot
     device: config.device,
     normalization: config.normalize,
   };
+  const offMessage = disabledReason(config.platform ?? process.platform);
   const state = new Observable<SpotifyConnectStatus>({
     ...base,
     state: config.enabled ? 'stopped' : 'disabled',
+    ...(config.enabled ? {} : { message: offMessage }),
   });
   let child: ChildProcessByStdio<null, Readable, Readable> | null = null;
   let retry: NodeJS.Timeout | null = null;
@@ -185,7 +196,7 @@ export function createSpotifyConnectReceiver(config: SpotifyConnectConfig): Spot
       const old = child;
       child = null;
       if (old) old.kill('SIGTERM');
-      publish({ state: config.enabled ? 'stopped' : 'disabled' });
+      publish(config.enabled ? { state: 'stopped' } : { state: 'disabled', message: offMessage });
     },
   };
 }

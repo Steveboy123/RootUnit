@@ -1,5 +1,6 @@
-import { mkdir, open, readFile, rename, rm } from 'node:fs/promises';
+import { mkdir, open, readFile, rm } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
+import { safeRename as rename } from './safeRename';
 
 interface Ticket {
   resolve: () => void;

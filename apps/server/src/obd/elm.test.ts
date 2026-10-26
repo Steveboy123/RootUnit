@@ -116,3 +116,12 @@ describe('serial error messages', () => {
     expect((err as Error).message).toBe("Can't open /dev/does-not-exist-9: No such file or directory");
   });
 });
+
+describe('no adapter set up', () => {
+  it('says so plainly, with an example for every kind of port', async () => {
+    const { createTransport, UnsetTransport } = await import('./transport');
+    const t = createTransport('  ', 38400);
+    expect(t).toBeInstanceOf(UnsetTransport);
+    await expect(t.open()).rejects.toThrow(/No OBD-II adapter set up\. Set OBD_PORT in \.env, for example COM5/);
+  });
+});

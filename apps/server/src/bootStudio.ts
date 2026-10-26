@@ -2,7 +2,8 @@
  * The boot HTML must work before the HTTP server exists, so it reads boot-config.js
  * directly from disk; the server also stores JSON under data/ for software updates.
  */
-import { mkdir, readFile, rename, writeFile, copyFile, stat } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, copyFile, stat } from 'node:fs/promises';
+import { safeRename as rename } from './safeRename';
 import { basename, join } from 'node:path';
 import type { IncomingMessage } from 'node:http';
 import { BOOT_CHOICES, BOOT_DEFAULTS, type BootConfig } from '@headunit/shared';

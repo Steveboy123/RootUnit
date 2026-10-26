@@ -12,9 +12,20 @@ export const SCREEN_PRESETS = [
 ] as const;
 
 const KEY = 'hu.frame';
+
+/**
+ * Which screen size to show: `?frame=800x480` picks one, a bare `?frame` (or an unknown size) keeps the one chosen last time, and
+ * the first time it is 1024×600.
+ */
+export function frameChoice(search: string, stored: string | null): string {
+  const known = (id: string | null | undefined): id is string => SCREEN_PRESETS.some((p) => p.id === id);
+  const asked = new URLSearchParams(search).get('frame');
+  return known(asked) ? asked : known(stored) ? stored : '1024x600';
+}
+
 const read = (): string => {
   try {
-    return new URLSearchParams(location.search).get('frame') ?? localStorage.getItem(KEY) ?? '1024x600';
+    return frameChoice(location.search, localStorage.getItem(KEY));
   } catch {
     return '1024x600';
   }

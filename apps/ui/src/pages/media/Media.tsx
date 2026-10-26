@@ -112,7 +112,7 @@ function SpotifyPane() {
   return (
     <div className="page fixed music">
       <section className="card music-player">
-        {media.status === 'no-device' && <Banner>No active player. Tap “Play on…” and choose RPI Headunit Native Connect for the 320 kbps Pi output.</Banner>}
+        {media.status === 'no-device' && <Banner>No active player. Tap “Play on…” and choose where Spotify plays: this head unit, your phone, or another speaker.</Banner>}
         {media.status === 'error' && <Banner tone="warn">{media.error}</Banner>}
         <div className="music-art">
           <AlbumArt artUrl={track?.artUrl} playing={media.playing} fallback={<Music />} label={track?.title} />

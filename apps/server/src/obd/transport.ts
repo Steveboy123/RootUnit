@@ -119,8 +119,20 @@ export class SerialTransport implements Transport {
   }
 }
 
-/** "tcp://host:port" → TCP; anything else is a serial device path. */
+/** No adapter set up (the default on Windows and macOS): says so plainly instead of failing to open an empty device name. */
+export class UnsetTransport implements Transport {
+  open(): Promise<void> {
+    return Promise.reject(new Error('No OBD-II adapter set up. Set OBD_PORT in .env, for example COM5, /dev/rfcomm0 or tcp://192.168.0.10:35000.'));
+  }
+  write() {}
+  onData() {}
+  onClose() {}
+  async close() {}
+}
+
+/** "tcp://host:port" → TCP; empty → no adapter; anything else is a serial device path. */
 export function createTransport(spec: string, baudRate: number): Transport {
+  if (!spec.trim()) return new UnsetTransport();
   const m = /^tcp:\/\/([^:/]+):(\d{1,5})$/i.exec(spec.trim());
   if (m) return new TcpTransport(m[1]!, Number(m[2]));
   return new SerialTransport({ path: spec.trim(), baudRate });

@@ -131,7 +131,7 @@ app.server.listen(config.port, config.host, () => {
   }
   console.log(`[headunit] listening on http://${config.host}:${config.port}`);
   console.log(demo ? '[headunit] mode: DEMO (simulated car, phones, music and GPS; nothing here is real)' : '[headunit] mode: hardware/services only');
-  console.log(demo ? '[headunit] vehicle: simulated drive cycle' : `[headunit] vehicle: OBD-II on ${config.obd.port}`);
+  console.log(demo ? '[headunit] vehicle: simulated drive cycle' : config.obd.port ? `[headunit] vehicle: OBD-II on ${config.obd.port}` : '[headunit] vehicle: no OBD-II adapter set up (OBD_PORT)');
   console.log(`[headunit] music: ${music.describe()}`);
   console.log(`[headunit] Spotify output: ${config.spotify.connectEnabled && !demo ? `${config.spotify.deviceName} native Connect @ ${config.spotify.connectBitrate} kbps` : 'native disabled; browser fallback available'}`);
   // Where each Client ID came from ('missing' = none yet; add one in Settings > Music services or with `npm run setup`).

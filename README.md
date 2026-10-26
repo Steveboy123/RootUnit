@@ -86,7 +86,11 @@ Laid out for **800×480, 1024×600 and 1280×400** touchscreens (and anything la
 
 ## Try it on a laptop
 
-Needs [Node.js](https://nodejs.org) **22.9 or newer**.
+**On Windows, with your real Spotify, TIDAL, YouTube Music and radio:** install [Node.js](https://nodejs.org) (LTS), download this
+project and double-click **`start-windows.cmd`**. The step-by-step guide, including setting up each music service, is
+[docs/windows.md](docs/windows.md).
+
+The rest of this section is the developer route (any system). Needs [Node.js](https://nodejs.org) **22.9 or newer**.
 
 ```sh
 git clone https://github.com/Steveboy123/RootUnit && cd RootUnit
@@ -166,7 +170,7 @@ from the internet.
 
 ## More documentation
 
-[Pi setup](docs/pi-setup.md) · [Music services setup](docs/setup.md) · [Car Lab](docs/car-lab.md) · [API](docs/api.md) ·
+[Pi setup](docs/pi-setup.md) · [Windows](docs/windows.md) · [Music services setup](docs/setup.md) · [Car Lab](docs/car-lab.md) · [API](docs/api.md) ·
 [Ideas](docs/ideas.md) · [Changelog](docs/changelog.md)
 
 ## Licence
