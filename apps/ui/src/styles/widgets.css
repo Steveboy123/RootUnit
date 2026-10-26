@@ -1081,6 +1081,20 @@
     display: none;
   }
 }
+/* Short rows (a 1280×400 screen): one row of icon tiles. */
+@container (max-height: 110px) {
+  .w-qtiles {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+  }
+}
+
+/* FM on a short row: the frequency and the dial; the presets are one tap away in the FM app. */
+@container (max-height: 110px) {
+  .w-fm-presets {
+    display: none;
+  }
+}
 
 /* Vehicle card. */
 .w-car {
@@ -1131,4 +1145,14 @@
 .w-car-stats small {
   color: var(--dim);
   font-size: 0.7rem;
+}
+/* On a short row the car keeps its numbers and drops the picture. */
+@container (max-height: 110px) {
+  .w-car-pic {
+    display: none;
+  }
+  .w-car-stats {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
 }

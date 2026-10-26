@@ -322,7 +322,7 @@ html[data-calm='true'] .home[data-editing='true'] .widget {
   display: grid;
   grid-template-columns: clamp(150px, 40vh, 300px) minmax(0, 1fr);
   gap: clamp(14px, 2.6vw, 26px);
-  align-items: center;
+  align-items: safe center; /* if it ever runs out of room it loses the bottom, never the title */
   min-height: 0;
   padding: 6px 4px;
 }
@@ -839,6 +839,23 @@ code {
   border-radius: 6px;
   background: rgba(var(--ink-rgb), 0.08);
   user-select: text;
+}
+
+/* Short, wide screens (1280×400): tighter spacing and a one-line title so the player fits without scrolling. */
+@media (max-height: 440px) {
+  .np-main {
+    grid-template-columns: clamp(120px, 36vh, 200px) minmax(0, 1fr);
+  }
+  .np-info {
+    gap: 6px;
+  }
+  .np-titles {
+    gap: 2px;
+  }
+  .np-titles h2 {
+    font-size: 1.35rem;
+    -webkit-line-clamp: 1;
+  }
 }
 
 @media (max-width: 860px) {
