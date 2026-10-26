@@ -399,6 +399,9 @@
   padding: var(--gap) calc(var(--dock-inset) + 4px) calc(var(--dock-inset) + 2px) 14px;
   overflow: hidden;
 }
+.app[data-nav-pos='bottom'] .ytm-page {
+  padding: var(--gap) 14px 8px;
+}
 .app[data-nav-pos='right'] .ytm-page {
   padding-left: calc(var(--dock-inset) + 4px);
   padding-right: 14px;

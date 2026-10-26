@@ -19,8 +19,8 @@ export type NavRoute = (typeof NAV_ROUTES)[number];
 export const NAV_MUSIC_TABS = ['spotify', 'tidal', 'youtube-music', 'radio'] as const;
 export type NavMusicTab = (typeof NAV_MUSIC_TABS)[number];
 
-/** `bottom` is reserved: it costs scarce screen height and is not built yet. Unknown values fall back to the current one. */
-export const NAV_POSITIONS = ['left', 'right'] as const;
+/** Where the navigation sits. A side keeps the most height for the page; the bottom bar suits wide dock styles. Unknown values fall back to the current one. */
+export const NAV_POSITIONS = ['left', 'right', 'bottom'] as const;
 export type NavPosition = (typeof NAV_POSITIONS)[number];
 
 export const NAV_SIZES = ['compact', 'regular', 'large'] as const;

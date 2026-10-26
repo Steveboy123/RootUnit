@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ListMusic, Mic2, Music2, Radio as RadioIcon, Repeat, Repeat1, Shuffle, Sparkles, Volume2 } from 'lucide-react';
 import { ALBUM_MOTIONS, type AlbumMotion, type LyricsResult, type QueueView, type RepeatMode } from '@headunit/shared';
+import { ALBUM_MOTION_INFO } from '../lib/appearanceInfo';
 import { AlbumArt } from '../components/AlbumArt';
 import { LikeButton } from '../components/LikeButton';
 import { Transport } from '../components/Transport';
@@ -13,23 +14,8 @@ import { useHeadUnit } from '../store';
 
 const NEXT_REPEAT: Record<RepeatMode, RepeatMode> = { off: 'context', context: 'track', track: 'off' };
 
-export const ALBUM_MOTION_LABELS: Record<AlbumMotion, string> = {
-  still: 'Classic',
-  vinyl: 'Vinyl',
-  float: 'Floating 3D',
-  hologram: 'Hologram',
-  glass: 'Glass 3D',
-  orbit: 'Orbit',
-  prism: 'Prism',
-  cd: 'Compact disc',
-  cassette: 'Cassette',
-  tilt: 'Parallax tilt',
-  stack: 'Stack',
-  breathe: 'Breathe',
-  polaroid: 'Polaroid',
-  glitch: 'Glitch',
-  flip: 'Flip',
-};
+/** The artwork styles by name (Settings and the chips under the player). */
+export const ALBUM_MOTION_LABELS: Record<AlbumMotion, string> = Object.fromEntries(ALBUM_MOTIONS.map((m) => [m, ALBUM_MOTION_INFO[m].label])) as Record<AlbumMotion, string>;
 
 /** The full-screen player: whatever is playing, large, with lyrics or the queue alongside. */
 export function NowPlayingPage() {
@@ -71,7 +57,6 @@ function Player({ np }: { np: NowPlayingView }) {
   const patchSettings = useHeadUnit((s) => s.patchSettings);
   const [seek, setSeek] = useState<number | null>(null);
   const server = np.kind === 'media' && media;
-  const nextMode = ALBUM_MOTIONS[(ALBUM_MOTIONS.indexOf(mode) + 1) % ALBUM_MOTIONS.length]!;
 
   return (
     <section className="np-main">
@@ -87,9 +72,6 @@ function Player({ np }: { np: NowPlayingView }) {
           data-no-swipe
         >
           <AlbumArt artUrl={np.artUrl} playing={np.playing} size="lg" label={np.title} fallback={np.kind === 'radio' ? <RadioIcon size={56} /> : <Music2 size={56} />} />
-        </button>
-        <button type="button" className="chip np-mode" aria-label={`Artwork style: ${ALBUM_MOTION_LABELS[mode]}. Tap for ${ALBUM_MOTION_LABELS[nextMode]}`} onClick={() => patchSettings({ albumMotion: nextMode })}>
-          <Sparkles /> {ALBUM_MOTION_LABELS[mode]}
         </button>
       </div>
 
@@ -149,8 +131,27 @@ function Player({ np }: { np: NowPlayingView }) {
             <Slider label="Volume" value={system.muted ? 0 : system.volume} onChange={(v) => patchSystem({ volume: v, muted: false })} />
           </div>
         )}
+        <ModeChips mode={mode} onMode={(m) => patchSettings({ albumMotion: m })} />
       </div>
     </section>
+  );
+}
+
+/** The artwork styles as a row of chips (Classic, Spinning vinyl, Floating 3D, Hologram…); the chosen one is kept in view. */
+function ModeChips({ mode, onMode }: { mode: AlbumMotion; onMode(m: AlbumMotion): void }) {
+  const row = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    row.current?.querySelector('[data-active="true"]')?.scrollIntoView?.({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+  }, [mode]);
+  return (
+    <div ref={row} className="chips scroll np-modes" role="radiogroup" aria-label="Artwork style" data-no-swipe>
+      <Sparkles className="dim" size={16} aria-hidden="true" />
+      {ALBUM_MOTIONS.map((m) => (
+        <button key={m} type="button" role="radio" aria-checked={m === mode} className="chip" data-active={m === mode} onClick={() => onMode(m)}>
+          {ALBUM_MOTION_INFO[m].label}
+        </button>
+      ))}
+    </div>
   );
 }
 

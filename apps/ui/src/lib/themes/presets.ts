@@ -1,4 +1,4 @@
-import type { Settings } from '@headunit/shared';
+import type { BuiltinWallpaper, Settings } from '@headunit/shared';
 
 /**
  * One-tap combinations. A preset is plain data: applying one sends its `patch` through the normal settings path, so it is validated like
@@ -8,10 +8,13 @@ import type { Settings } from '@headunit/shared';
  *  · looks      — v2's Looks: palette + style + background + shape + accent.
  *  · scenes     — v2's 3D scene presets: a look plus album motion, depth, tempo, background animation and glass.
  *  · signature  — new in RootUnit: complete themes that also choose the typeface, the page transition, the gauges and the mascot's mood.
+ *  · featured   — the showcase looks: everything matched, down to the wallpaper, the navigation bar and how the mascot moves.
+ * The 3D scenes keep v2's values and add the matching typeface, transition, gauges, bar and mascot mood, so nothing in a scene clashes.
  */
-export type PresetGroup = 'signature' | 'scenes' | 'looks';
+export type PresetGroup = 'featured' | 'signature' | 'scenes' | 'looks';
 
 export const PRESET_GROUPS: ReadonlyArray<{ id: PresetGroup; label: string; blurb: string }> = [
+  { id: 'featured', label: 'Featured', blurb: 'Showcase looks, matched from the wallpaper to the navigation bar.' },
   { id: 'signature', label: 'Signature', blurb: 'Complete themes: colours, motion, type and transitions together.' },
   { id: 'scenes', label: '3D scenes', blurb: 'A look plus album motion, depth and a moving background.' },
   { id: 'looks', label: 'Looks', blurb: 'Palette, style, background and accent.' },
@@ -40,6 +43,7 @@ export type PresetPatch = Partial<
     | 'mascotAura'
     | 'dockStyle'
     | 'touchFx'
+    | 'mascotGlow'
   >
 >;
 
@@ -49,13 +53,49 @@ export interface Preset {
   blurb: string;
   group: PresetGroup;
   patch: PresetPatch & Pick<Settings, 'theme' | 'accent'>;
+  /** A wallpaper that pictures the look on its gallery tile (its own wallpaper when it has one). */
+  thumb?: BuiltinWallpaper;
 }
 
 const look = (id: string, label: string, blurb: string, patch: Preset['patch']): Preset => ({ id, label, blurb, group: 'looks', patch });
-const scene = (id: string, label: string, blurb: string, patch: Preset['patch']): Preset => ({ id, label, blurb, group: 'scenes', patch });
+/** A v2 scene: v2's values, then the RootUnit finish that matches them. */
+const scene = (id: string, label: string, blurb: string, patch: Preset['patch'], finish: PresetPatch, thumb: BuiltinWallpaper): Preset => ({ id, label, blurb, group: 'scenes', patch: { ...patch, ...finish }, thumb });
+const featured = (id: string, label: string, blurb: string, patch: Preset['patch']): Preset => ({ id, label, blurb, group: 'featured', patch, thumb: patch.wallpaper as BuiltinWallpaper | undefined });
 const signature = (id: string, label: string, blurb: string, patch: Preset['patch']): Preset => ({ id, label, blurb, group: 'signature', patch });
 
 export const PRESETS: readonly Preset[] = [
+  // --- Featured (the showcase looks) -------------------------------------------------------------------------------------------
+  featured('retro-synthwave', 'Retro Synthwave', 'Neon sunsets, palm trees and a grid to the horizon.', {
+    theme: 'synthwave', accent: '#ff2bd6', surface: 'neon', background: 'wallpaper', wallpaper: 'synth-sunset', shape: 'soft', effects: 'full',
+    albumMotion: 'vinyl', depthStyle: 'deep', motionSpeed: 'lively', dashScene: 'synthsun', glassFinish: 'prismatic',
+    font: 'future', transition: 'slide', gaugeStyle: 'sport', dockStyle: 'curve', touchFx: 'glow', mascotMotion: 'float', mascotAura: 'glow', mascotGlow: 70,
+  }),
+  featured('arctic-crystal', 'Arctic Crystal', 'Cool blue ice and clear glass, clean and modern.', {
+    theme: 'blueprint', accent: '#7fe3ff', surface: 'glass', background: 'wallpaper', wallpaper: 'ice-peaks', shape: 'round', effects: 'full',
+    albumMotion: 'float', depthStyle: 'crystal', motionSpeed: 'calm', dashScene: 'snow', glassFinish: 'frosted',
+    font: 'outfit', transition: 'depth', gaugeStyle: 'ring', dockStyle: 'glass3d', touchFx: 'ripple', mascotMotion: 'breathe', mascotAura: 'halo', mascotGlow: 55,
+  }),
+  featured('phantom-pink', 'Phantom Pink', 'Dark and edgy cyberpunk, with your mascot in the middle.', {
+    theme: 'plague', accent: '#ff2a93', surface: 'neon', background: 'wallpaper', wallpaper: 'phantom-smoke', shape: 'sharp', effects: 'full',
+    albumMotion: 'hologram', depthStyle: 'deep', motionSpeed: 'cinematic', dashScene: 'particles', glassFinish: 'smoked',
+    font: 'grotesk', transition: 'zoom', gaugeStyle: 'sport', dockStyle: 'mascot', touchFx: 'glow', mascotMotion: 'hologram', mascotAura: 'smoke', mascotGlow: 85,
+  }),
+  featured('liquid-metal', 'Liquid Chrome', 'Polished metal and glass, sleek and luxurious.', {
+    theme: 'lunar', accent: '#d7dde8', surface: 'chrome', background: 'wallpaper', wallpaper: 'liquid-chrome', shape: 'round', effects: 'full',
+    albumMotion: 'glass', depthStyle: 'bevel', motionSpeed: 'calm', dashScene: 'glow', glassFinish: 'liquid',
+    font: 'inter', transition: 'zoom', gaugeStyle: 'needle', dockStyle: 'glass3d', touchFx: 'pop', mascotMotion: 'tilt', mascotAura: 'glow', mascotGlow: 40,
+  }),
+  featured('stealth-amoled', 'Stealth AMOLED', 'True black, an eclipse, almost nothing lit.', {
+    theme: 'amoled', accent: '#2f7bff', surface: 'outline', background: 'wallpaper', wallpaper: 'eclipse', shape: 'soft', effects: 'balanced',
+    albumMotion: 'float', depthStyle: 'flat', motionSpeed: 'calm', dashScene: 'off', glassFinish: 'smoked',
+    font: 'inter', transition: 'fade', gaugeStyle: 'digital', dockStyle: 'ghost', touchFx: 'glow', mascotMotion: 'breathe', mascotAura: 'none', mascotGlow: 25,
+  }),
+  featured('nature-drive', 'Nature Drive', 'Pine forest, fireflies and soft green glass.', {
+    theme: 'forest', accent: '#79e06a', surface: 'glass', background: 'wallpaper', wallpaper: 'pine-forest', shape: 'round', effects: 'balanced',
+    albumMotion: 'vinyl', depthStyle: 'soft', motionSpeed: 'calm', dashScene: 'fireflies', glassFinish: 'frosted',
+    font: 'rounded', transition: 'rise', gaugeStyle: 'arc', dockStyle: 'pill', touchFx: 'ripple', mascotMotion: 'sway', mascotAura: 'glow', mascotGlow: 35,
+  }),
+
   // --- Signature (RootUnit) ---------------------------------------------------------------------------------------------------
   signature('rootunit', 'RootUnit', 'Obsidian glass over a slow colour mesh.', {
     theme: 'obsidian', accent: '#a66bff', surface: 'glass', background: 'mesh', shape: 'soft', effects: 'balanced',
@@ -184,22 +224,22 @@ export const PRESETS: readonly Preset[] = [
   }),
 
   // --- 3D scenes (v2, unchanged) ----------------------------------------------------------------------------------------------
-  scene('cyber-neon', 'Cyber Neon', 'Hot pink neon, holograms and orbit rings.', { theme: 'synthwave', accent: '#ff4fd8', background: 'grid', surface: 'neon', albumMotion: 'hologram', depthStyle: 'deep', motionSpeed: 'cinematic', effects: 'full', dashScene: 'orbits', glassFinish: 'prismatic' }),
-  scene('ocean-glass', 'Ocean Glass', 'Aqua crystal over ambient album colour.', { theme: 'ocean', accent: '#2dd4cf', background: 'art-ambient', surface: 'glass', albumMotion: 'glass', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'glow', glassFinish: 'frosted' }),
-  scene('vinyl-lounge', 'Vinyl Lounge', 'Gold on carbon weave with a spinning record.', { theme: 'royal', accent: '#e6b94a', background: 'weave', surface: 'glass', albumMotion: 'vinyl', depthStyle: 'soft', motionSpeed: 'calm', effects: 'balanced', dashScene: 'glow', glassFinish: 'clear' }),
-  scene('aurora-3d', 'Aurora 3D', 'Northern lights with hologram artwork.', { theme: 'carbon', accent: '#a78bfa', background: 'aurora', surface: 'glass', albumMotion: 'hologram', depthStyle: 'deep', motionSpeed: 'calm', effects: 'full', dashScene: 'orbits', glassFinish: 'prismatic' }),
-  scene('night-racer', 'Night Racer', 'Red neon on weave and a laser grid.', { theme: 'crimson', accent: '#ff3b47', background: 'weave', surface: 'neon', albumMotion: 'orbit', depthStyle: 'deep', motionSpeed: 'cinematic', effects: 'full', dashScene: 'grid', glassFinish: 'clear' }),
-  scene('amoled-eclipse', 'AMOLED Eclipse', 'True black with the cover floating in crystal.', { theme: 'amoled', accent: '#2f7bff', background: 'art-cover', surface: 'glass', albumMotion: 'float', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'orbits', glassFinish: 'frosted' }),
-  scene('sunset-gt', 'Sunset GT', 'Warm paper glass with a vinyl record.', { theme: 'sand', accent: '#b5502d', background: 'gradient', surface: 'glass', albumMotion: 'vinyl', depthStyle: 'soft', motionSpeed: 'calm', effects: 'balanced', dashScene: 'glow', glassFinish: 'clear' }),
-  scene('focus-hud', 'Focus HUD', 'High contrast, nothing moving.', { theme: 'contrast', accent: '#ffd400', background: 'none', surface: 'outline', albumMotion: 'still', depthStyle: 'flat', motionSpeed: 'off', effects: 'minimal', dashScene: 'off', glassFinish: 'clear' }),
-  scene('crystal-palace', 'Crystal Palace', 'Frost cyan prisms over the aurora.', { theme: 'nord', accent: '#8de8fc', background: 'aurora', surface: 'glass', albumMotion: 'prism', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'orbits', glassFinish: 'prismatic' }),
-  scene('liquid-chrome', 'Liquid Chrome', 'Silver crystal on a laser grid.', { theme: 'carbon', accent: '#d1d5db', background: 'grid', surface: 'glass', albumMotion: 'glass', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'grid', glassFinish: 'prismatic' }),
-  scene('emerald-matrix', 'Emerald Matrix', 'Emerald neon and orbiting artwork.', { theme: 'forest', accent: '#2fffa3', background: 'grid', surface: 'neon', albumMotion: 'orbit', depthStyle: 'deep', motionSpeed: 'cinematic', effects: 'full', dashScene: 'grid', glassFinish: 'clear' }),
-  scene('galaxy-purple', 'Galaxy Purple', 'Violet prisms over the aurora.', { theme: 'aurora', accent: '#ac7bff', background: 'aurora', surface: 'glass', albumMotion: 'prism', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'orbits', glassFinish: 'prismatic' }),
-  scene('arctic-ice', 'Arctic Ice', 'Pale mint crystal and a soft glow.', { theme: 'mint', accent: '#36c7ff', background: 'gradient', surface: 'glass', albumMotion: 'glass', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'balanced', dashScene: 'glow', glassFinish: 'frosted' }),
-  scene('ruby-glass', 'Ruby Glass', 'Ember warmth and hologram artwork.', { theme: 'ember', accent: '#ff6b83', background: 'weave', surface: 'glass', albumMotion: 'hologram', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'glow', glassFinish: 'prismatic' }),
-  scene('copper-retro', 'Copper Retro', 'Coffee and copper with a record playing.', { theme: 'mocha', accent: '#ffb66e', background: 'gradient', surface: 'glass', albumMotion: 'vinyl', depthStyle: 'soft', motionSpeed: 'calm', effects: 'balanced', dashScene: 'glow', glassFinish: 'clear' }),
-  scene('hyperdrive', 'Hyperdrive', 'Cyan neon and a perspective laser grid.', { theme: 'midnight', accent: '#38e7ff', background: 'grid', surface: 'neon', albumMotion: 'orbit', depthStyle: 'deep', motionSpeed: 'cinematic', effects: 'full', dashScene: 'grid', glassFinish: 'prismatic' }),
+  scene('cyber-neon', 'Cyber Neon', 'Hot pink neon, holograms and orbit rings.', { theme: 'synthwave', accent: '#ff4fd8', background: 'grid', surface: 'neon', albumMotion: 'hologram', depthStyle: 'deep', motionSpeed: 'cinematic', effects: 'full', dashScene: 'orbits', glassFinish: 'prismatic' }, { font: 'future', transition: 'zoom', gaugeStyle: 'sport', dockStyle: 'curve', touchFx: 'glow', mascotMotion: 'hologram', mascotAura: 'glow' }, 'neon-city'),
+  scene('ocean-glass', 'Ocean Glass', 'Aqua crystal over ambient album colour.', { theme: 'ocean', accent: '#2dd4cf', background: 'art-ambient', surface: 'glass', albumMotion: 'glass', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'glow', glassFinish: 'frosted' }, { font: 'outfit', transition: 'depth', gaugeStyle: 'ring', dockStyle: 'pill', touchFx: 'ripple', mascotMotion: 'float', mascotAura: 'halo' }, 'waves'),
+  scene('vinyl-lounge', 'Vinyl Lounge', 'Gold on carbon weave with a spinning record.', { theme: 'royal', accent: '#e6b94a', background: 'weave', surface: 'glass', albumMotion: 'vinyl', depthStyle: 'soft', motionSpeed: 'calm', effects: 'balanced', dashScene: 'glow', glassFinish: 'clear' }, { font: 'grotesk', transition: 'fade', gaugeStyle: 'needle', dockStyle: 'island', touchFx: 'ripple', mascotMotion: 'sway', mascotAura: 'glow' }, 'vinyl-lounge'),
+  scene('aurora-3d', 'Aurora 3D', 'Northern lights with hologram artwork.', { theme: 'carbon', accent: '#a78bfa', background: 'aurora', surface: 'glass', albumMotion: 'hologram', depthStyle: 'deep', motionSpeed: 'calm', effects: 'full', dashScene: 'orbits', glassFinish: 'prismatic' }, { font: 'outfit', transition: 'depth', gaugeStyle: 'ring', dockStyle: 'glass3d', touchFx: 'ripple', mascotMotion: 'float', mascotAura: 'halo' }, 'aurora-lake'),
+  scene('night-racer', 'Night Racer', 'Red neon on weave and a laser grid.', { theme: 'crimson', accent: '#ff3b47', background: 'weave', surface: 'neon', albumMotion: 'orbit', depthStyle: 'deep', motionSpeed: 'cinematic', effects: 'full', dashScene: 'grid', glassFinish: 'clear' }, { font: 'tech', transition: 'slide', gaugeStyle: 'sport', dockStyle: 'curve', touchFx: 'glow', mascotMotion: 'glitch', mascotAura: 'sparks' }, 'race-track'),
+  scene('amoled-eclipse', 'AMOLED Eclipse', 'True black with the cover floating in crystal.', { theme: 'amoled', accent: '#2f7bff', background: 'art-cover', surface: 'glass', albumMotion: 'float', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'orbits', glassFinish: 'frosted' }, { font: 'inter', transition: 'fade', gaugeStyle: 'digital', dockStyle: 'ghost', touchFx: 'glow', mascotMotion: 'breathe', mascotAura: 'halo' }, 'eclipse'),
+  scene('sunset-gt', 'Sunset GT', 'Warm paper glass with a vinyl record.', { theme: 'sand', accent: '#b5502d', background: 'gradient', surface: 'glass', albumMotion: 'vinyl', depthStyle: 'soft', motionSpeed: 'calm', effects: 'balanced', dashScene: 'glow', glassFinish: 'clear' }, { font: 'grotesk', transition: 'slide', gaugeStyle: 'needle', dockStyle: 'pill', touchFx: 'ripple', mascotMotion: 'sway', mascotAura: 'glow' }, 'sunset-gt'),
+  scene('focus-hud', 'Focus HUD', 'High contrast, nothing moving.', { theme: 'contrast', accent: '#ffd400', background: 'none', surface: 'outline', albumMotion: 'still', depthStyle: 'flat', motionSpeed: 'off', effects: 'minimal', dashScene: 'off', glassFinish: 'clear' }, { font: 'tech', transition: 'none', gaugeStyle: 'digital', dockStyle: 'tabs', touchFx: 'none', mascotMotion: 'still', mascotAura: 'none' }, 'tunnel'),
+  scene('crystal-palace', 'Crystal Palace', 'Frost cyan prisms over the aurora.', { theme: 'nord', accent: '#8de8fc', background: 'aurora', surface: 'glass', albumMotion: 'prism', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'orbits', glassFinish: 'prismatic' }, { font: 'outfit', transition: 'depth', gaugeStyle: 'ring', dockStyle: 'glass3d', touchFx: 'ripple', mascotMotion: 'float', mascotAura: 'halo' }, 'ice-peaks'),
+  scene('liquid-chrome', 'Silver Grid', 'Silver crystal on a laser grid.', { theme: 'carbon', accent: '#d1d5db', background: 'grid', surface: 'glass', albumMotion: 'glass', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'grid', glassFinish: 'prismatic' }, { font: 'inter', transition: 'zoom', gaugeStyle: 'needle', dockStyle: 'glass3d', touchFx: 'pop', mascotMotion: 'tilt', mascotAura: 'glow' }, 'liquid-chrome'),
+  scene('emerald-matrix', 'Emerald Matrix', 'Emerald neon and orbiting artwork.', { theme: 'forest', accent: '#2fffa3', background: 'grid', surface: 'neon', albumMotion: 'orbit', depthStyle: 'deep', motionSpeed: 'cinematic', effects: 'full', dashScene: 'grid', glassFinish: 'clear' }, { font: 'mono', transition: 'flip', gaugeStyle: 'digital', dockStyle: 'rail', touchFx: 'glow', mascotMotion: 'glitch', mascotAura: 'sparks' }, 'pine-forest'),
+  scene('galaxy-purple', 'Galaxy Purple', 'Violet prisms over the aurora.', { theme: 'aurora', accent: '#ac7bff', background: 'aurora', surface: 'glass', albumMotion: 'prism', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'orbits', glassFinish: 'prismatic' }, { font: 'future', transition: 'depth', gaugeStyle: 'ring', dockStyle: 'curve', touchFx: 'glow', mascotMotion: 'orbit', mascotAura: 'halo' }, 'galaxy'),
+  scene('arctic-ice', 'Arctic Ice', 'Pale mint crystal and a soft glow.', { theme: 'mint', accent: '#36c7ff', background: 'gradient', surface: 'glass', albumMotion: 'glass', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'balanced', dashScene: 'glow', glassFinish: 'frosted' }, { font: 'rounded', transition: 'rise', gaugeStyle: 'arc', dockStyle: 'pill', touchFx: 'ripple', mascotMotion: 'breathe', mascotAura: 'halo' }, 'mountains'),
+  scene('ruby-glass', 'Ruby Glass', 'Ember warmth and hologram artwork.', { theme: 'ember', accent: '#ff6b83', background: 'weave', surface: 'glass', albumMotion: 'hologram', depthStyle: 'crystal', motionSpeed: 'calm', effects: 'full', dashScene: 'glow', glassFinish: 'prismatic' }, { font: 'grotesk', transition: 'zoom', gaugeStyle: 'sport', dockStyle: 'island', touchFx: 'glow', mascotMotion: 'pulse', mascotAura: 'glow' }, 'city-lights'),
+  scene('copper-retro', 'Copper Retro', 'Coffee and copper with a record playing.', { theme: 'mocha', accent: '#ffb66e', background: 'gradient', surface: 'glass', albumMotion: 'vinyl', depthStyle: 'soft', motionSpeed: 'calm', effects: 'balanced', dashScene: 'glow', glassFinish: 'clear' }, { font: 'grotesk', transition: 'fade', gaugeStyle: 'needle', dockStyle: 'island', touchFx: 'pop', mascotMotion: 'sway', mascotAura: 'smoke' }, 'canyon'),
+  scene('hyperdrive', 'Hyperdrive', 'Cyan neon and a perspective laser grid.', { theme: 'midnight', accent: '#38e7ff', background: 'grid', surface: 'neon', albumMotion: 'orbit', depthStyle: 'deep', motionSpeed: 'cinematic', effects: 'full', dashScene: 'grid', glassFinish: 'prismatic' }, { font: 'future', transition: 'zoom', gaugeStyle: 'sport', dockStyle: 'curve', touchFx: 'glow', mascotMotion: 'scan', mascotAura: 'sparks' }, 'tunnel'),
 
   // --- Looks (v2, unchanged) --------------------------------------------------------------------------------------------------
   look('classic', 'Classic', 'The original: Midnight, solid cards.', { theme: 'midnight', surface: 'solid', background: 'none', shape: 'soft', accent: '#3dd5f3' }),

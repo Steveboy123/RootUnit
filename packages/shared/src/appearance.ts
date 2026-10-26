@@ -178,8 +178,13 @@ export type GaugeStyle = (typeof GAUGE_STYLES)[number];
 export const STANDBY_STYLES = ['clock', 'analog', 'flip', 'mascot', 'orbit', 'minimal'] as const;
 export type StandbyStyle = (typeof STANDBY_STYLES)[number];
 
-/** How the navigation dock is drawn: a floating island, an edge rail, a slim pill, or icons with no backing. */
-export const DOCK_STYLES = ['island', 'rail', 'pill', 'ghost'] as const;
+/**
+ * How the navigation bar is drawn. Each works at the bottom and on either side:
+ * island (classic dock), pill (floating pill), rail (edge rail), ghost (minimal icons), curve (glowing curve under the current button),
+ * glass3d (raised 3D glass keys), split (two halves around a centre medallion with the album art), tabs (text tabs, no icons),
+ * wave (a wave-shaped backing), mascot (the centre medallion is your mascot).
+ */
+export const DOCK_STYLES = ['island', 'rail', 'pill', 'ghost', 'curve', 'glass3d', 'split', 'tabs', 'wave', 'mascot'] as const;
 export type DockStyle = (typeof DOCK_STYLES)[number];
 
 /** Wallpapers drawn by the app itself (inline SVG scenes). Files the user drops in data/wallpapers/ are `user:<filename>`. */
@@ -197,6 +202,13 @@ export const BUILTIN_WALLPAPERS = [
   'tunnel',
   'race-track',
   'aurora-lake',
+  'synth-sunset',
+  'ice-peaks',
+  'liquid-chrome',
+  'phantom-smoke',
+  'eclipse',
+  'vinyl-lounge',
+  'sunset-gt',
 ] as const;
 export type BuiltinWallpaper = (typeof BUILTIN_WALLPAPERS)[number];
 

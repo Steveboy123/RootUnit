@@ -186,7 +186,9 @@ describe('appearance vocabulary', () => {
 
   it('is declared once: no other source file carries its own list of palette ids', () => {
     const root = fileURLToPath(new URL('../../../', import.meta.url));
-    const allowed = (rel: string) => rel === 'packages/shared/src/appearance.ts' || rel.startsWith('apps/ui/src/lib/themes/');
+    // types.ts names three palettes in the defaults (theme, day and night); Boot Studio's own presets share some names. Neither is a list.
+    const allowed = (rel: string) =>
+      rel === 'packages/shared/src/appearance.ts' || rel.startsWith('apps/ui/src/lib/themes/') || rel === 'packages/shared/src/types.ts' || rel === 'apps/server/src/bootStudio.ts';
     const files: string[] = [];
     const walk = (dir: string) => {
       for (const name of readdirSync(dir)) {

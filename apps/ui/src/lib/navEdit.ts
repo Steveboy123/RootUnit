@@ -248,6 +248,19 @@ export function countFit(railHeight: number, size: NavSize, tier: NavTier): numb
   return Math.max(0, Math.floor(room / (BUTTON_MIN[size][tier] + RAIL_GAP[tier])));
 }
 
+/** The narrowest a bottom bar's button may be, by size (the bar's CSS: --dock-btn-w and the gaps between). */
+const BUTTON_MIN_W: Record<NavSize, number> = { compact: 64, regular: 76, large: 92 };
+const BAR_PAD = 16;
+const BAR_GAP = 4;
+const BAR_DIVIDER = 13;
+
+/** The same count for a bar along the bottom: how many buttons fit across this width without it scrolling. */
+export function countFitAcross(barWidth: number, size: NavSize): number {
+  if (!Number.isFinite(barWidth) || barWidth <= 0) return 0;
+  const room = barWidth - BAR_PAD - BAR_DIVIDER;
+  return Math.max(0, Math.floor(room / (BUTTON_MIN_W[size] + BAR_GAP)));
+}
+
 /**
  * Where the head starts to scroll, as the index of the first scrolling button in the head (the editor draws its "scrolls on this screen"
  * line before it), or null if they all fit or the rail has not been measured. The pinned buttons and Settings take their places first.

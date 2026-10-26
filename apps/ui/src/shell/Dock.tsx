@@ -1,5 +1,6 @@
 import { Component, memo, useCallback, useLayoutEffect, useMemo, useRef, useState, type ErrorInfo, type ReactNode, type Ref } from 'react';
 import { Car, Check, Gauge, House, LayoutGrid, Music2, Settings, type LucideIcon } from 'lucide-react';
+import type { DockStyle, NavLabelMode, NavPosition, NavSize } from '@headunit/shared';
 import { useAttentionBadges } from '../apps/badges';
 import { apiRequest } from '../lib/api';
 import { applyScene, sceneSummary } from '../lib/scenes';
@@ -7,9 +8,13 @@ import { openNavEditor, runTarget, useLongPress, type LongPressProps, type Resol
 import { useArmedStep } from '../lib/nav/armed';
 import { useRailScroll, type RailFade } from '../lib/nav/scroll';
 import { useActiveNavId, useNavConfig, useResolvedNav } from '../lib/nav/useNav';
+import { MASCOT_ASSETS } from '../layers/Mascot';
+import { useNowPlaying } from '../lib/nowPlaying';
 import { useHeadUnit, type Route } from '../store';
 
 type Tone = 'ok' | 'warn' | 'danger' | 'info';
+
+const DEFAULT_LOOK = { position: 'left', size: 'regular', labels: 'always', style: 'island' } as const;
 
 /** The dock's two parts: the scrolling head, and the foot that stays put (the extra pinned buttons and Settings). */
 export function splitDock(items: readonly ResolvedNavItem[]): { head: ResolvedNavItem[]; foot: ResolvedNavItem[] } {
@@ -27,19 +32,25 @@ const toneWord = (tone: string): string => (Object.prototype.hasOwnProperty.call
  * active. It measures the button, so it follows any size, label mode or scroll position.
  */
 function Indicator({ container, activeId, items }: { container: HTMLDivElement | null; activeId: string | null; items: readonly ResolvedNavItem[] }) {
-  const [box, setBox] = useState<{ y: number; h: number } | null>(null);
+  const [box, setBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   useLayoutEffect(() => {
     if (!container) return;
     const measure = () => {
       const el = activeId ? container.querySelector<HTMLElement>(`[data-nav-id="${CSS.escape(activeId)}"]`) : null;
-      setBox(el ? { y: el.offsetTop, h: el.offsetHeight } : null);
+      setBox(el ? { x: el.offsetLeft, y: el.offsetTop, w: el.offsetWidth, h: el.offsetHeight } : null);
     };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(container);
     return () => ro.disconnect();
   }, [container, activeId, items]);
-  return <i className="dock-ind" aria-hidden="true" style={{ opacity: box ? 1 : 0, ['--y' as string]: `${box?.y ?? 0}px`, ['--h' as string]: `${box?.h ?? 0}px` }} />;
+  return (
+    <i
+      className="dock-ind"
+      aria-hidden="true"
+      style={{ opacity: box ? 1 : 0, ['--x' as string]: `${box?.x ?? 0}px`, ['--y' as string]: `${box?.y ?? 0}px`, ['--w' as string]: `${box?.w ?? 0}px`, ['--h' as string]: `${box?.h ?? 0}px` }}
+    />
+  );
 }
 
 export interface DockViewProps {
@@ -53,10 +64,15 @@ export interface DockViewProps {
   /** A small picture of the dock (Settings, the editor): not a landmark, not focusable, not tappable. */
   preview?: boolean;
   scroll?: { ref: Ref<HTMLDivElement>; onScroll(): void; fade: RailFade };
+  /** The centre piece of the split and mascot styles (album art, or the mascot), drawn halfway along the buttons. */
+  medallion?: ReactNode;
+  /** Where the dock is and how it looks (set on the dock itself, so a preview is never styled by the app's own dock). */
+  look?: { position: NavPosition; size: NavSize; labels: NavLabelMode; style: DockStyle };
 }
 
 /** The dock drawn from already-resolved items. No store: the connected Dock feeds it, and so can a preview. */
-export function DockView({ items, activeId, armedId = null, badges, editing = false, onSelect, gesture, preview = false, scroll }: DockViewProps) {
+export function DockView({ items, activeId, armedId = null, badges, editing = false, onSelect, gesture, preview = false, scroll, medallion, look = DEFAULT_LOOK }: DockViewProps) {
+  const attrs = { 'data-pos': look.position, 'data-size': look.size, 'data-labels': look.labels, 'data-look': look.style };
   const { head, foot } = splitDock(items);
   const [headEl, setHeadEl] = useState<HTMLDivElement | null>(null);
   const [footEl, setFootEl] = useState<HTMLDivElement | null>(null);
@@ -107,7 +123,15 @@ export function DockView({ items, activeId, armedId = null, badges, editing = fa
       </div>
       <div className="dock-scroll" ref={headRef} onScroll={scroll?.onScroll} data-fade-top={scroll?.fade.top || undefined} data-fade-bottom={scroll?.fade.bottom || undefined} {...gesture}>
         <Indicator container={headEl} activeId={headActive ? activeId : null} items={head} />
-        {head.map(button)}
+        {medallion ? (
+          <>
+            {head.slice(0, Math.ceil(head.length / 2)).map(button)}
+            {medallion}
+            {head.slice(Math.ceil(head.length / 2)).map(button)}
+          </>
+        ) : (
+          head.map(button)
+        )}
       </div>
       {foot.length > 0 && <i className="dock-gap" />}
       <div className="dock-foot" ref={setFootEl} {...gesture}>
@@ -117,11 +141,11 @@ export function DockView({ items, activeId, armedId = null, badges, editing = fa
     </>
   );
   return preview ? (
-    <div className="dock" aria-hidden="true" inert>
+    <div className="dock" aria-hidden="true" inert {...attrs}>
       {body}
     </div>
   ) : (
-    <nav className="dock" aria-label="Main" data-editing={editing || undefined}>
+    <nav className="dock" aria-label="Main" data-editing={editing || undefined} {...attrs}>
       {body}
       <span className="dock-say" role="status">
         {armedId ? `${items.find((i) => i.id === armedId)?.label ?? 'This button'}: tap again to confirm` : ''}
@@ -142,7 +166,10 @@ export const Dock = memo(function Dock() {
   const attention = useAttentionBadges();
   const badges = useMemo(() => Object.fromEntries(items.flatMap((i) => (i.to.kind === 'app' && i.state === 'ok' && attention.has(i.to.app) ? [[i.id, attention.get(i.to.app)!] as const] : []))), [items, attention]);
   const scrollKey = useMemo(() => `${activeId}|${items.map((i) => i.id).join(',')}|${config.size}`, [activeId, items, config.size]);
-  const scroll = useRailScroll(scrollKey);
+  const across = config.position === 'bottom';
+  const scroll = useRailScroll(scrollKey, across ? 'x' : 'y');
+  const dockStyle = useHeadUnit((s) => s.settings?.dockStyle ?? 'island');
+  const medallion = dockStyle === 'split' || dockStyle === 'mascot' ? <DockMedallion kind={dockStyle} /> : undefined;
 
   // Hold to edit. The editor itself refuses (with a toast) while the car moves or the head unit is unreachable.
   const gesture = useLongPress({ onLongPress: () => void openNavEditor(), enabled: !editorOpen });
@@ -175,8 +202,40 @@ export const Dock = memo(function Dock() {
     [armClear, armTap, scenes, toast],
   );
 
-  return <DockView items={items} activeId={activeId} armedId={armedId} badges={badges} editing={editorOpen} onSelect={onSelect} gesture={gesture} scroll={scroll} />;
+  const look = useMemo(() => ({ position: config.position, size: config.size, labels: config.labels, style: dockStyle }), [config.position, config.size, config.labels, dockStyle]);
+  return <DockView items={items} activeId={activeId} armedId={armedId} badges={badges} editing={editorOpen} onSelect={onSelect} gesture={gesture} scroll={scroll} medallion={medallion} look={look} />;
 });
+
+/**
+ * The centre piece of the split and mascot bars: the album art of what is playing (a slowly turning disc while it plays), or the mascot in
+ * a glowing ring. A tap opens Now Playing.
+ */
+export function DockMedallion({ kind, preview = false }: { kind: 'split' | 'mascot'; preview?: boolean }) {
+  const np = useNowPlaying();
+  const variant = useHeadUnit((s) => s.settings?.mascotVariant ?? 'transparent');
+  const go = useHeadUnit((s) => s.go);
+  const art = kind === 'split' ? np?.artUrl : undefined;
+  return (
+    <button
+      type="button"
+      className="dock-medal"
+      data-kind={kind}
+      data-playing={Boolean(np?.playing)}
+      aria-label={np ? `Now playing: ${np.title}` : 'Now playing'}
+      tabIndex={preview ? -1 : undefined}
+      onClick={preview ? undefined : () => go('nowplaying')}
+    >
+      <span className="dock-medal-ring fx" aria-hidden="true" />
+      {kind === 'mascot' ? (
+        <img className="dock-medal-mascot" src={MASCOT_ASSETS[variant] ?? MASCOT_ASSETS.transparent} alt="" draggable={false} />
+      ) : (
+        <span className="dock-medal-art fx fx-drive" style={art ? { backgroundImage: `url(${JSON.stringify(art)})` } : undefined} aria-hidden="true">
+          {!art && <Music2 />}
+        </span>
+      )}
+    </button>
+  );
+}
 
 /**
  * The dock the head unit falls back to when the configurable one cannot be drawn. Written out by hand, on purpose: it must not depend
@@ -191,6 +250,8 @@ const FALLBACK: ReadonlyArray<{ route: Route; label: string; Icon: LucideIcon }>
 ];
 
 export function FallbackDock() {
+  // Only the side is read (a plain string, checked here), so the fallback still lines up with the page.
+  const position = useHeadUnit((s) => s.settings?.nav?.position);
   const route = useHeadUnit((s) => s.route);
   const go = useHeadUnit((s) => s.go);
   const here = route === 'app' || route === 'devices' || route === 'vehicle' ? 'apps' : route === 'nowplaying' ? 'media' : route;
@@ -201,7 +262,7 @@ export function FallbackDock() {
     </button>
   );
   return (
-    <nav className="dock" aria-label="Main" data-fallback="true">
+    <nav className="dock" aria-label="Main" data-fallback="true" data-pos={position === 'bottom' || position === 'right' ? position : 'left'}>
       <div className="dock-scroll">{FALLBACK.map(button)}</div>
       <i className="dock-gap" />
       <div className="dock-foot">{button({ route: 'settings', label: 'Settings', Icon: Settings })}</div>

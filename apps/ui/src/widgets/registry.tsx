@@ -1,8 +1,9 @@
-import { Activity, Clock, CloudSun, Compass, Cpu, Gauge, History, Hourglass, LayoutGrid, MapPinned, Music, Navigation, Radio, Route, SlidersHorizontal, Smartphone, Timer, WandSparkles, Wrench, Zap } from 'lucide-react';
+import { Activity, CarFront, Clock, CloudSun, Compass, Cpu, Disc3, Gauge, History, Hourglass, LayoutGrid, MapPinned, Music, Navigation, Radio, RadioTower, Route, SlidersHorizontal, Smartphone, Timer, WandSparkles, Wrench, Zap } from 'lucide-react';
 import { METRICS } from '../lib/metrics';
 import { GaugeWidget, Speedometer, Tachometer } from './gauges';
 import { ActionsWidget, FindCarWidget, GarageWidget, HealthWidget, ScenesWidget, TimersWidget, TripsTodayWidget, WeatherWidget } from './glance';
 import { NowPlayingWidget, RadioPresets, RecentTiles } from './media';
+import { ClockWeather, FmTuner, HeroPlayer, QuickTiles, VehicleCard } from './showcase';
 import { ClockWidget, CompassWidget, DevicesWidget, GpsMini, LauncherWidget, QuickControls, TripWidget } from './simple';
 import type { WidgetDef } from './types';
 
@@ -23,6 +24,24 @@ export const WIDGETS: WidgetDef[] = [
   },
   { type: 'gps', name: 'Satellite GPS', description: 'USB GPS speed, heading and trip distance', icon: Compass, group: 'Driving', size: { w: 4, h: 2 }, min: { w: 3, h: 2 }, Component: GpsMini },
   { type: 'compass', name: 'Compass', description: 'A compass rose that turns with the car', icon: Navigation, group: 'Driving', size: { w: 3, h: 3 }, min: { w: 2, h: 2 }, Component: CompassWidget },
+  {
+    type: 'hero',
+    name: 'Hero player',
+    description: 'Big artwork, controls, a spectrum and your mascot',
+    icon: Disc3,
+    group: 'Music',
+    size: { w: 8, h: 4 },
+    min: { w: 5, h: 2 },
+    config: [
+      { key: 'mascot', label: 'Mascot in the card', options: [{ value: 'on', label: 'Show' }, { value: 'off', label: 'Hide' }], default: 'on' },
+      { key: 'layout', label: 'Layout', options: [{ value: 'card', label: 'Card' }, { value: 'focus', label: 'Full player' }], default: 'card' },
+    ],
+    Component: HeroPlayer,
+  },
+  { type: 'clockWeather', name: 'Clock & weather', description: 'Big time, date and the weather', icon: CloudSun, group: 'Everyday', size: { w: 3, h: 4 }, min: { w: 3, h: 2 }, Component: ClockWeather },
+  { type: 'fmTuner', name: 'FM transmitter', description: 'Frequency, dial and saved stations', icon: RadioTower, group: 'Music', size: { w: 3, h: 2 }, min: { w: 3, h: 2 }, Component: FmTuner },
+  { type: 'quickTiles', name: 'Quick tiles', description: 'Six big shortcuts', icon: LayoutGrid, group: 'Everyday', size: { w: 3, h: 2 }, min: { w: 3, h: 2 }, Component: QuickTiles },
+  { type: 'vehicleCard', name: 'Vehicle', description: 'Your car, faults and this drive', icon: CarFront, group: 'Car', size: { w: 3, h: 2 }, min: { w: 3, h: 2 }, Component: VehicleCard },
   { type: 'nowPlaying', name: 'Now Playing', description: 'Music controls and animated artwork', icon: Music, group: 'Music', size: { w: 5, h: 4 }, min: { w: 3, h: 1 }, Component: NowPlayingWidget },
   { type: 'recent', name: 'Jump back in', description: 'Recently played — tap to resume', icon: History, group: 'Music', size: { w: 5, h: 2 }, min: { w: 3, h: 1 }, Component: RecentTiles },
   { type: 'radioPresets', name: 'Radio presets', description: 'One-tap favourite stations', icon: Radio, group: 'Music', size: { w: 5, h: 2 }, min: { w: 3, h: 1 }, Component: RadioPresets },

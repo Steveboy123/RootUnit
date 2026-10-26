@@ -389,6 +389,10 @@ export interface Settings {
   sceneIntensity: number;
   /** Let the real weather add to the scene: rain, snow, fog or a starry sky. Needs the weather to be on. */
   weatherFx: boolean;
+  /** A soft light in the album art's colour behind the artwork. */
+  albumGlow: boolean;
+  /** Let the background itself move: drifting colours, a slow wallpaper pan. Off keeps the background still. */
+  bgMotion: boolean;
   units: 'metric' | 'imperial';
   clock24h: boolean;
   /** Switch between dayTheme and nightTheme on a schedule (overrides `theme`). */
@@ -480,6 +484,8 @@ export const DEFAULT_SETTINGS: Settings = {
   gaugeStyle: 'arc',
   standbyStyle: 'clock',
   dockStyle: 'island',
+  albumGlow: true,
+  bgMotion: true,
   sceneIntensity: 60,
   weatherFx: false,
   units: 'metric',

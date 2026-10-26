@@ -208,7 +208,7 @@ const someItem = (r: Rng, n: Record<string, unknown>): Record<string, unknown> |
 
 /** Targeted damage. Each one makes a near-valid configuration invalid in one specific way. */
 const DAMAGE: Array<(r: Rng, n: Record<string, unknown>) => void> = [
-  (r, n) => void (n[r.pick(['position', 'size', 'labels'])] = r.chance(0.5) ? junk(r) : r.pick(['bottom', 'top', 'LEFT', ' left', 'huge', 'sometimes'])),
+  (r, n) => void (n[r.pick(['position', 'size', 'labels'])] = r.chance(0.5) ? junk(r) : r.pick(['middle', 'top', 'LEFT', ' left', 'huge', 'sometimes'])),
   (r, n) => void (n.version = r.pick([2, '1', 1.5, 0, -1, null, true, [1], 1n])),
   (_r, n) => void delete n.version,
   (_r, n) => void delete n.items,

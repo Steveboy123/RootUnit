@@ -3,7 +3,7 @@ import { DEFAULT_NAV, type NavConfig, type NavPosition } from '@headunit/shared'
 import { APPS } from '../../../apps/registry';
 import { useTypingLocked } from '../../../lib/driving';
 import { resolveNav, type NavContext } from '../../../lib/nav';
-import { countFit, createNavSession, sameNav, type NavSession } from '../../../lib/navEdit';
+import { countFit, countFitAcross, createNavSession, sameNav, type NavSession } from '../../../lib/navEdit';
 import { useHeadUnit } from '../../../store';
 import { NavEditorView, type NavScreen, type NavTab } from './NavEditorView';
 
@@ -24,7 +24,9 @@ function useRailFit(position: NavPosition, size: NavConfig['size']): number | nu
     const rail = liveRail();
     if (!rail) return setHeight(null);
     const read = () => {
-      setHeight(rail.clientHeight > 0 ? rail.clientHeight : null);
+      // Across the bottom the bar's length is its width.
+      const length = position === 'bottom' ? rail.clientWidth : rail.clientHeight;
+      setHeight(length > 0 ? length : null);
       setTight(typeof matchMedia === 'function' && matchMedia('(max-height: 520px)').matches);
     };
     read();
@@ -33,7 +35,8 @@ function useRailFit(position: NavPosition, size: NavConfig['size']): number | nu
     ro.observe(rail);
     return () => ro.disconnect();
   }, [position, savedPosition]);
-  return height === null ? null : countFit(height, size, tight ? 'tight' : 'default');
+  if (height === null) return null;
+  return position === 'bottom' ? countFitAcross(height, size) : countFit(height, size, tight ? 'tight' : 'default');
 }
 
 /**

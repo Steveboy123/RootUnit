@@ -69,6 +69,7 @@
   --tap: 48px;
   --status-h: 50px;
   --dock-w: 84px;
+  --dock-h: 74px;
   --dock-inset: 10px;
 
   /* Motion */
@@ -147,15 +148,14 @@ html[data-font='mono'] {
   --tracking-display: -0.03em;
 }
 
-/* Dock size follows the navigation's own size setting (data-nav-size on .app). */
+/* The dock's own size is set on the dock (shell.css); the page reads it here too so it can leave room. */
 .app[data-nav-size='compact'] {
   --dock-w: 68px;
+  --dock-h: 62px;
 }
 .app[data-nav-size='large'] {
   --dock-w: 104px;
-}
-.app[data-dock='pill'] {
-  --dock-w: 64px;
+  --dock-h: 88px;
 }
 .app[data-dock='rail'] {
   --dock-inset: 0px;

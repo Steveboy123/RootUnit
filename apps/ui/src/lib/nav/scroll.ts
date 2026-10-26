@@ -19,16 +19,17 @@ export function railFade(scrollTop: number, clientHeight: number, scrollHeight: 
  * The scrolling head of the rail: tells which ends fade out (data-fade-top / data-fade-bottom) and keeps the current page's button in
  * view whenever it changes. `activeKey` is anything that changes when the highlighted button does (or the buttons move).
  */
-export function useRailScroll(activeKey: string) {
+export function useRailScroll(activeKey: string, axis: 'x' | 'y' = 'y') {
   const ref = useRef<HTMLDivElement>(null);
   const [fade, setFade] = useState<RailFade>({ top: false, bottom: false });
 
   const measure = useCallback(() => {
     const el = ref.current;
     if (!el) return;
-    const next = railFade(el.scrollTop, el.clientHeight, el.scrollHeight);
+    // Across a bottom bar, "top" and "bottom" are its start and end.
+    const next = axis === 'x' ? railFade(el.scrollLeft, el.clientWidth, el.scrollWidth) : railFade(el.scrollTop, el.clientHeight, el.scrollHeight);
     setFade((f) => (f.top === next.top && f.bottom === next.bottom ? f : next));
-  }, []);
+  }, [axis]);
 
   // Look again whenever the head or any button changes size (a size change, a label wrapping, the window or the keyboard resizing).
   useEffect(() => {
@@ -45,9 +46,9 @@ export function useRailScroll(activeKey: string) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    revealActive(el, 'y', RAIL_FADE_PX);
+    revealActive(el, axis, RAIL_FADE_PX);
     measure();
-  }, [activeKey, measure]);
+  }, [activeKey, measure, axis]);
 
   return { ref, fade, onScroll: measure };
 }

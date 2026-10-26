@@ -13,6 +13,11 @@
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas: 'main dock';
 }
+.app[data-nav-pos='bottom'] {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: 'main' 'dock';
+}
 
 .layer {
   position: absolute;
@@ -37,6 +42,13 @@
 }
 
 /* ---- Dock ---------------------------------------------------------------------------------------------------------------- */
+/*
+ * One dock, three places (data-pos: left · right · bottom) and ten looks (data-look), with data-size and data-labels, all set on the
+ * .dock element itself: a preview tile in Settings is a real dock with its own attributes, untouched by the app's. On a side the dock is
+ * a column; at the bottom it is a row.
+ *   island classic dock · pill floating pill · rail edge rail · ghost minimal icons · curve glowing curve · glass3d 3D glass keys
+ *   split two halves around the album art · tabs text tabs · wave a wave-shaped bar · mascot the mascot in the centre
+ */
 
 .dock {
   grid-area: dock;
@@ -56,33 +68,17 @@
   backdrop-filter: var(--surface-blur);
   -webkit-backdrop-filter: var(--surface-blur);
 }
-.app[data-nav-pos='right'] .dock {
+.dock[data-pos='right'] {
   margin-right: var(--dock-inset);
   margin-left: 0;
 }
-.app[data-dock='rail'] .dock {
-  margin: 0;
-  border-radius: 0;
-  background: var(--nav);
-  border: 0;
-  border-right: var(--bw-min) solid var(--border);
-  box-shadow: none;
-}
-.app[data-dock='rail'][data-nav-pos='right'] .dock {
-  border-right: 0;
-  border-left: var(--bw-min) solid var(--border);
-}
-.app[data-dock='pill'] .dock {
-  margin-top: calc(var(--dock-inset) + 26px);
-  margin-bottom: calc(var(--dock-inset) + 26px);
-  border-radius: var(--r-pill);
-  padding: 10px 5px;
-}
-.app[data-dock='ghost'] .dock {
-  background: transparent;
-  border-color: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
+.dock[data-pos='bottom'] {
+  flex-direction: row;
+  align-items: stretch;
+  width: auto;
+  height: var(--dock-h);
+  margin: 0 var(--dock-inset) var(--dock-inset);
+  padding: 6px 8px;
 }
 
 .dock-brand {
@@ -90,6 +86,7 @@
   place-items: center;
   height: 40px;
   margin-bottom: 2px;
+  flex: none;
 }
 .dock-brand i {
   display: block;
@@ -108,8 +105,9 @@
   border-radius: 3px;
   background: var(--bg2);
 }
-[data-nav-size='compact'] .dock-brand,
-.app[data-dock='pill'] .dock-brand {
+.dock[data-size='compact'] .dock-brand,
+.dock[data-pos='bottom'] .dock-brand,
+.dock:is([data-look='pill'], [data-look='tabs'], [data-look='split'], [data-look='mascot'], [data-look='wave']) .dock-brand {
   display: none;
 }
 
@@ -129,6 +127,16 @@
 .dock-scroll::-webkit-scrollbar {
   display: none;
 }
+.dock[data-pos='bottom'] :is(.dock-scroll, .dock-foot) {
+  flex-direction: row;
+  align-items: stretch;
+  min-width: 0;
+}
+.dock[data-pos='bottom'] .dock-scroll {
+  justify-content: space-around;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 .dock-scroll[data-fade-top='true'] {
   mask-image: linear-gradient(180deg, transparent, #000 26px);
 }
@@ -138,24 +146,38 @@
 .dock-scroll[data-fade-top='true'][data-fade-bottom='true'] {
   mask-image: linear-gradient(180deg, transparent, #000 26px, #000 calc(100% - 26px), transparent);
 }
+.dock[data-pos='bottom'] .dock-scroll[data-fade-top='true'] {
+  mask-image: linear-gradient(90deg, transparent, #000 26px);
+}
+.dock[data-pos='bottom'] .dock-scroll[data-fade-bottom='true'] {
+  mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent);
+}
+.dock[data-pos='bottom'] .dock-scroll[data-fade-top='true'][data-fade-bottom='true'] {
+  mask-image: linear-gradient(90deg, transparent, #000 26px, #000 calc(100% - 26px), transparent);
+}
 .dock-gap {
   flex: none;
   height: 1px;
   margin: 6px 10px;
   background: var(--border);
 }
+.dock[data-pos='bottom'] .dock-gap {
+  width: 1px;
+  height: auto;
+  margin: 10px 6px;
+}
 
-/* The moving highlight behind the current page's button. DockIndicator positions it with --y and --h. */
+/* The highlight behind the current page's button. The Indicator measures the button and sets --x --y --w --h; only the move animates. */
 .dock-ind {
   position: absolute;
   left: 0;
-  right: 0;
   top: 0;
+  width: var(--w, 100%);
   height: var(--h, 64px);
   border-radius: var(--r-lg);
   background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.24), rgba(var(--accent-2-rgb), 0.14));
   box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.35), 0 0 22px rgba(var(--accent-rgb), 0.18);
-  transform: translateY(var(--y, 0px));
+  transform: translate(var(--x, 0px), var(--y, 0px));
   transition: transform 420ms var(--ease-spring), opacity var(--dur-2);
   pointer-events: none;
 }
@@ -170,13 +192,17 @@
   background: var(--accent);
   box-shadow: 0 0 12px var(--accent);
 }
-.app[data-nav-pos='right'] .dock-ind::before {
+.dock[data-pos='right'] .dock-ind::before {
   left: auto;
   right: -6px;
 }
-.app[data-dock='ghost'] .dock-ind {
-  background: transparent;
-  box-shadow: none;
+.dock[data-pos='bottom'] .dock-ind::before {
+  left: 26%;
+  right: 26%;
+  top: auto;
+  bottom: -5px;
+  width: auto;
+  height: 3px;
 }
 
 .dock-btn {
@@ -194,7 +220,13 @@
   font-size: 0.7rem;
   font-weight: 650;
   flex: none;
-  transition: color var(--dur-2);
+  transition: color var(--dur-2), transform var(--dur-2) var(--ease-spring);
+}
+.dock[data-pos='bottom'] .dock-btn {
+  min-height: 0;
+  min-width: var(--dock-btn-w, 76px);
+  flex: 1 1 0;
+  max-width: 132px;
 }
 .dock-btn svg {
   width: 25px;
@@ -213,6 +245,9 @@
 .dock-btn[data-active='true'] svg {
   color: var(--accent-text);
   transform: scale(1.08);
+}
+.dock-btn:active {
+  transform: scale(0.94);
 }
 .dock-btn[data-armed='true'] {
   color: var(--on-accent);
@@ -247,37 +282,32 @@
 .dock-btn .dock-badge[data-tone='ok'] {
   background: var(--ok);
 }
-[data-nav-labels='never'] .dock-btn > span,
-[data-nav-labels='active'] .dock-btn:not([data-active='true']) > span {
+.dock[data-labels='never'] .dock-btn > span,
+.dock[data-labels='active'] .dock-btn:not([data-active='true']) > span {
   display: none;
 }
-[data-nav-labels='never'] .dock-btn,
-[data-nav-labels='active'] .dock-btn:not([data-active='true']) {
+.dock[data-labels='never'] .dock-btn,
+.dock[data-labels='active'] .dock-btn:not([data-active='true']) {
   min-height: 56px;
 }
-[data-nav-size='compact'] .dock-btn {
+.dock[data-size='compact'] .dock-btn {
   min-height: 52px;
   font-size: 0.64rem;
 }
-[data-nav-size='compact'] .dock-btn svg {
+.dock[data-size='compact'] .dock-btn svg {
   width: 22px;
   height: 22px;
 }
-[data-nav-size='large'] .dock-btn {
+.dock[data-size='large'] .dock-btn {
   min-height: 74px;
   font-size: 0.8rem;
 }
-[data-nav-size='large'] .dock-btn svg {
+.dock[data-size='large'] .dock-btn svg {
   width: 30px;
   height: 30px;
 }
-.app[data-dock='pill'] .dock-btn {
-  min-height: 52px;
-  font-size: 0.6rem;
-  border-radius: var(--r-pill);
-}
-.app[data-dock='pill'] .dock-ind {
-  border-radius: var(--r-pill);
+.dock[data-pos='bottom'] .dock-btn {
+  min-height: 0;
 }
 .dock[data-editing='true'] {
   box-shadow: 0 0 0 2px var(--accent), 0 16px 40px rgba(0, 0, 0, 0.35);
@@ -288,6 +318,247 @@
   height: 1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
+}
+
+/* The centre medallion of the split and mascot bars. */
+.dock-medal {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  flex: none;
+  align-self: center;
+  width: var(--medal, 64px);
+  height: var(--medal, 64px);
+  margin: 2px auto;
+  border-radius: 50%;
+  transition: transform var(--dur-2) var(--ease-spring);
+}
+.dock[data-pos='bottom'] .dock-medal {
+  --medal: calc(var(--dock-h) - 16px);
+  margin: 0 12px;
+}
+.dock-medal:active {
+  transform: scale(0.94);
+}
+.dock-medal-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--accent), var(--accent-2), transparent 55%, var(--accent));
+  box-shadow: 0 0 22px rgba(var(--accent-rgb), 0.55);
+  animation: spin 6s linear infinite;
+}
+.dock-medal-art,
+.dock-medal-mascot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--bg2);
+}
+.dock-medal-art {
+  display: grid;
+  place-items: center;
+  background: var(--card-hi) center / cover no-repeat;
+  color: var(--dim);
+}
+.dock-medal[data-playing='true'] .dock-medal-art {
+  animation: spin 9s linear infinite;
+}
+.dock-medal-mascot {
+  object-fit: cover;
+  object-position: 50% 18%;
+  background: radial-gradient(circle at 50% 40%, rgba(var(--accent-rgb), 0.45), var(--bg2) 70%);
+}
+html[data-calm='true'] .dock-medal-ring,
+html[data-calm='true'] .dock-medal-art {
+  animation: none;
+}
+
+/* Sizes: the dock's own width (on a side) or height (at the bottom). */
+.dock[data-size='compact'] {
+  --dock-w: 68px;
+  --dock-h: 62px;
+}
+.dock[data-size='large'] {
+  --dock-w: 104px;
+  --dock-h: 88px;
+}
+.dock[data-look='pill']:not([data-pos='bottom']) {
+  --dock-w: 64px;
+}
+
+/* ---- The ten looks -------------------------------------------------------------------------------------------------------- */
+
+/* Floating pill: slimmer and fully rounded, floating off the edges. */
+.dock[data-look='pill'] {
+  margin-top: calc(var(--dock-inset) + 26px);
+  margin-bottom: calc(var(--dock-inset) + 26px);
+  border-radius: var(--r-pill);
+  padding: 10px 5px;
+}
+.dock[data-look='pill'][data-pos='bottom'] {
+  justify-self: center;
+  width: min(640px, calc(100% - 40px));
+  margin: 0 auto var(--dock-inset);
+  padding: 6px 12px;
+}
+.dock[data-look='pill'] :is(.dock-btn, .dock-ind) {
+  border-radius: var(--r-pill);
+}
+.dock[data-look='pill'] .dock-btn {
+  min-height: 52px;
+  font-size: 0.6rem;
+}
+
+/* Edge rail: fastened to the edge, no float. */
+.dock[data-look='rail'] {
+  margin: 0;
+  border-radius: 0;
+  background: var(--nav);
+  border: 0;
+  border-right: var(--bw-min) solid var(--border);
+  box-shadow: none;
+}
+.dock[data-look='rail'][data-pos='right'] {
+  border-right: 0;
+  border-left: var(--bw-min) solid var(--border);
+}
+.dock[data-look='rail'][data-pos='bottom'] {
+  border-right: 0;
+  border-top: var(--bw-min) solid var(--border);
+}
+
+/* Minimal icons: no backing, no names, a glowing icon for the page you are on. */
+.dock[data-look='ghost'] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.dock[data-look='ghost'] .dock-ind {
+  background: transparent;
+  box-shadow: none;
+}
+.dock[data-look='ghost'] .dock-btn > span {
+  display: none;
+}
+.dock[data-look='ghost'] .dock-btn[data-active='true'] svg {
+  transform: scale(1.18);
+  color: var(--accent-text);
+}
+
+/* Glowing curve: the bar's edge is a curve of light, and the current button sits raised in a lit frame. */
+.dock[data-look='curve'] {
+  background: linear-gradient(180deg, rgba(var(--bg2-rgb), 0.92), rgba(var(--bg-rgb), 0.92));
+  border: 0;
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.2), 0 0 26px rgba(var(--accent-rgb), 0.22), 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+.dock[data-look='curve']::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(180deg, transparent 10%, var(--accent) 50%, transparent 90%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.dock[data-look='curve'][data-pos='bottom'] {
+  border-radius: 50% 50% var(--r-xl) var(--r-xl) / 34px 34px var(--r-xl) var(--r-xl);
+}
+.dock[data-look='curve'][data-pos='bottom']::before {
+  background: linear-gradient(90deg, transparent 6%, var(--accent) 50%, transparent 94%);
+}
+.dock[data-look='curve'] .dock-ind {
+  background: rgba(var(--accent-rgb), 0.16);
+  box-shadow: 0 0 0 2px var(--accent), 0 0 18px rgba(var(--accent-rgb), 0.65), inset 0 0 14px rgba(var(--accent-rgb), 0.35);
+}
+.dock[data-look='curve'] .dock-ind::before {
+  display: none;
+}
+
+/* 3D glass: every button is its own raised glass key; the current one glows. */
+.dock[data-look='glass3d'] {
+  background: rgba(var(--bg-rgb), 0.55);
+}
+.dock[data-look='glass3d'] .dock-btn {
+  margin: 2px;
+  background: linear-gradient(160deg, rgba(var(--ink-rgb), 0.12), rgba(var(--ink-rgb), 0.03));
+  border: var(--bw-min) solid rgba(var(--ink-rgb), 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+.dock[data-look='glass3d'] .dock-btn[data-active='true'] {
+  background: linear-gradient(160deg, var(--accent), rgba(var(--accent-2-rgb), 0.85));
+  color: var(--on-accent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 8px 20px rgba(var(--accent-rgb), 0.45);
+}
+.dock[data-look='glass3d'] .dock-btn[data-active='true'] svg {
+  color: var(--on-accent);
+}
+.dock[data-look='glass3d'] .dock-ind {
+  opacity: 0 !important;
+}
+
+/* Split: two halves around the album art. Side tabs: names only, in pill tabs. */
+.dock:is([data-look='split'], [data-look='mascot']) {
+  --medal: 66px;
+}
+.dock[data-look='tabs'] .dock-btn svg {
+  display: none;
+}
+.dock[data-look='tabs'] .dock-btn > span {
+  display: block !important;
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.dock[data-look='tabs'] .dock-btn {
+  min-height: 46px;
+}
+.dock[data-look='tabs'] .dock-ind {
+  background: var(--accent);
+  box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.4);
+}
+.dock[data-look='tabs'] .dock-ind::before {
+  display: none;
+}
+.dock[data-look='tabs'] .dock-btn[data-active='true'] {
+  color: var(--on-accent);
+}
+
+/* Wave: the bar's backing is a soft wave, the current button rides its crest. */
+.dock[data-look='wave'] {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.dock[data-look='wave']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: var(--r-xl);
+  background: linear-gradient(135deg, rgba(var(--bg2-rgb), 0.92), rgba(var(--accent-rgb), 0.18));
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 18 C25 0 50 30 75 10 S100 12 100 12 V100 H0 Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 18 C25 0 50 30 75 10 S100 12 100 12 V100 H0 Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+.dock[data-look='wave']:not([data-pos='bottom'])::before {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H82 C100 25 70 50 90 75 S82 100 82 100 H0 Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 0 H82 C100 25 70 50 90 75 S82 100 82 100 H0 Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+.dock[data-look='wave'] .dock-ind {
+  border-radius: var(--r-pill);
+}
+
+/* Mascot: the medallion holds the mascot; the bar glows in the accent. */
+.dock[data-look='mascot'] {
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.35), 0 0 30px rgba(var(--accent-rgb), 0.25), 0 16px 40px rgba(0, 0, 0, 0.4);
 }
 
 @media (max-height: 500px) {
@@ -319,6 +590,9 @@
 }
 .app[data-nav-pos='right'] .statusbar {
   padding: 0 14px 0 calc(var(--dock-inset) + 4px);
+}
+.app[data-nav-pos='bottom'] .statusbar {
+  padding: 0 14px;
 }
 .sb-left {
   display: flex;
@@ -556,6 +830,9 @@
 .app[data-nav-pos='right'] .page {
   padding-left: calc(var(--dock-inset) + 4px);
   padding-right: 14px;
+}
+.app[data-nav-pos='bottom'] .page {
+  padding: var(--gap) 14px 8px;
 }
 .page > * {
   flex-shrink: 0; /* a scrolling page grows; cards with overflow: hidden would otherwise be squashed to nothing */

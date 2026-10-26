@@ -205,7 +205,8 @@ describe('a patch to the rail, the launcher or the Quick Panel', () => {
     await expectEchoes({ panel: { version: 1, sections: { scenes: false } } }, 0); // a partial sections patch is not a correction
     await expectEchoes({ panel: { version: 1, sections: { scenes: 'maybe' } } }, 1);
     await expectEchoes({ nav: { version: 1, position: 'left' } }, 0);
-    await expectEchoes({ nav: { version: 1, position: 'bottom' } }, 1);
+    await expectEchoes({ nav: { version: 1, position: 'bottom' } }, 0);
+    await expectEchoes({ nav: { version: 1, position: 'top' } }, 1);
     await expectEchoes({ nav: { version: 2, position: 'right' } }, 1);
     await expectEchoes({ nav: { position: 'right' } }, 1);
     await expectEchoes({ nav: 'right' }, 1);

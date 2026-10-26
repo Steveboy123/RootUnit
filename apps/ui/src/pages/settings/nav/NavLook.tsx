@@ -1,10 +1,14 @@
 import type { NavConfig, NavLabelMode, NavPosition, NavPresetId, NavSize } from '@headunit/shared';
-import { NAV_PRESETS } from '@headunit/shared';
+import { DOCK_STYLES, NAV_PRESETS } from '@headunit/shared';
+import { DOCK_INFO } from '../../../lib/appearanceInfo';
+import { useHeadUnit } from '../../../store';
+import { NavPreview } from './NavPreview';
 import { applyPreset, sameNav, setLook } from '../../../lib/navEdit';
 import { ConfirmButton, Segment } from '../../../components/ui';
 
 const POSITIONS: Array<{ value: NavPosition; label: string }> = [
   { value: 'left', label: 'Left' },
+  { value: 'bottom', label: 'Bottom' },
   { value: 'right', label: 'Right' },
 ];
 const SIZES: Array<{ value: NavSize; label: string }> = [
@@ -33,14 +37,30 @@ export interface NavLookProps {
   onChange(next: NavConfig): void;
 }
 
-/** The Look tab: where the rail is, how big, when names show, and the ready-made arrangements. No typing anywhere. */
+/** The Look tab: where the bar is, its style, how big, when names show, and the ready-made arrangements. No typing anywhere. */
 export function NavLook({ config, onChange }: NavLookProps) {
   const current = matchingPreset(config);
+  const dockStyle = useHeadUnit((s) => s.settings?.dockStyle ?? 'island');
+  const patchSettings = useHeadUnit((s) => s.patchSettings);
   return (
     <div className="ne-look">
       <section className="ne-group">
-        <h3 className="ne-h">Side of the screen</h3>
-        <Segment label="Side of the screen" value={config.position} options={POSITIONS} onChange={(position) => onChange(setLook(config, { position }))} />
+        <h3 className="ne-h">Where</h3>
+        <Segment label="Where the navigation sits" value={config.position} options={POSITIONS} onChange={(position) => onChange(setLook(config, { position }))} />
+      </section>
+      <section className="ne-group">
+        <h3 className="ne-h">Style</h3>
+        <div className="dock-styles" role="radiogroup" aria-label="Navigation style">
+          {DOCK_STYLES.map((id) => (
+            <button key={id} type="button" role="radio" aria-checked={dockStyle === id} className="dock-style" data-active={dockStyle === id} onClick={() => patchSettings({ dockStyle: id })}>
+              <span className="dock-style-pic" data-pos={config.position}>
+                <NavPreview config={config} style={id} />
+              </span>
+              <b>{DOCK_INFO[id].label}</b>
+              <small>{DOCK_INFO[id].blurb}</small>
+            </button>
+          ))}
+        </div>
       </section>
       <section className="ne-group">
         <h3 className="ne-h">Size</h3>

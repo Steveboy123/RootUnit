@@ -39,6 +39,7 @@ import {
   setLook,
   type NavSessionDeps,
   type Timers,
+  countFitAcross,
 } from './navEdit';
 
 // ---------------------------------------------------------------------------
@@ -440,9 +441,9 @@ describe('setLook', () => {
     expect(next.items).toEqual(c.items);
     expect(setLook(next, { labels: 'never' }).labels).toBe('never');
   });
-  it('a value that is not in the vocabulary (including the reserved "bottom") is ignored', () => {
+  it('a value that is not in the vocabulary is ignored', () => {
     const c = rail([A]);
-    expect(setLook(c, { position: 'bottom' as never })).toBe(c);
+    expect(setLook(c, { position: 'top' as never })).toBe(c);
     expect(setLook(c, { size: 'huge' as never, labels: 'sometimes' as never })).toBe(c);
   });
   it('no change at all is the same object', () => {
@@ -1128,5 +1129,15 @@ describe('openNavEditor', () => {
     useHeadUnit.setState({ vehicle: vehicle(60), conn: 'closed' });
     expect(openNavEditor()).toBe(false);
     expect(toast).toHaveBeenCalledWith(EDIT_LOCKED_MESSAGE);
+  });
+});
+
+describe('countFitAcross', () => {
+  it('counts buttons across a bottom bar, fewer when they are bigger', () => {
+    expect(countFitAcross(1000, 'regular')).toBe(12);
+    expect(countFitAcross(1000, 'large')).toBeLessThan(countFitAcross(1000, 'regular'));
+    expect(countFitAcross(1000, 'compact')).toBeGreaterThan(countFitAcross(1000, 'regular'));
+    expect(countFitAcross(0, 'regular')).toBe(0);
+    expect(countFitAcross(Number.NaN, 'regular')).toBe(0);
   });
 });

@@ -215,7 +215,7 @@ describe('1. golden: the default is today\'s rail', () => {
   it('keeps the vocabularies as the spec lists them (they are append-only)', () => {
     expect([...NAV_ROUTES]).toEqual(['home', 'drive', 'media', 'aa', 'apps', 'settings']);
     expect([...NAV_MUSIC_TABS]).toEqual(['spotify', 'tidal', 'youtube-music', 'radio']);
-    expect([...NAV_POSITIONS]).toEqual(['left', 'right']);
+    expect([...NAV_POSITIONS]).toEqual(['left', 'right', 'bottom']);
     expect([...NAV_SIZES]).toEqual(['compact', 'regular', 'large']);
     expect([...NAV_LABEL_MODES]).toEqual(['always', 'active', 'never']);
     expect([...QUICK_TILES]).toEqual(['camera', 'standby', 'passenger', 'lights', 'aa', 'phones', 'bt']);
@@ -878,7 +878,7 @@ describe('13. an unknown version is ignored on a patch, and a patch merges per f
   });
 
   it('an invalid field in a patch keeps the stored value of that field only', () => {
-    const out = applyNavPatch(customNav, { version: 1, position: 'bottom', size: 'compact', labels: 5, items: 'nope' });
+    const out = applyNavPatch(customNav, { version: 1, position: 'top', size: 'compact', labels: 5, items: 'nope' });
     expect(out).toEqual({ ...customNav, size: 'compact' });
   });
 
@@ -940,7 +940,8 @@ describe('14. a list of garbage gives the default rail, never a Settings-only on
 
   it('keeps position, size and labels that were fine', () => {
     expect(sanitizeNav(nav([{}], { position: 'right', size: 'large', labels: 'never' }))).toEqual({ ...DEFAULT_NAV, position: 'right', size: 'large', labels: 'never' });
-    expect(sanitizeNav(nav([{}], { position: 'bottom', size: 'compact' }))).toEqual({ ...DEFAULT_NAV, size: 'compact' });
+    expect(sanitizeNav(nav([{}], { position: 'top', size: 'compact' }))).toEqual({ ...DEFAULT_NAV, size: 'compact' });
+    expect(sanitizeNav(nav([{}], { position: 'bottom', size: 'compact' }))).toEqual({ ...DEFAULT_NAV, position: 'bottom', size: 'compact' });
   });
 
   it('brings back the fallback rail (the default when loading, the current rail for a live patch), with its scalars', () => {
@@ -1087,7 +1088,7 @@ describe('objects that JSON cannot make: getters, proxies, holes, null prototype
   });
 
   it('a fallback that is itself broken is made whole first, so the result is still a valid rail', () => {
-    for (const broken of [undefined, null, 5, 'x', [], {}, { version: 1 }, { version: 1, items: 'x' }, { version: 1, position: 'bottom', items: [{ id: 'x' }] }, { version: 1, items: [pin(1), pin(1)], size: 3 }]) {
+    for (const broken of [undefined, null, 5, 'x', [], {}, { version: 1 }, { version: 1, items: 'x' }, { version: 1, position: 'top', items: [{ id: 'x' }] }, { version: 1, items: [pin(1), pin(1)], size: 3 }]) {
       const out = sanitizeNav(nav('not an array'), broken as never);
       expectRail(out);
       expectRail(sanitizeNav(5, broken as never));
@@ -1232,7 +1233,7 @@ describe('arrangementsCorrected: does the sender need to be told what was kept?'
 
   it('says yes when something the sender wrote was repaired, dropped or refused', () => {
     const patches = [
-      { nav: { version: 1, position: 'bottom' } },
+      { nav: { version: 1, position: 'top' } },
       { nav: { version: 1, items: [pin(1), pin(1)] } },
       { nav: { version: 1, items: [{ id: 'BAD', to: { kind: 'app', app: 'gps' } }] } },
       { nav: { version: 1, items: [pin(1)] } }, // Settings and the divider were added
@@ -1317,6 +1318,8 @@ const VARIANT: { [K in keyof Settings]: Variant<K> } = {
   dockStyle: { valid: 'ghost', expected: 'ghost', invalid: 'floating' },
   sceneIntensity: { valid: 2, expected: 10, invalid: '50' },
   weatherFx: { valid: true, expected: true, invalid: 'on' },
+  albumGlow: { valid: false, expected: false, invalid: 'yes' },
+  bgMotion: { valid: false, expected: false, invalid: 1 },
   shape: { valid: 'round', expected: 'round', invalid: 'pointy' },
   bgBlur: { valid: 33.6, expected: 34, invalid: '33' },
   bgDim: { valid: 80, expected: 80, invalid: NaN },
@@ -1416,8 +1419,8 @@ describe('18. sanitizeSettings', () => {
     expect(loaded).toEqual({ ...DEFAULT_SETTINGS, theme: 'ember' });
   });
 
-  it('a rail with a newer position (bottom, planned for later) loads with the rest kept', () => {
-    const loaded = sanitizeSettings({ nav: { version: 1, position: 'bottom', size: 'large', items: json(NAV_PRESETS.minimal.items) } });
+  it('a rail with a newer position (one this build does not know) loads with the rest kept', () => {
+    const loaded = sanitizeSettings({ nav: { version: 1, position: 'top', size: 'large', items: json(NAV_PRESETS.minimal.items) } });
     expect(loaded.nav).toEqual({ ...NAV_PRESETS.minimal, position: 'left', size: 'large', labels: 'always' });
   });
 

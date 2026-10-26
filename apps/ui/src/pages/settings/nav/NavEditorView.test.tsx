@@ -269,10 +269,15 @@ describe('NavEditorView: where the rail starts to scroll on this screen', () => 
 describe('NavEditorView: the Look tab', () => {
   const html = view(DEFAULT_NAV, { tab: 'look' });
 
-  it('has Side, Size and Names as plain-language choices, and no Bottom', () => {
-    for (const name of ['Left', 'Right', 'Small', 'Medium', 'Large', 'Always', 'Current page', 'Never']) expect(find(html, name), name).toBeDefined();
-    expect(html).not.toMatch(/bottom/i);
-    expect(count(html, /role="radiogroup"/g)).toBe(4); // the tabs and the three choices
+  it('has Where (left, bottom, right), Style, Size and Names as plain-language choices', () => {
+    for (const name of ['Left', 'Bottom', 'Right', 'Small', 'Medium', 'Large', 'Always', 'Current page', 'Never']) expect(find(html, name), name).toBeDefined();
+    expect(count(html, /role="radiogroup"/g)).toBe(5); // the tabs, where, style, size and names
+  });
+
+  it('offers all ten navigation styles, each drawn as a small live preview', () => {
+    for (const name of ['Classic dock', 'Floating pill', 'Edge rail', 'Minimal icons', 'Glowing curve', '3D glass', 'Split', 'Text tabs', 'Wave', 'Mascot']) expect(html, name).toContain(`<b>${name}</b>`);
+    expect(count(html, /class="dock-style"/g)).toBe(10);
+    expect(count(html, /class="dock" aria-hidden="true"/g)).toBe(10);
   });
 
   it('marks the current choice', () => {

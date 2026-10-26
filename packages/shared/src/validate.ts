@@ -156,6 +156,8 @@ export function mergeSettings(current: Settings, patch: unknown): Settings {
   const sceneIntensity = clampInt(patch.sceneIntensity, APPEARANCE_RANGES.sceneIntensity);
   if (sceneIntensity !== null) next.sceneIntensity = sceneIntensity;
   if (typeof patch.weatherFx === 'boolean') next.weatherFx = patch.weatherFx;
+  if (typeof patch.albumGlow === 'boolean') next.albumGlow = patch.albumGlow;
+  if (typeof patch.bgMotion === 'boolean') next.bgMotion = patch.bgMotion;
   return next;
 }
 

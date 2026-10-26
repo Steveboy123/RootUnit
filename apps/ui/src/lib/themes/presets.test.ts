@@ -24,7 +24,8 @@ describe('presets', () => {
     expect(PRESETS.filter((p) => p.group === 'looks')).toHaveLength(14);
     expect(PRESETS.filter((p) => p.group === 'scenes')).toHaveLength(16);
     // spot checks pinned to v2's exact values
-    expect(PRESETS.find((p) => p.id === 'cyber-neon')?.patch).toEqual({
+    // RootUnit adds the matching finish (type, transition, gauges, bar, mascot) on top; v2's own values are all still there.
+    expect(PRESETS.find((p) => p.id === 'cyber-neon')?.patch).toMatchObject({
       theme: 'synthwave', accent: '#ff4fd8', background: 'grid', surface: 'neon', albumMotion: 'hologram', depthStyle: 'deep',
       motionSpeed: 'cinematic', effects: 'full', dashScene: 'orbits', glassFinish: 'prismatic',
     });
@@ -40,5 +41,18 @@ describe('presets', () => {
   it('the RootUnit signature preset is exactly the default look', () => {
     expect(activePreset(DEFAULT_SETTINGS)?.id).toBe('rootunit');
     expect(PALETTES[DEFAULT_SETTINGS.theme].accentDefault).toBe(DEFAULT_SETTINGS.accent);
+  });
+
+  it('every featured look and 3D scene is fully matched: wallpaper art, motion, type, transition, bar and mascot all chosen together', () => {
+    for (const p of PRESETS.filter((x) => x.group === 'featured' || x.group === 'scenes')) {
+      for (const k of ['font', 'transition', 'gaugeStyle', 'dockStyle', 'touchFx', 'mascotMotion', 'mascotAura', 'albumMotion', 'dashScene', 'motionSpeed'] as const) expect(p.patch[k], `${p.id}.${k}`).toBeDefined();
+      expect(p.thumb, p.id).toBeDefined();
+    }
+  });
+
+  it('the showcase looks from the reference sheets are all offered by name', () => {
+    const labels = new Set(PRESETS.map((p) => p.label));
+    for (const name of ['Retro Synthwave', 'Arctic Crystal', 'Phantom Pink', 'Liquid Chrome', 'Stealth AMOLED', 'Nature Drive', 'Cyber Neon', 'Ocean Glass', 'Vinyl Lounge', 'Aurora 3D', 'Night Racer', 'AMOLED Eclipse', 'Sunset GT', 'Focus HUD'])
+      expect(labels.has(name), name).toBe(true);
   });
 });
