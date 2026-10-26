@@ -14,3 +14,6 @@ __pycache__/
 
 # Owner-private app provisioning: never commit or publish
 private/
+
+# Half-written temp files from an interrupted save
+*.tmp-*
