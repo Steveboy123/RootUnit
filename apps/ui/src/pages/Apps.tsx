@@ -1,8 +1,8 @@
-import { Suspense, memo, useCallback, useMemo, useState } from 'react';
-import { AppWindow, EyeOff, Pin } from 'lucide-react';
+import { Suspense, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AppWindow, EyeOff, GalleryHorizontal, LayoutGrid, Pin } from 'lucide-react';
 import { APPS, APP_GROUPS, appById, type AppBadge, type AppDef } from '../apps/registry';
 import { useAppBadges } from '../apps/badges';
-import { Badge, DrivingGate, Empty, Page, Spinner } from '../components/ui';
+import { Badge, DrivingGate, Empty, Page, Segment, Spinner } from '../components/ui';
 import { EDIT_LOCKED_MESSAGE, useTypingLocked } from '../lib/driving';
 import { openAppDef, useLongPress } from '../lib/nav';
 import { hiddenApps, visibleApps } from '../lib/surfaces';
@@ -10,6 +10,56 @@ import { useHeadUnit } from '../store';
 import { AppTileMenu } from './apps/AppTileMenu';
 
 const NONE: readonly string[] = [];
+
+type LauncherView = 'grid' | 'carousel';
+const VIEW_KEY = 'rootunit.appsView';
+/** Grid or carousel is a per-screen convenience, kept in this browser only. */
+function readView(): LauncherView {
+  try {
+    return localStorage.getItem(VIEW_KEY) === 'carousel' ? 'carousel' : 'grid';
+  } catch {
+    return 'grid';
+  }
+}
+
+/**
+ * The launcher as a 3D carousel: one row of big tiles that snap to the middle, the ones to the sides turned away and smaller. The turn is
+ * set straight on each tile from the scroll position (no re-render), and is a transform, so it stays smooth on the Pi.
+ */
+function Carousel({ children }: { children: React.ReactNode }) {
+  const row = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = row.current;
+    if (!el) return;
+    let frame = 0;
+    const place = () => {
+      frame = 0;
+      const mid = el.scrollLeft + el.clientWidth / 2;
+      for (const item of Array.from(el.children) as HTMLElement[]) {
+        const d = Math.max(-3, Math.min(3, (item.offsetLeft + item.offsetWidth / 2 - mid) / Math.max(1, item.offsetWidth)));
+        item.style.setProperty('--d', d.toFixed(3));
+        item.style.setProperty('--a', Math.abs(d).toFixed(3));
+      }
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(place);
+    };
+    place();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(onScroll);
+    ro?.observe(el);
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      ro?.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+  return (
+    <div className="apps-carousel" ref={row} data-no-swipe>
+      {children}
+    </div>
+  );
+}
 
 /** One launcher tile. A tap opens the app; a long press opens its menu (and the click that ends the press is swallowed). */
 const AppTile = memo(function AppTile({ app, badge, hidden, onNav, canHold, onHold, index }: { app: AppDef; badge: AppBadge | undefined; hidden: boolean; onNav: boolean; canHold: boolean; onHold(app: AppDef): void; index: number }) {
@@ -58,6 +108,15 @@ export function AppsPage() {
   const locked = useTypingLocked();
   const [showHidden, setShowHidden] = useState(false);
   const [menuFor, setMenuFor] = useState<AppDef | null>(null);
+  const [view, setView] = useState<LauncherView>(readView);
+  const chooseView = (v: LauncherView) => {
+    setView(v);
+    try {
+      localStorage.setItem(VIEW_KEY, v);
+    } catch {
+      /* not kept; still switched */
+    }
+  };
   const hiddenCount = hiddenApps(APPS, hidden).length;
   const revealed = showHidden && hiddenCount > 0;
   const shown = visibleApps(APPS, hidden, badges, revealed);
@@ -66,15 +125,33 @@ export function AppsPage() {
   return (
     <Page
       actions={
-        hiddenCount > 0 ? (
-          <button type="button" className="chip apps-hidden-chip" data-active={revealed} aria-pressed={revealed} onClick={() => setShowHidden(!revealed)}>
-            <EyeOff />
-            Hidden ({hiddenCount})
-          </button>
-        ) : undefined
+        <>
+          {hiddenCount > 0 && (
+            <button type="button" className="chip apps-hidden-chip" data-active={revealed} aria-pressed={revealed} onClick={() => setShowHidden(!revealed)}>
+              <EyeOff />
+              Hidden ({hiddenCount})
+            </button>
+          )}
+          <Segment<LauncherView>
+            label="Launcher view"
+            value={view}
+            onChange={chooseView}
+            options={[
+              { value: 'grid', label: 'Grid', icon: LayoutGrid },
+              { value: 'carousel', label: 'Carousel', icon: GalleryHorizontal },
+            ]}
+          />
+        </>
       }
     >
-      {APP_GROUPS.map((group) => {
+      {view === 'carousel' && shown.length > 0 && (
+        <Carousel>
+          {shown.map((a, i) => (
+            <AppTile key={a.id} app={a} badge={badges[a.id]} hidden={revealed && hidden.includes(a.id)} onNav={onNav.has(a.id)} canHold={!editorOpen} onHold={hold} index={i} />
+          ))}
+        </Carousel>
+      )}
+      {view === 'grid' && APP_GROUPS.map((group) => {
         const apps = shown.filter((a) => a.group === group);
         if (apps.length === 0) return null;
         return (

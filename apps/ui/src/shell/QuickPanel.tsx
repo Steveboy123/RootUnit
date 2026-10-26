@@ -47,13 +47,59 @@ function SleepLeft({ endsAt }: { endsAt: number }) {
   return <span className="dim"> · music stops in {formatDuration((endsAt - now) / 1000)}</span>;
 }
 
-function LiveSlider({ icon, label, value, min = 0, onCommit }: { icon: ReactNode; label: string; value: number; min?: number; onCommit: (v: number) => void }) {
+/**
+ * A tall slider you drag up and down, like the controls on a phone: the fill rises from the bottom (a transform), the value is under
+ * it. The arrow keys move it by 5. Changes are sent while dragging; the number shown follows the finger.
+ */
+function TallSlider({ icon, label, value, min = 0, onChange, onIcon }: { icon: ReactNode; label: string; value: number; min?: number; onChange: (v: number) => void; onIcon?: () => void }) {
   const [live, setLive] = useState<number | null>(null);
+  const shown = live ?? value;
+  const at = (e: React.PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    return Math.round(Math.min(100, Math.max(min, ((r.bottom - e.clientY) / Math.max(1, r.height)) * 100)));
+  };
+  const set = (v: number) => {
+    setLive(v);
+    onChange(v);
+  };
   return (
-    <div className="qp-slider">
-      {icon}
-      <Slider label={label} value={value} min={min} thick onChange={(v) => { setLive(v); onCommit(v); }} onCommit={() => setLive(null)} />
-      <output>{live ?? value}</output>
+    <div className="qp-tall">
+      <div
+        className="qp-tall-track"
+        role="slider"
+        tabIndex={0}
+        aria-label={label}
+        aria-valuemin={min}
+        aria-valuemax={100}
+        aria-valuenow={shown}
+        data-no-swipe
+        onPointerDown={(e) => {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          set(at(e));
+        }}
+        onPointerMove={(e) => e.currentTarget.hasPointerCapture(e.pointerId) && set(at(e))}
+        onPointerUp={() => setLive(null)}
+        onPointerCancel={() => setLive(null)}
+        onKeyDown={(e) => {
+          const step = e.key === 'ArrowUp' || e.key === 'ArrowRight' ? 5 : e.key === 'ArrowDown' || e.key === 'ArrowLeft' ? -5 : 0;
+          if (!step) return;
+          e.preventDefault();
+          onChange(Math.min(100, Math.max(min, value + step)));
+        }}
+      >
+        <i style={{ transform: `scaleY(${shown / 100})` }} />
+        <b className="num">{shown}</b>
+      </div>
+      {onIcon ? (
+        <button type="button" className="qp-tall-icon" aria-label={label === 'Volume' && shown === 0 ? 'Unmute' : `Mute`} onClick={onIcon}>
+          {icon}
+        </button>
+      ) : (
+        <span className="qp-tall-icon" aria-hidden="true">
+          {icon}
+        </span>
+      )}
+      <small>{label}</small>
     </div>
   );
 }
@@ -135,30 +181,23 @@ export function QuickPanelBody() {
     <>
       <div className="qp-scrim" onClick={() => setOpen(false)} data-no-swipe data-no-edge-back />
       <div className="qp" role="dialog" aria-label="Quick controls" data-no-edge-back data-no-swipe>
-        <LiveSlider
-          icon={
-            <button type="button" className="icon-btn" style={{ width: 40, height: 40 }} aria-label={muted ? 'Unmute' : 'Mute'} onClick={() => patchSystem({ muted: !system.muted })}>
-              {muted ? <VolumeX /> : <Volume2 />}
-            </button>
-          }
-          label="Volume"
-          value={system.muted ? 0 : system.volume}
-          onCommit={(v) => patchSystem({ volume: v, muted: false })}
-        />
-        <LiveSlider icon={<SunMedium style={{ margin: '0 9px' }} />} label="Brightness" min={5} value={system.brightness} onCommit={(v) => patchSystem({ brightness: v })} />
-
-        <Segment<Exclude<DisplayMode, 'custom'>>
-          label="Display"
-          value={mode === 'custom' ? ('' as 'auto') : mode}
-          onChange={(m) => patchSettings(displayModePatch(m, settings))}
-          options={[
-            { value: 'auto', label: 'Auto', icon: Sunrise },
-            { value: 'day', label: 'Day', icon: Sun },
-            { value: 'night', label: 'Night', icon: Moon },
-          ]}
-        />
-
-        {tiles.length > 0 && <div className="qp-tiles stagger">{tiles}</div>}
+        <div className="qp-top">
+          <TallSlider icon={muted ? <VolumeX /> : <Volume2 />} label="Volume" value={system.muted ? 0 : system.volume} onChange={(v) => patchSystem({ volume: v, muted: false })} onIcon={() => patchSystem({ muted: !system.muted })} />
+          <TallSlider icon={<SunMedium />} label="Brightness" min={5} value={system.brightness} onChange={(v) => patchSystem({ brightness: v })} />
+          <div className="qp-side">
+            <Segment<Exclude<DisplayMode, 'custom'>>
+              label="Display"
+              value={mode === 'custom' ? ('' as 'auto') : mode}
+              onChange={(m) => patchSettings(displayModePatch(m, settings))}
+              options={[
+                { value: 'auto', label: 'Auto', icon: Sunrise },
+                { value: 'day', label: 'Day', icon: Sun },
+                { value: 'night', label: 'Night', icon: Moon },
+              ]}
+            />
+            {tiles.length > 0 && <div className="qp-tiles stagger">{tiles}</div>}
+          </div>
+        </div>
 
         {panel.sections.scenes && scenes && scenes.length > 0 && (
           <section className="col" style={{ gap: 8 }}>

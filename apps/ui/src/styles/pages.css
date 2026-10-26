@@ -852,3 +852,53 @@ code {
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
   }
 }
+
+/* The launcher as a 3D carousel: big tiles that snap to the middle; Carousel sets --d (offset from the middle) and --a (its size). */
+.apps-carousel {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 1;
+  min-height: 300px;
+  padding: 20px calc(50% - 110px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  perspective: 1000px;
+}
+.apps-carousel::-webkit-scrollbar {
+  display: none;
+}
+.apps-carousel .app-tile {
+  flex: none;
+  flex-direction: column;
+  justify-content: center;
+  width: 220px;
+  min-height: 250px;
+  gap: 14px;
+  text-align: center;
+  scroll-snap-align: center;
+  animation: none;
+  transform: rotateY(calc(var(--d, 0) * -30deg)) scale(calc(1 - var(--a, 0) * 0.13));
+  opacity: calc(1 - var(--a, 0) * 0.22);
+  transition: transform 120ms linear, opacity 120ms linear;
+}
+.apps-carousel .app-icon {
+  width: 104px;
+  height: 104px;
+  border-radius: 28px;
+}
+.apps-carousel .app-icon svg {
+  width: 52px;
+  height: 52px;
+}
+.apps-carousel .app-text {
+  align-items: center;
+}
+.apps-carousel .app-text small {
+  -webkit-line-clamp: 2;
+}
+html[data-calm='true'] .apps-carousel .app-tile {
+  transform: scale(calc(1 - var(--a, 0) * 0.1));
+}

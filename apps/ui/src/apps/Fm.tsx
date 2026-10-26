@@ -61,7 +61,7 @@ export function FmApp() {
 
       <Cols min={320}>
         <Panel title="Station" icon={Radio}>
-          <FmDial min={view.limits.min} max={view.limits.max} at={shown} on={view.status === 'transmitting'} />
+          <FmDial min={view.limits.min} max={view.limits.max} at={shown} on={view.status === 'transmitting'} level={view.level} />
           <Tuner view={tuner} pending={shown !== view.frequency} onStep={(steps) => view.ready && step(nextFrequency(shown, steps, view.limits))} />
           <Presets view={presets} current={shown === null ? null : frequencyText(shown)} busy={busy} onTune={jump} onToggle={togglePreset} />
         </Panel>
@@ -83,13 +83,21 @@ export function FmApp() {
 }
 
 /** An old-radio dial across the band, its needle at the frequency on the readout. Decoration: the readout above says the same in words. */
-function FmDial({ min, max, at, on }: { min: number; max: number; at: number | null; on: boolean }) {
+function FmDial({ min, max, at, on, level }: { min: number; max: number; at: number | null; on: boolean; level: number }) {
   const span = Math.max(0.1, max - min);
   const pos = at === null ? 0.5 : Math.min(1, Math.max(0, (at - min) / span));
+  // A spectrum across the band that peaks where you are tuned; while on air it rises and falls with the level being sent.
+  const BARS = 48;
+  const peak = (i: number) => Math.exp(-(((i + 0.5) / BARS - pos) ** 2) / 0.0035);
   const marks: number[] = [];
   for (let f = Math.ceil(min); f <= Math.floor(max); f += 2) marks.push(f);
   return (
-    <div className="fm-dial" data-on={on} aria-hidden="true">
+    <div className="fm-dial" data-on={on} aria-hidden="true" style={{ ['--lvl' as string]: on ? Math.max(0.35, Math.min(1, level)).toFixed(2) : '0.4' }}>
+      <div className="fm-spectrum">
+        {Array.from({ length: BARS }, (_, i) => (
+          <i key={i} className="fx" style={{ ['--h' as string]: (0.08 + 0.92 * peak(i) + 0.06 * Math.abs(Math.sin(i * 2.3))).toFixed(3), ['--i' as string]: i }} />
+        ))}
+      </div>
       <div className="fm-dial-scale">
         {Array.from({ length: 41 }, (_, i) => (
           <i key={i} data-major={i % 5 === 0} />

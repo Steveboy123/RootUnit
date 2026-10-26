@@ -133,12 +133,12 @@ describe('FM transmitter app: every state', () => {
     }
   });
 
-  it('the only inline styles are positions: the level meter’s transform, the dial’s needle and marks, and the grid', () => {
+  it('the only inline styles are positions and levels: the meter’s transform, the dial’s needle, marks and spectrum, and the grid', () => {
     const html = page(state({ status: 'transmitting', on: true, level: 0.3 }));
     const styles = [...html.matchAll(/ style="([^"]*)"/g)].map((m) => m[1]!);
     expect(styles).toContain('transform:scaleX(0.3)');
     expect(styles.some((s) => s.startsWith('--pos:'))).toBe(true);
-    for (const s of styles) expect(s).toMatch(/^(transform:scaleX\([\d.]+\)|--pos:[\d.]+|left:[\d.]+%|display:grid;.*)$/);
+    for (const s of styles) expect(s).toMatch(/^(transform:scaleX\([\d.]+\)|--pos:[\d.]+|--lvl:[\d.]+|--h:[\d.]+;--i:\d+|left:[\d.]+%|display:grid;.*)$/);
   });
 });
 
