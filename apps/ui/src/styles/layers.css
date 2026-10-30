@@ -1,0 +1,991 @@
+/* Backdrop and animated scenes. Everything here sits behind the content and never takes a touch. */
+
+.backdrop {
+  z-index: var(--z-backdrop);
+  overflow: hidden;
+  background: var(--bg);
+  container-type: size;
+}
+.bd-base {
+  background-color: var(--bg);
+}
+.bd-mode {
+  overflow: hidden;
+}
+.bd-entering {
+  animation: fade-in 700ms var(--ease-out) both;
+}
+.bd-leaving {
+  animation: fade-out 700ms var(--ease-out) both;
+}
+.bd-scrim {
+  transition: opacity 600ms var(--ease-out), background-color 600ms;
+}
+.bd-css {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+}
+.bd-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* The one blur filter on screen (Balanced and Full); Minimal draws colour clouds instead (lib/backdrop.ts). */
+.bd-blur {
+  transform: scale(1.18);
+  filter: blur(var(--blur, 28px)) saturate(1.5);
+}
+.bd-cover {
+  left: 30%;
+  width: 70%;
+  object-fit: cover;
+}
+.bd-blob {
+  inset: auto;
+  border-radius: 50%;
+}
+.bd-band {
+  inset: auto 0 0 0;
+  height: 60%;
+}
+.bd-floor {
+  inset: auto -50% -64px -50%;
+  height: calc(52% + 64px);
+  transform: perspective(380px) rotateX(64deg);
+  transform-origin: 50% 100%;
+  mask-image: linear-gradient(to top, #000 45%, transparent 95%);
+}
+.bd-sun {
+  inset: auto;
+  left: 50%;
+  top: 16%;
+  width: 46cqmin;
+  height: 46cqmin;
+  margin-left: -23cqmin;
+  border-radius: 50%;
+  mask-image: linear-gradient(to bottom, #000 52%, transparent 52%, transparent 56%, #000 56%, #000 63%, transparent 63%, transparent 68%, #000 68%, #000 74%, transparent 74%, transparent 80%, #000 80%, #000 85%, transparent 85%, transparent 92%, #000 92%);
+}
+
+.bd-rays {
+  /* Big enough to cover the screen from its centre at the bottom edge while it turns. */
+  inset: auto;
+  left: 50%;
+  top: 100%;
+  width: 170cqmax;
+  height: 170cqmax;
+  margin: -85cqmax 0 0 -85cqmax;
+  border-radius: 50%;
+}
+
+.bd-drift-a {
+  animation: bd-drift-a 40s ease-in-out infinite alternate;
+}
+.bd-drift-b {
+  animation: bd-drift-b 48s ease-in-out infinite alternate;
+}
+.bd-drift-c {
+  animation: bd-drift-c 56s ease-in-out infinite alternate;
+}
+.bd-pan-x {
+  animation: bd-pan 40s linear infinite;
+  inset: auto -800px 0 0;
+}
+.bd-grid-scroll {
+  animation: bd-grid calc(2.4s * var(--tempo)) linear infinite;
+}
+.bd-twinkle {
+  animation: blink calc(6s * var(--tempo)) ease-in-out infinite;
+}
+.bd-rise {
+  animation: breathe calc(9s * var(--tempo)) ease-in-out infinite;
+}
+.bd-spin-slow {
+  animation: spin calc(140s * var(--tempo)) linear infinite;
+}
+@keyframes bd-drift-a {
+  to {
+    transform: translate(9%, 7%) scale(1.12);
+  }
+}
+@keyframes bd-drift-b {
+  to {
+    transform: translate(-8%, 9%) scale(0.92);
+  }
+}
+@keyframes bd-drift-c {
+  to {
+    transform: translate(6%, -8%) scale(1.08);
+  }
+}
+@keyframes bd-pan {
+  to {
+    transform: translateX(-800px);
+  }
+}
+@keyframes bd-grid {
+  from {
+    transform: perspective(380px) rotateX(64deg) translateY(0);
+  }
+  to {
+    transform: perspective(380px) rotateX(64deg) translateY(64px);
+  }
+}
+
+/* ---- Scenes ---------------------------------------------------------------------------------------------------------- */
+
+.scene {
+  z-index: var(--z-scene);
+  overflow: hidden;
+  container-type: size;
+  opacity: calc(0.45 + 0.55 * var(--scene-k));
+  animation: fade-in 900ms var(--ease-out);
+}
+.scene.weather {
+  z-index: calc(var(--z-scene) + 1);
+}
+.scene > i,
+.scene i {
+  position: absolute;
+  display: block;
+}
+
+/* glow */
+.sc-glow {
+  width: 75cqmin;
+  height: 75cqmin;
+  border-radius: 50%;
+  animation: sc-glow calc(16s * var(--tempo)) ease-in-out infinite alternate;
+}
+.sc-glow.a {
+  left: -12cqmin;
+  top: -18cqmin;
+  background: radial-gradient(closest-side, rgba(var(--accent-rgb), 0.34), transparent);
+}
+.sc-glow.b {
+  right: -14cqmin;
+  bottom: -20cqmin;
+  background: radial-gradient(closest-side, rgba(var(--accent-2-rgb), 0.28), transparent);
+  animation-delay: -8s;
+}
+@keyframes sc-glow {
+  to {
+    transform: translate(calc(60px * var(--amp)), calc(40px * var(--amp))) scale(calc(1 + 0.18 * var(--amp)));
+  }
+}
+
+/* orbits */
+.sc-orbits {
+  position: absolute;
+  left: 58%;
+  top: 52%;
+}
+.sc-orbit {
+  position: absolute;
+  width: calc(44cqmin + var(--i) * 22cqmin);
+  height: calc(44cqmin + var(--i) * 22cqmin);
+  margin: calc((44cqmin + var(--i) * 22cqmin) / -2);
+  border-radius: 50%;
+  border: 1.5px solid rgba(var(--accent-rgb), calc(0.42 - var(--i) * 0.09));
+  animation: sc-orbit calc((26s + var(--i) * 12s) * var(--tempo)) linear infinite;
+}
+.sc-orbit:nth-child(2) {
+  animation-direction: reverse;
+  border-color: rgba(var(--accent-2-rgb), 0.32);
+}
+.sc-orbit > i {
+  left: 50%;
+  top: -5px;
+  width: 9px;
+  height: 9px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 14px var(--accent);
+}
+.sc-core {
+  position: absolute;
+  width: 18cqmin;
+  height: 18cqmin;
+  margin: -9cqmin;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--accent-rgb), 0.35), transparent);
+  animation: breathe calc(6s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes sc-orbit {
+  from {
+    transform: rotateX(70deg) rotateY(calc(var(--i) * 14deg - 14deg)) rotateZ(0deg);
+  }
+  to {
+    transform: rotateX(70deg) rotateY(calc(var(--i) * 14deg - 14deg)) rotateZ(360deg);
+  }
+}
+
+/* laser grid (also the floor of synthsun) */
+.sc-horizon {
+  left: 0;
+  right: 0;
+  top: 48%;
+  height: 26cqh;
+  margin-top: -13cqh;
+  background: radial-gradient(60% 50% at 50% 50%, rgba(var(--accent-rgb), 0.28), transparent 70%);
+}
+.sc-floor {
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  bottom: 0;
+  height: 52%;
+  overflow: hidden;
+  mask-image: linear-gradient(to top, #000 35%, transparent);
+}
+.sc-floor > i {
+  inset: -64px 0 0 0;
+  background: repeating-linear-gradient(90deg, rgba(var(--accent-rgb), 0.55) 0 1.5px, transparent 1.5px 64px),
+    repeating-linear-gradient(0deg, rgba(var(--accent-rgb), 0.55) 0 1.5px, transparent 1.5px 64px);
+  transform-origin: 50% 100%;
+  animation: sc-floor calc(1.8s * var(--tempo)) linear infinite;
+}
+@keyframes sc-floor {
+  from {
+    transform: perspective(300px) rotateX(66deg) translateY(0);
+  }
+  to {
+    transform: perspective(300px) rotateX(66deg) translateY(64px);
+  }
+}
+
+/* particles */
+.sc-mote {
+  left: var(--x);
+  bottom: -12px;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: rgba(var(--accent-rgb), 0.95);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.8);
+  opacity: 0;
+  animation: sc-mote calc(var(--d) * var(--tempo)) linear var(--delay) infinite;
+}
+.sc-mote:nth-child(3n) {
+  background: rgba(var(--accent-2-rgb), 0.95);
+  box-shadow: 0 0 8px rgba(var(--accent-2-rgb), 0.8);
+}
+@keyframes sc-mote {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  12%,
+  85% {
+    opacity: var(--o);
+  }
+  100% {
+    transform: translate(var(--dx), -108cqh);
+    opacity: 0;
+  }
+}
+
+/* warp */
+.sc-warp {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+}
+.sc-warp > i {
+  left: 0;
+  top: 0;
+  width: var(--l);
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(var(--ink-rgb), 0.9));
+  transform-origin: 0 50%;
+  opacity: 0;
+  animation: sc-warp calc(var(--d) * var(--tempo)) cubic-bezier(0.55, 0, 1, 0.45) var(--delay) infinite;
+}
+.sc-warp > i:nth-child(4n) {
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.95));
+}
+@keyframes sc-warp {
+  0% {
+    transform: rotate(var(--a)) translateX(2cqmax) scaleX(0.1);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: rotate(var(--a)) translateX(72cqmax) scaleX(1);
+    opacity: 0;
+  }
+}
+
+/* waves */
+.sc-wave {
+  left: 0;
+  bottom: 0;
+  width: 200%;
+  background: rgba(var(--accent-rgb), 0.16);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath d='M0 50 Q50 10 100 50 T200 50 T300 50 T400 50 V100 H0Z'/%3E%3C/svg%3E") 0 0 / 50% 100% repeat-x;
+  animation: sc-wave calc(14s * var(--tempo)) linear infinite;
+}
+.sc-wave.a {
+  height: 34%;
+}
+.sc-wave.b {
+  height: 26%;
+  background: rgba(var(--accent-2-rgb), 0.18);
+  animation-duration: calc(10s * var(--tempo));
+  animation-direction: reverse;
+}
+.sc-wave.c {
+  height: 18%;
+  background: rgba(var(--accent-rgb), 0.24);
+  animation-duration: calc(7s * var(--tempo));
+}
+@keyframes sc-wave {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* rain */
+.sc-drop {
+  left: var(--x);
+  top: 0;
+  width: 1.5px;
+  height: var(--l);
+  background: linear-gradient(to bottom, transparent, rgba(var(--ink-rgb), 0.6));
+  opacity: var(--o);
+  animation: sc-drop var(--d) linear var(--delay) infinite;
+}
+@keyframes sc-drop {
+  from {
+    transform: translate(0, -20cqh) rotate(14deg);
+  }
+  to {
+    transform: translate(-30cqh, 120cqh) rotate(14deg);
+  }
+}
+
+/* fireflies */
+.sc-fly {
+  left: var(--x);
+  top: var(--y);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(var(--warn-rgb), 1);
+  box-shadow: 0 0 10px 2px rgba(var(--warn-rgb), 0.7);
+  animation: sc-fly-move calc(var(--d) * var(--tempo)) ease-in-out var(--delay) infinite alternate, sc-fly-blink var(--b) ease-in-out infinite;
+}
+@keyframes sc-fly-move {
+  to {
+    transform: translate(var(--mx), var(--my));
+  }
+}
+@keyframes sc-fly-blink {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* matrix */
+.sc-matrix > span {
+  position: absolute;
+  top: 0;
+  left: var(--x);
+  white-space: pre;
+  font: 600 var(--fs) / 1.15 'JetBrains Mono Variable', ui-monospace, monospace;
+  color: rgba(var(--accent-rgb), var(--o));
+  text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.55);
+  mask-image: linear-gradient(to bottom, transparent, #000 85%);
+  animation: sc-matrix calc(var(--d) * var(--tempo)) linear var(--delay) infinite;
+}
+@keyframes sc-matrix {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(105cqh);
+  }
+}
+
+/* nebula and twinkles */
+.sc-nebula {
+  position: absolute;
+  inset: -25%;
+  animation: spin calc(160s * var(--tempo)) linear infinite;
+}
+.sc-nebula > i.n1,
+.sc-nebula > i.n2,
+.sc-nebula > i.n3 {
+  border-radius: 50%;
+  animation: breathe calc(14s * var(--tempo)) ease-in-out infinite;
+}
+.sc-nebula > .n1 {
+  left: 18%;
+  top: 22%;
+  width: 52%;
+  height: 34%;
+  background: radial-gradient(closest-side, rgba(var(--accent-rgb), 0.36), transparent);
+}
+.sc-nebula > .n2 {
+  left: 40%;
+  top: 44%;
+  width: 46%;
+  height: 32%;
+  background: radial-gradient(closest-side, rgba(var(--accent-2-rgb), 0.3), transparent);
+  animation-delay: -5s;
+}
+.sc-nebula > .n3 {
+  left: 26%;
+  top: 54%;
+  width: 34%;
+  height: 26%;
+  background: radial-gradient(closest-side, rgba(var(--ok-rgb), 0.18), transparent);
+  animation-delay: -9s;
+}
+.sc-twinkle {
+  left: var(--x);
+  top: var(--y);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(var(--ink-rgb), 0.95);
+  box-shadow: 0 0 6px rgba(var(--ink-rgb), 0.6);
+  animation: sc-twinkle var(--b) ease-in-out var(--delay) infinite;
+}
+@keyframes sc-twinkle {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* snow */
+.sc-flake {
+  left: var(--x);
+  top: 0;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: rgba(var(--ink-rgb), 0.92);
+  opacity: var(--o);
+  animation: sc-fall calc(var(--d) * var(--tempo)) linear var(--delay) infinite, sc-sway 3.2s ease-in-out var(--delay) infinite alternate;
+}
+@keyframes sc-fall {
+  from {
+    translate: 0 -5cqh;
+  }
+  to {
+    translate: 0 105cqh;
+  }
+}
+@keyframes sc-sway {
+  from {
+    transform: translateX(calc(var(--sw) * -1));
+  }
+  to {
+    transform: translateX(var(--sw));
+  }
+}
+
+/* lava */
+.sc-lava {
+  left: var(--x);
+  bottom: -20%;
+  width: var(--s);
+  height: var(--s);
+  margin-left: calc(var(--s) / -2);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 55%, transparent), color-mix(in srgb, var(--c) 20%, transparent) 70%, transparent);
+  animation: sc-lava calc(var(--d) * var(--tempo)) ease-in-out var(--delay) infinite alternate;
+}
+@keyframes sc-lava {
+  to {
+    transform: translateY(-88cqh) scale(1.35);
+  }
+}
+
+/* rings (sonar) */
+.sc-rings {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+.sc-rings > i {
+  width: 90cqmin;
+  height: 90cqmin;
+  margin: -45cqmin;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--accent-rgb), 0.5);
+  opacity: 0;
+  animation: sc-ring calc(8s * var(--tempo)) ease-out var(--delay) infinite;
+}
+@keyframes sc-ring {
+  0% {
+    transform: scale(0.05);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+/* comets */
+.sc-comet {
+  left: var(--x);
+  top: var(--y);
+  width: var(--l);
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(var(--ink-rgb), 0.95), rgba(var(--accent-rgb), 0.4) 30%, transparent);
+  opacity: 0;
+  animation: sc-comet calc(var(--d) * var(--tempo)) ease-in var(--delay) infinite;
+}
+@keyframes sc-comet {
+  0% {
+    transform: rotate(-28deg) translateX(0);
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  16%,
+  100% {
+    transform: rotate(-28deg) translateX(-70cqw);
+    opacity: 0;
+  }
+}
+
+/* bubbles */
+.sc-bubble {
+  left: var(--x);
+  bottom: 0;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  border: 1.5px solid rgba(var(--accent-rgb), 0.5);
+  background: radial-gradient(circle at 30% 30%, rgba(var(--ink-rgb), 0.35), transparent 40%), rgba(var(--accent-rgb), 0.06);
+  animation: sc-rise calc(var(--d) * var(--tempo)) linear var(--delay) infinite, sc-sway 2.6s ease-in-out var(--delay) infinite alternate;
+}
+@keyframes sc-rise {
+  from {
+    translate: 0 10cqh;
+  }
+  to {
+    translate: 0 -110cqh;
+  }
+}
+
+/* tunnel */
+.sc-tunnel {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+}
+.sc-tunnel > i {
+  width: 64cqmin;
+  height: 42cqmin;
+  margin: -21cqmin 0 0 -32cqmin;
+  border-radius: 22%;
+  border: 2px solid rgba(var(--accent-rgb), 0.55);
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25), inset 0 0 18px rgba(var(--accent-rgb), 0.18);
+  opacity: 0;
+  animation: sc-tunnel calc(4s * var(--tempo)) linear var(--delay) infinite;
+}
+.sc-tunnel > i:nth-child(2n) {
+  border-color: rgba(var(--accent-2-rgb), 0.5);
+}
+@keyframes sc-tunnel {
+  0% {
+    transform: scale(0.04);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(3.4);
+    opacity: 0;
+  }
+}
+
+/* synthwave sun */
+.sc-sun {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  width: 46cqmin;
+  height: 46cqmin;
+  margin-left: -23cqmin;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  opacity: 0.7;
+  box-shadow: 0 0 60px rgba(var(--accent-rgb), 0.45);
+}
+.sc-sun > i {
+  left: 0;
+  right: 0;
+  top: 52%;
+  height: 120%;
+  background: repeating-linear-gradient(to bottom, transparent 0 11px, var(--bg) 11px 16px);
+  animation: sc-stripes calc(2.6s * var(--tempo)) linear infinite;
+}
+@keyframes sc-stripes {
+  to {
+    transform: translateY(-16px);
+  }
+}
+
+/* circuit pulses */
+.sc-pulse {
+  top: var(--p);
+  left: 0;
+  width: var(--w);
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--c), transparent);
+  box-shadow: 0 0 10px var(--c);
+  animation: sc-pulse calc(var(--d) * var(--tempo)) linear var(--delay) infinite;
+}
+.sc-pulse:nth-child(odd) {
+  animation-direction: reverse;
+}
+@keyframes sc-pulse {
+  from {
+    transform: translateX(-30cqw);
+  }
+  to {
+    transform: translateX(130cqw);
+  }
+}
+
+/* highway: a road rushing towards you, street lamps flying past on both sides */
+.sc-road {
+  position: absolute;
+  left: -40%;
+  right: -40%;
+  bottom: 0;
+  height: 54%;
+  overflow: hidden;
+  mask-image: linear-gradient(to top, #000 55%, transparent 98%);
+}
+.sc-road > i {
+  inset: -700px 0 0 0;
+  background:
+    linear-gradient(90deg, transparent 33.5%, rgba(var(--accent-rgb), 0.85) 33.5% 34.3%, transparent 34.3% 65.7%, rgba(var(--accent-rgb), 0.85) 65.7% 66.5%, transparent 66.5%),
+    repeating-linear-gradient(to bottom, rgba(var(--accent-2-rgb), 0.95) 0 54px, transparent 54px 120px) center top / 18px 120px repeat-y,
+    linear-gradient(90deg, transparent 33%, rgba(var(--ink-rgb), 0.07) 34% 66%, transparent 67%);
+  transform-origin: 50% 100%;
+  mask-image: linear-gradient(to bottom, transparent, #000 40%);
+  animation: sc-road calc(0.9s * var(--tempo)) linear infinite;
+}
+@keyframes sc-road {
+  from {
+    transform: perspective(260px) rotateX(60deg) translateY(0);
+  }
+  to {
+    transform: perspective(260px) rotateX(60deg) translateY(120px);
+  }
+}
+.sc-horizon.low {
+  top: 80%;
+  height: 20cqh;
+  margin-top: -10cqh;
+}
+.sc-lamp {
+  left: 50%;
+  top: 80%;
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  border-radius: 50%;
+  background: rgba(var(--accent-2-rgb), 0.95);
+  box-shadow: 0 0 18px 4px rgba(var(--accent-2-rgb), 0.55);
+  opacity: 0;
+  animation: sc-lamp calc(2.2s * var(--tempo)) ease-in var(--delay) infinite;
+}
+@keyframes sc-lamp {
+  0% {
+    transform: translate(0, 0) scale(0.1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(calc(var(--side) * 62cqw), -60cqh) scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* sakura: blossom petals tumbling down */
+.sc-petal {
+  left: var(--x);
+  top: 0;
+  width: var(--s);
+  height: calc(var(--s) * 0.7);
+  border-radius: 80% 0 80% 0;
+  background: linear-gradient(135deg, #ffd1dc, #f48fb1);
+  opacity: var(--o);
+  animation: sc-fall calc(var(--d) * var(--tempo)) linear var(--delay) infinite, sc-tumble calc(3.4s * var(--tempo)) ease-in-out var(--delay) infinite alternate;
+}
+@keyframes sc-tumble {
+  from {
+    transform: translateX(calc(var(--sw) * -1)) rotate(calc(var(--rot) * -40deg));
+  }
+  to {
+    transform: translateX(var(--sw)) rotate(calc(var(--rot) * 140deg));
+  }
+}
+
+/* embers: sparks rising from a glow at the bottom */
+.sc-hearth {
+  left: 10%;
+  right: 10%;
+  bottom: -18cqh;
+  height: 40cqh;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 120, 40, 0.32), rgba(var(--accent-rgb), 0.1) 60%, transparent);
+  animation: sc-hearth calc(3.2s * var(--tempo)) ease-in-out infinite alternate;
+}
+@keyframes sc-hearth {
+  to {
+    opacity: 0.6;
+    transform: scale(1.05, 0.92);
+  }
+}
+.sc-ember {
+  left: var(--x);
+  bottom: 0;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: rgb(var(--c));
+  box-shadow: 0 0 8px 2px rgba(var(--c), 0.6);
+  animation: sc-ember-rise calc(var(--d) * var(--tempo)) ease-out var(--delay) infinite, sc-sway 1.8s ease-in-out var(--delay) infinite alternate;
+}
+@keyframes sc-ember-rise {
+  0% {
+    translate: 0 4cqh;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    translate: 0 -75cqh;
+    opacity: 0;
+  }
+}
+
+/* radar: a sweeping scope, blips lighting up as the beam passes */
+.sc-radar {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+}
+.sc-radar-grid {
+  width: 96cqmin;
+  height: 96cqmin;
+  margin: -48cqmin;
+  border-radius: 50%;
+  background:
+    linear-gradient(rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.22)) center / 100% 1px no-repeat,
+    linear-gradient(rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.22)) center / 1px 100% no-repeat,
+    repeating-radial-gradient(circle, transparent 0 calc(12cqmin - 1px), rgba(var(--accent-rgb), 0.24) calc(12cqmin - 1px) 12cqmin);
+  box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.3), inset 0 0 60px rgba(var(--accent-rgb), 0.12);
+}
+.sc-radar-sweep {
+  width: 96cqmin;
+  height: 96cqmin;
+  margin: -48cqmin;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(var(--accent-rgb), 0.5), rgba(var(--accent-rgb), 0.12) 40deg, transparent 90deg);
+  animation: spin calc(6s * var(--tempo)) linear infinite;
+}
+.sc-blip {
+  width: 8px;
+  height: 8px;
+  margin: -4px;
+  border-radius: 50%;
+  background: rgba(var(--accent-2-rgb), 1);
+  box-shadow: 0 0 10px rgba(var(--accent-2-rgb), 0.8);
+  transform: translate(var(--bx), var(--by));
+  opacity: 0;
+  animation: sc-blip calc(6s * var(--tempo)) linear var(--delay) infinite;
+}
+@keyframes sc-blip {
+  0% {
+    opacity: 1;
+  }
+  60%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* skyline: a city at night, windows coming on and off, a beacon and a passing plane */
+.sc-city {
+  position: absolute;
+  inset: 0;
+}
+.sc-tower {
+  left: var(--x);
+  bottom: 0;
+  width: var(--w);
+  height: var(--h);
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.12), rgba(var(--ink-rgb), 0.04)), rgba(var(--bg-rgb), 0.85);
+  border-top: 1px solid rgba(var(--accent-rgb), 0.3);
+}
+.sc-window {
+  left: var(--x);
+  top: var(--y);
+  width: 5px;
+  height: 7px;
+  background: rgba(var(--accent-2-rgb), 0.9);
+  box-shadow: 0 0 6px rgba(var(--accent-2-rgb), 0.5);
+  animation: blink calc(var(--b) * var(--tempo)) steps(2, jump-none) var(--delay) infinite;
+}
+.sc-beacon {
+  left: 46%;
+  bottom: 54%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff3b30;
+  box-shadow: 0 0 10px 3px rgba(255, 59, 48, 0.6);
+  animation: blink calc(1.6s * var(--tempo)) steps(2, jump-none) infinite;
+}
+.sc-plane {
+  left: 0;
+  top: 18%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.5);
+  animation: sc-plane calc(38s * var(--tempo)) linear infinite;
+}
+@keyframes sc-plane {
+  from {
+    transform: translate(-5cqw, 4cqh);
+  }
+  to {
+    transform: translate(105cqw, -6cqh);
+  }
+}
+
+/* storm: heavy cloud, distant lightning (gentle, and never more often than every few seconds) and rain */
+.sc-cloud {
+  left: -20%;
+  width: 90%;
+  height: 50%;
+  top: -18%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--ink-rgb), 0.1), transparent);
+  animation: sc-fog 60s linear infinite alternate;
+}
+.sc-cloud.b {
+  left: 35%;
+  top: -10%;
+  animation-delay: -30s;
+}
+.sc-flash {
+  inset: 0;
+  background: radial-gradient(70% 50% at 60% 10%, rgba(var(--ink-rgb), 0.5), transparent 70%);
+  opacity: 0;
+  animation: sc-flash calc(11s * var(--tempo)) linear infinite;
+}
+@keyframes sc-flash {
+  0%,
+  60%,
+  64%,
+  100% {
+    opacity: 0;
+  }
+  61% {
+    opacity: 0.35;
+  }
+  62% {
+    opacity: 0.08;
+  }
+  63% {
+    opacity: 0.28;
+  }
+}
+.sc-bolt {
+  left: var(--x);
+  top: 0;
+  width: 70px;
+  height: 46%;
+  margin-left: -35px;
+  clip-path: polygon(46% 0, 58% 0, 50% 38%, 66% 38%, 34% 100%, 42% 52%, 28% 52%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(var(--accent-2-rgb), 0.7));
+  transform: scale(var(--sc));
+  transform-origin: 50% 0;
+  opacity: 0;
+  animation: sc-bolt calc(27s * var(--tempo)) linear var(--delay) infinite;
+}
+@keyframes sc-bolt {
+  0%,
+  40%,
+  43.5%,
+  100% {
+    opacity: 0;
+  }
+  40.5%,
+  42.5% {
+    opacity: 0.85;
+  }
+  41.5% {
+    opacity: 0.2;
+  }
+}
+
+/* fog (weather) */
+.sc-fog {
+  left: -50%;
+  width: 200%;
+  height: 45%;
+  background: radial-gradient(closest-side, rgba(var(--ink-rgb), 0.14), transparent);
+  animation: sc-fog 70s linear infinite alternate;
+}
+.sc-fog.a {
+  top: 20%;
+}
+.sc-fog.b {
+  top: 55%;
+  animation-duration: 90s;
+  animation-direction: alternate-reverse;
+}
+@keyframes sc-fog {
+  to {
+    transform: translateX(25%);
+  }
+}
+
+/* Background motion off (Appearance → 3D effects): the backdrop and the scene stay still; everything else keeps its own motion. */
+html[data-bg-motion='off'] :is(.backdrop, .scene) :is(*, *::before, *::after) {
+  animation: none !important;
+}

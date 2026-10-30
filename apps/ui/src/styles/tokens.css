@@ -1,0 +1,177 @@
+/*
+ * RootUnit design tokens.
+ *
+ * Colours come from the palette (lib/themes, applied inline on <html> by applyAppearance). The values below are only the fallback
+ * (Obsidian) for the instant before the first snapshot; a test keeps this list in step with PALETTE_CSS_VARS + APPEARANCE_CSS_VARS.
+ *
+ * Rules every stylesheet follows (a policy test scans them):
+ *   - only `opacity` and `transform` are animated;
+ *   - colours are theme tokens, never literal white/black alphas (they vanish on light palettes: tint with rgba(var(--ink-rgb), a));
+ *   - `backdrop-filter` only through --surface-blur, which is `none` below Full effects;
+ *   - `filter` only on the one backdrop picture layer.
+ */
+:root {
+  --bg: #08080d;
+  --bg2: #0f0f17;
+  --nav: #0c0c13;
+  --card: rgba(225, 220, 255, 0.055);
+  --card-hi: rgba(225, 220, 255, 0.1);
+  --border: rgba(225, 220, 255, 0.1);
+  --border-strong: rgba(225, 220, 255, 0.38);
+  --text: #efeef8;
+  --dim: #a09fb8;
+  --track: rgba(225, 220, 255, 0.13);
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  --glow: 0.16;
+  --ok: #3ddc97;
+  --warn: #ffc14d;
+  --danger: #ff6b7a;
+  --glass-fill: rgba(225, 220, 255, 0.075);
+  --glass-border: rgba(225, 220, 255, 0.17);
+  --glass-hi: rgba(240, 236, 255, 0.28);
+  --scrim: #08080d;
+  --ink-rgb: 255, 255, 255;
+  --bg-rgb: 8, 8, 13;
+  --bg2-rgb: 15, 15, 23;
+  --ok-rgb: 61, 220, 151;
+  --warn-rgb: 255, 193, 77;
+  --danger-rgb: 255, 107, 122;
+  --glass-rgb: 225, 220, 255;
+  --glass-alpha: 0.075;
+  --bw-min: 1px;
+
+  --accent: #a66bff;
+  --accent-rgb: 166, 107, 255;
+  --accent-2: #ff6bd8;
+  --accent-2-rgb: 255, 107, 216;
+  --accent-text: #b98cff;
+  --on-accent: #06121a;
+  --bg-blur: 28px;
+  --bg-dim: 0.45;
+  --glass-a: 0.5;
+  --radius-scale: 1;
+  --text-scale: 1;
+  --scene-k: 0.6;
+  --tempo: 1.3;
+  --amp: 0.6;
+
+  /* Shape */
+  --r-xs: calc(6px * var(--radius-scale));
+  --r-sm: calc(10px * var(--radius-scale));
+  --r-md: calc(16px * var(--radius-scale));
+  --r-lg: calc(22px * var(--radius-scale));
+  --r-xl: calc(28px * var(--radius-scale));
+  --r-pill: 999px;
+
+  /* Space */
+  --gap: 10px;
+  --pad: 14px;
+  --tap: 48px;
+  --status-h: 50px;
+  --dock-w: 84px;
+  --dock-h: 74px;
+  --dock-inset: 10px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-1: 120ms;
+  --dur-2: 220ms;
+  --dur-3: 380ms;
+  --dur-4: 620ms;
+
+  /* Type */
+  --font-ui: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: var(--font-ui);
+  --font-num: var(--font-ui);
+  --num-features: 'tnum' 1, 'cv11' 1;
+  --tracking-display: -0.02em;
+  --weight-display: 750;
+
+  /* Surfaces (surfaces.css sets these per data-surface) */
+  --surface-fill: var(--card);
+  --surface-fill-hi: var(--card-hi);
+  --surface-border: var(--border);
+  --surface-shadow: var(--shadow);
+  --surface-blur: none;
+
+  /* Layers */
+  --z-backdrop: 0;
+  --z-scene: 1;
+  --z-beat: 2;
+  --z-mascot-behind: 3;
+  --z-main: 5;
+  --z-mascot-front: 20;
+  --z-dock: 30;
+  --z-panel: 60;
+  --z-sheet: 70;
+  --z-keyboard: 90;
+  --z-toast: 95;
+  --z-camera: 100;
+  --z-standby: 110;
+  --z-touch: 120;
+}
+
+/* Typefaces: all bundled (main.tsx imports them), so nothing is fetched from the internet. */
+html[data-font='system'] {
+  --font-ui: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+}
+html[data-font='grotesk'] {
+  --font-ui: 'Space Grotesk Variable', system-ui, sans-serif;
+  --tracking-display: -0.03em;
+}
+html[data-font='outfit'] {
+  --font-ui: 'Outfit Variable', system-ui, sans-serif;
+  --weight-display: 700;
+}
+html[data-font='rounded'] {
+  --font-ui: 'Nunito Variable', system-ui, sans-serif;
+  --weight-display: 850;
+  --tracking-display: -0.01em;
+}
+html[data-font='tech'] {
+  --font-ui: 'Rajdhani', 'Arial Narrow', system-ui, sans-serif;
+  --weight-display: 700;
+  --tracking-display: 0.01em;
+}
+html[data-font='future'] {
+  --font-ui: 'Rajdhani', 'Arial Narrow', system-ui, sans-serif;
+  --font-display: 'Orbitron Variable', 'Rajdhani', system-ui, sans-serif;
+  --font-num: 'Orbitron Variable', 'Rajdhani', system-ui, sans-serif;
+  --weight-display: 700;
+  --tracking-display: 0.02em;
+}
+html[data-font='mono'] {
+  --font-ui: 'JetBrains Mono Variable', ui-monospace, 'DejaVu Sans Mono', monospace;
+  --weight-display: 700;
+  --tracking-display: -0.03em;
+}
+
+/* The dock's own size is set on the dock (shell.css); the page reads it here too so it can leave room. */
+.app[data-nav-size='compact'] {
+  --dock-w: 68px;
+  --dock-h: 62px;
+}
+.app[data-nav-size='large'] {
+  --dock-w: 104px;
+  --dock-h: 88px;
+}
+.app[data-dock='rail'] {
+  --dock-inset: 0px;
+}
+
+/* Small screens (800×480): tighter everything. Wide short screens (1280×400): a slimmer status bar. */
+@media (max-height: 500px) {
+  :root {
+    --gap: 8px;
+    --pad: 11px;
+    --status-h: 44px;
+    --tap: 44px;
+  }
+}
+@media (max-width: 860px) {
+  :root {
+    --dock-inset: 8px;
+  }
+}

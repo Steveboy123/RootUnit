@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Head Unit Mascot Boot
+Description=Neon pink cyber-mascot loading screen
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/headunit
+ScriptFile=/usr/share/plymouth/themes/headunit/headunit.script

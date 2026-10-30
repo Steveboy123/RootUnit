@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "RPI Headunit Touch Companion",
+  "version": "0.3.3",
+  "description": "Local touchscreen keyboard and edge-swipe Back support for external sign-in pages in the RPI Head Unit kiosk.",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["companion.js"],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ]
+}

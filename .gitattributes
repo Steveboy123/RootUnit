@@ -1,0 +1,6 @@
+# Windows batch files need CRLF line endings to run reliably; shell scripts for the Pi must keep LF, even when the project is
+# checked out on Windows and copied to the Pi afterwards.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.sh text eol=lf
+install.sh text eol=lf

@@ -1,0 +1,639 @@
+/* Music-reactive overlay and the mascot. Both sit between the background and the content and never take a touch (except the mascot
+   in Home's edit mode). Driven by CSS variables written from JS (--beat-power, --beat-hit, --b0..--b15, --w0..--w31). */
+
+.beat {
+  --beat-tint: var(--accent);
+  z-index: var(--z-beat);
+  overflow: hidden;
+  container-type: size;
+}
+.beat i {
+  position: absolute;
+  display: block;
+}
+.beat-light {
+  left: 50%;
+  top: 50%;
+  width: 120cqmax;
+  height: 120cqmax;
+  margin: -60cqmax;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--beat-tint) 50%, transparent), color-mix(in srgb, var(--beat-tint) 14%, transparent) 55%, transparent);
+  opacity: var(--beat-power, 0);
+  transform: scale(calc(0.7 + var(--beat-power, 0) * 0.35));
+}
+.beat[data-mode='wash'] .beat-light {
+  inset: 0;
+  width: auto;
+  height: auto;
+  margin: 0;
+  border-radius: 0;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--beat-tint) 34%, transparent), color-mix(in srgb, var(--beat-tint) 10%, transparent));
+  opacity: calc(var(--beat-power, 0) * 0.9);
+  transform: none;
+}
+.beat-halo {
+  left: 50%;
+  top: 50%;
+  width: 56cqmin;
+  height: 56cqmin;
+  margin: -28cqmin;
+  border-radius: 50%;
+  border: 6px solid color-mix(in srgb, var(--beat-tint) 80%, transparent);
+  box-shadow: 0 0 40px color-mix(in srgb, var(--beat-tint) 60%, transparent), inset 0 0 40px color-mix(in srgb, var(--beat-tint) 40%, transparent);
+  opacity: var(--beat-power, 0);
+  transform: scale(calc(0.7 + var(--beat-power, 0) * 0.55));
+}
+.beat-edge {
+  opacity: var(--beat-power, 0);
+}
+.beat-edge.t,
+.beat-edge.b {
+  left: 0;
+  right: 0;
+  height: 18%;
+}
+.beat-edge.t {
+  top: 0;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--beat-tint) 60%, transparent), transparent);
+}
+.beat-edge.b {
+  bottom: 0;
+  background: linear-gradient(to top, color-mix(in srgb, var(--beat-tint) 60%, transparent), transparent);
+}
+.beat-edge.l,
+.beat-edge.r {
+  top: 0;
+  bottom: 0;
+  width: 12%;
+}
+.beat-edge.l {
+  left: 0;
+  background: linear-gradient(to right, color-mix(in srgb, var(--beat-tint) 55%, transparent), transparent);
+}
+.beat-edge.r {
+  right: 0;
+  background: linear-gradient(to left, color-mix(in srgb, var(--beat-tint) 55%, transparent), transparent);
+}
+.beat-rings {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  perspective: 600px;
+}
+.beat-rings > i {
+  width: 70cqmin;
+  height: 70cqmin;
+  margin: -35cqmin;
+  border-radius: 50%;
+  border: 3px solid color-mix(in srgb, var(--beat-tint) 75%, transparent);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--beat-tint) 50%, transparent);
+  opacity: calc(var(--beat-hit, 0) * 0.9 + var(--beat-power, 0) * 0.3);
+  transform: rotateX(68deg) scale(calc(0.4 + var(--beat-power, 0) * 0.5));
+}
+.beat-rings > i:nth-child(2) {
+  transform: rotateX(68deg) scale(calc(0.65 + var(--beat-power, 0) * 0.65));
+}
+.beat-rings > i:nth-child(3) {
+  transform: rotateX(68deg) scale(calc(0.9 + var(--beat-power, 0) * 0.8));
+  opacity: calc(var(--beat-hit, 0) * 0.6);
+}
+.beat-bars {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 0;
+  height: 42%;
+  display: flex;
+  align-items: flex-end;
+  gap: 1.2%;
+}
+.beat-bars > i {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(to top, color-mix(in srgb, var(--beat-tint) 55%, transparent), color-mix(in srgb, var(--beat-tint) 8%, transparent));
+  transform-origin: 50% 100%;
+  transform: scaleY(var(--v, 0.05));
+}
+.beat-radial {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+.beat-radial > i {
+  left: -2px;
+  bottom: 0;
+  width: 4px;
+  height: 20cqmin;
+  border-radius: 4px;
+  background: linear-gradient(to top, color-mix(in srgb, var(--beat-tint) 75%, transparent), transparent);
+  transform-origin: 50% 100%;
+  transform: rotate(var(--a)) translateY(-16cqmin) scaleY(var(--v, 0.05));
+}
+.beat-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14%;
+  height: 22%;
+  display: flex;
+  align-items: center;
+  gap: 0.6%;
+  padding: 0 2%;
+}
+.beat-wave > i {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--beat-tint) 45%, transparent);
+  transform: scaleY(calc(0.04 + var(--v, 0)));
+}
+.beat-burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+.beat-burst > i {
+  width: 10px;
+  height: 10px;
+  margin: -5px;
+  border-radius: 50%;
+  background: var(--beat-tint);
+  box-shadow: 0 0 14px var(--beat-tint);
+  opacity: 0;
+}
+.beat[data-burst='a'] .beat-burst > i {
+  animation: burst-a 700ms var(--ease-out) forwards;
+}
+.beat[data-burst='b'] .beat-burst > i {
+  animation: burst-b 700ms var(--ease-out) forwards;
+}
+@keyframes burst-a {
+  from {
+    transform: rotate(var(--a)) translateX(4cqmin) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: rotate(var(--a)) translateX(36cqmin) scale(0.4);
+    opacity: 0;
+  }
+}
+@keyframes burst-b {
+  from {
+    transform: rotate(var(--a)) translateX(4cqmin) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: rotate(var(--a)) translateX(36cqmin) scale(0.4);
+    opacity: 0;
+  }
+}
+
+/* ---- Mascot ----------------------------------------------------------------------------------------------------------- */
+
+.mascot {
+  z-index: var(--z-mascot-behind);
+  overflow: hidden;
+  container-type: size;
+}
+.mascot[data-place='front'] {
+  z-index: var(--z-mascot-front);
+}
+.mascot-pos {
+  position: absolute;
+  left: var(--mx);
+  top: var(--my);
+  width: var(--msize);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+}
+.mascot[data-mirror='true'] .mascot-pos {
+  transform: translate(-50%, -50%) scaleX(-1);
+}
+.mascot-subject {
+  position: absolute;
+  inset: 0;
+  opacity: var(--mop);
+  pointer-events: none;
+}
+.mascot[data-editing='true'] .mascot-subject {
+  pointer-events: auto;
+  cursor: grab;
+  outline: 2px dashed rgba(var(--accent-rgb), 0.7);
+  outline-offset: 6px;
+  border-radius: 12px;
+}
+.mascot[data-dragging='true'] .mascot-subject {
+  cursor: grabbing;
+}
+.mascot-motion {
+  position: absolute;
+  inset: 0;
+}
+.mascot-motion img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+.mascot-fxlayer,
+.mascot-ghost {
+  position: absolute;
+  inset: 0;
+  mask: var(--mask) center / contain no-repeat;
+  -webkit-mask: var(--mask) center / contain no-repeat;
+  opacity: 0;
+  pointer-events: none;
+}
+.mascot-hint {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translate(-50%, 100%);
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Auras */
+.mascot-aura {
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+}
+.mascot-aura i {
+  position: absolute;
+  display: block;
+}
+.mascot[data-aura='glow'] .mascot-aura {
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--accent-rgb), calc(0.18 + var(--mglow) * 0.42)), transparent 72%);
+  animation: breathe calc(5s * var(--tempo)) ease-in-out infinite;
+}
+.mascot[data-aura='halo'] .mascot-aura::before {
+  content: '';
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 2%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid rgba(var(--accent-rgb), calc(0.3 + var(--mglow) * 0.6));
+  box-shadow: 0 0 calc(10px + var(--mglow) * 30px) rgba(var(--accent-rgb), 0.6), inset 0 0 20px rgba(var(--accent-rgb), 0.35);
+  border-top-color: transparent;
+  animation: spin calc(14s * var(--tempo)) linear infinite;
+}
+.mascot[data-aura='sparks'] .mascot-aura i {
+  left: calc(18% + var(--i) * 6.5%);
+  bottom: 18%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  opacity: 0;
+  animation: spark calc((3s + var(--i) * 0.37s) * var(--tempo)) ease-out calc(var(--i) * -0.7s) infinite;
+}
+@keyframes spark {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  15% {
+    opacity: calc(0.4 + var(--mglow) * 0.6);
+  }
+  100% {
+    transform: translate(calc((var(--i) - 5) * 9px), -55cqmin) scale(0.3);
+    opacity: 0;
+  }
+}
+.mascot[data-aura='smoke'] .mascot-aura i {
+  left: calc(15% + var(--i) * 15%);
+  bottom: 4%;
+  width: 34%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--accent-rgb), calc(0.1 + var(--mglow) * 0.22)), transparent);
+  opacity: 0;
+  animation: smoke calc((9s + var(--i) * 1.3s) * var(--tempo)) ease-out calc(var(--i) * -2.1s) infinite;
+}
+@keyframes smoke {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40cqmin) scale(1.8);
+    opacity: 0;
+  }
+}
+/* Rings: three rings of light pulsing outwards from behind it, one after another. */
+.mascot[data-aura='rings'] .mascot-aura i {
+  left: 20%;
+  top: 20%;
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--accent-rgb), calc(0.35 + var(--mglow) * 0.6));
+  box-shadow: 0 0 calc(8px + var(--mglow) * 18px) rgba(var(--accent-rgb), 0.5);
+  opacity: 0;
+  animation: m-ring calc(4.5s * var(--tempo)) ease-out calc(var(--i) * -1.5s) infinite;
+}
+@keyframes m-ring {
+  0% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+/* Aurora: three soft curtains of light swaying behind it. */
+.mascot[data-aura='aurora'] .mascot-aura i {
+  left: calc(8% + var(--i) * 26%);
+  top: 0;
+  width: 34%;
+  height: 80%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, transparent, rgba(var(--accent-rgb), calc(0.14 + var(--mglow) * 0.3)) 45%, transparent);
+  transform-origin: 50% 0;
+  animation: m-curtain calc((8s + var(--i) * 1.7s) * var(--tempo)) ease-in-out calc(var(--i) * -2.3s) infinite alternate;
+}
+.mascot[data-aura='aurora'] .mascot-aura i:nth-child(2) {
+  background: linear-gradient(180deg, transparent, rgba(var(--accent-2-rgb), calc(0.14 + var(--mglow) * 0.3)) 45%, transparent);
+}
+@keyframes m-curtain {
+  from {
+    transform: skewX(-10deg) scaleY(0.85);
+    opacity: 0.55;
+  }
+  to {
+    transform: skewX(10deg) scaleY(1.08) translateX(8%);
+    opacity: 1;
+  }
+}
+
+/* The beat makes the aura breathe with the music (only when "react to the beat" is on). */
+.mascot[data-beat='true'] .mascot-aura {
+  transform: scale(calc(1 + var(--mascot-beat-power, 0) * 0.25));
+  opacity: calc(0.6 + var(--mascot-beat-power, 0) * 0.8);
+}
+
+/* Motions */
+.mascot[data-motion='float'] .mascot-motion {
+  animation: m-float calc(7s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes m-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(calc(-14px * var(--amp))) rotate(1deg);
+  }
+}
+.mascot[data-motion='tilt'] .mascot-motion {
+  animation: m-tilt calc(10s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes m-tilt {
+  0%,
+  100% {
+    transform: perspective(900px) rotateY(-14deg) rotateX(4deg);
+  }
+  50% {
+    transform: perspective(900px) rotateY(14deg) rotateX(-3deg);
+  }
+}
+.mascot[data-motion='breathe'] .mascot-motion,
+.mascot[data-motion='pulse'] .mascot-motion {
+  animation: breathe calc(4.5s * var(--tempo)) ease-in-out infinite;
+}
+.mascot[data-motion='pulse'] .mascot-aura {
+  animation: pulse calc(2.2s * var(--tempo)) ease-in-out infinite;
+}
+.mascot[data-motion='bounce'] .mascot-motion {
+  transform-origin: 50% 100%;
+  animation: m-bounce calc(2.4s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes m-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1.04, 0.96);
+  }
+  12% {
+    transform: translateY(0) scale(0.97, 1.03);
+  }
+  40% {
+    transform: translateY(calc(-9% * var(--amp))) scale(1);
+  }
+  70% {
+    transform: translateY(0) scale(1.05, 0.95);
+  }
+  82% {
+    transform: translateY(0) scale(1);
+  }
+}
+.mascot[data-motion='drift'] .mascot-motion {
+  animation: m-drift calc(34s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes m-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+  25% {
+    transform: translate(9%, -4%) rotate(2deg);
+  }
+  50% {
+    transform: translate(2%, 5%) rotate(-1deg);
+  }
+  75% {
+    transform: translate(-8%, -2%) rotate(-2deg);
+  }
+}
+.mascot[data-motion='sway'] .mascot-motion {
+  transform-origin: 50% 100%;
+  animation: m-sway calc(6s * var(--tempo)) ease-in-out infinite;
+}
+@keyframes m-sway {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+.mascot[data-motion='orbit'] .mascot-motion {
+  animation: m-orbit calc(24s * var(--tempo)) linear infinite;
+}
+@keyframes m-orbit {
+  0% {
+    transform: translate(14px, 0) rotate(0);
+  }
+  25% {
+    transform: translate(0, 14px) rotate(1.5deg);
+  }
+  50% {
+    transform: translate(-14px, 0) rotate(0);
+  }
+  75% {
+    transform: translate(0, -14px) rotate(-1.5deg);
+  }
+  100% {
+    transform: translate(14px, 0) rotate(0);
+  }
+}
+.mascot[data-motion='peek'] .mascot-motion {
+  animation: m-peek calc(18s * var(--tempo)) var(--ease-in-out) infinite;
+}
+@keyframes m-peek {
+  0%,
+  12% {
+    transform: translateX(70%) rotate(8deg);
+    opacity: 0;
+  }
+  22%,
+  70% {
+    transform: translateX(0) rotate(0);
+    opacity: 1;
+  }
+  80%,
+  100% {
+    transform: translateX(70%) rotate(8deg);
+    opacity: 0;
+  }
+}
+
+/* Hologram: a flickering, scanlined copy tinted with the accent. */
+.mascot[data-motion='hologram'] .mascot-motion {
+  animation: m-flicker calc(5s * var(--tempo)) steps(1) infinite, m-float calc(8s * var(--tempo)) ease-in-out infinite;
+}
+.mascot[data-motion='hologram'] .mascot-fxlayer {
+  opacity: 0.55;
+  background: repeating-linear-gradient(to bottom, rgba(var(--accent-rgb), 0.55) 0 2px, transparent 2px 5px);
+  animation: m-scanlines 1.6s linear infinite;
+}
+@keyframes m-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  47% {
+    opacity: 1;
+  }
+  48% {
+    opacity: 0.55;
+  }
+  49% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  51% {
+    opacity: 1;
+  }
+}
+@keyframes m-scanlines {
+  to {
+    transform: translateY(5px);
+  }
+}
+
+/* Scan: a bright line sweeps down the artwork. */
+.mascot[data-motion='scan'] .mascot-fxlayer {
+  opacity: 1;
+  background: linear-gradient(to bottom, transparent 0, rgba(var(--accent-rgb), 0.85) 50%, transparent 54%, transparent 100%) 0 0 / 100% 200% no-repeat;
+  animation: m-scan calc(4s * var(--tempo)) linear infinite;
+}
+@keyframes m-scan {
+  from {
+    transform: translateY(-50%);
+  }
+  to {
+    transform: translateY(50%);
+  }
+}
+
+/* Glitch: two colour ghosts and short jolts. */
+.mascot[data-motion='glitch'] .mascot-motion {
+  animation: m-glitch calc(3.6s * var(--tempo)) steps(1) infinite;
+}
+.mascot[data-motion='glitch'] .mascot-ghost.a {
+  background: rgba(var(--accent-rgb), 0.7);
+  animation: m-ghost-a calc(3.6s * var(--tempo)) steps(1) infinite;
+}
+.mascot[data-motion='glitch'] .mascot-ghost.b {
+  background: rgba(var(--accent-2-rgb), 0.7);
+  animation: m-ghost-b calc(3.6s * var(--tempo)) steps(1) infinite;
+}
+@keyframes m-glitch {
+  0%,
+  100% {
+    transform: none;
+  }
+  70% {
+    transform: translateX(-6px) skewX(4deg);
+  }
+  72% {
+    transform: translateX(5px);
+  }
+  74% {
+    transform: none;
+  }
+  90% {
+    transform: translateY(3px) skewX(-3deg);
+  }
+  91% {
+    transform: none;
+  }
+}
+@keyframes m-ghost-a {
+  0%,
+  69%,
+  75%,
+  100% {
+    opacity: 0;
+  }
+  70% {
+    opacity: 0.8;
+    transform: translateX(-10px);
+  }
+  73% {
+    opacity: 0.6;
+    transform: translateX(8px);
+  }
+}
+@keyframes m-ghost-b {
+  0%,
+  69%,
+  75%,
+  89%,
+  92%,
+  100% {
+    opacity: 0;
+  }
+  71% {
+    opacity: 0.7;
+    transform: translateX(10px);
+  }
+  90% {
+    opacity: 0.6;
+    transform: translateX(-7px);
+  }
+}

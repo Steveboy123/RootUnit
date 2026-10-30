@@ -1,0 +1,365 @@
+/*
+ * Surfaces: how every card, widget, panel and sheet is drawn. One class (.card) everywhere; the look comes from attributes on <html>
+ * (or on any ancestor, so a preview tile can show another combination):
+ *   data-surface  solid · glass · outline · neon · clay · hud · chrome · aero · brutal · holo · terminal · lumen
+ *   data-depth    flat · soft · deep · crystal · float · bevel · layered
+ *   data-glass    clear · frosted · prismatic · iridescent · smoked · liquid   (glass and aero surfaces)
+ * ::before belongs to the surface (HUD corners, chrome rim, aero gloss, holo foil, terminal scan lines); ::after to the depth / glass
+ * finish (and the holo surface's sheen, which stops with every other .card::after animation while driving).
+ */
+
+.card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background: var(--surface-fill);
+  border: var(--bw-min) solid var(--surface-border);
+  box-shadow: var(--surface-shadow);
+  backdrop-filter: var(--surface-blur);
+  -webkit-backdrop-filter: var(--surface-blur);
+  color: var(--text);
+}
+
+.card::before,
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.card.raised,
+.card .card {
+  --surface-fill: var(--surface-fill-hi);
+}
+
+/* ---- Surfaces ---------------------------------------------------------------------------------------------------------- */
+
+[data-surface='solid'] {
+  --surface-fill: var(--card);
+  --surface-fill-hi: var(--card-hi);
+  --surface-border: var(--border);
+}
+[data-surface='solid'] .card {
+  background: linear-gradient(var(--surface-fill), var(--surface-fill)), var(--bg);
+}
+
+[data-surface='glass'] {
+  --surface-fill: rgba(var(--glass-rgb), calc(var(--glass-alpha) * (0.35 + var(--glass-a) * 1.5)));
+  --surface-fill-hi: rgba(var(--glass-rgb), calc(var(--glass-alpha) * (0.6 + var(--glass-a) * 1.8)));
+  --surface-border: var(--glass-border);
+}
+[data-surface='glass'] .card {
+  box-shadow: var(--surface-shadow), inset 0 1px 0 var(--glass-hi);
+}
+
+[data-surface='outline'] {
+  --surface-fill: rgba(var(--bg-rgb), 0.28);
+  --surface-fill-hi: rgba(var(--ink-rgb), 0.06);
+  --surface-border: var(--border-strong);
+  --surface-shadow: none;
+}
+[data-surface='outline'] .card {
+  border-width: max(1.5px, var(--bw-min));
+}
+
+[data-surface='neon'] {
+  --surface-fill: rgba(var(--bg-rgb), 0.55);
+  --surface-fill-hi: rgba(var(--accent-rgb), 0.12);
+  --surface-border: rgba(var(--accent-rgb), 0.75);
+  --surface-shadow: 0 0 14px rgba(var(--accent-rgb), 0.35), inset 0 0 18px rgba(var(--accent-rgb), 0.1);
+}
+[data-surface='neon'] .card {
+  border-width: max(1.5px, var(--bw-min));
+}
+[data-surface='neon'] .card .card {
+  --surface-shadow: none;
+  --surface-border: rgba(var(--accent-rgb), 0.35);
+}
+
+[data-surface='clay'] {
+  --surface-fill: var(--bg2);
+  --surface-fill-hi: var(--card-hi);
+  --surface-border: transparent;
+  --surface-shadow: -5px -5px 14px rgba(255, 255, 255, calc(0.035 + var(--glow) * 0.1)), 8px 10px 22px rgba(0, 0, 0, 0.42),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.06), inset -2px -3px 6px rgba(0, 0, 0, 0.22);
+}
+[data-scheme='light'][data-surface='clay'],
+[data-scheme='light'] [data-surface='clay'] {
+  --surface-shadow: -6px -6px 14px rgba(255, 255, 255, 0.9), 8px 10px 22px rgba(0, 0, 0, 0.14), inset 1px 1px 0 rgba(255, 255, 255, 0.7);
+}
+[data-surface='clay'] .card {
+  border-radius: calc(var(--r-lg) * 1.25);
+}
+[data-surface='clay'] .card .card {
+  --surface-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.25), inset -2px -2px 6px rgba(255, 255, 255, 0.05);
+}
+
+[data-surface='hud'] {
+  --surface-fill: rgba(var(--bg-rgb), 0.38);
+  --surface-fill-hi: rgba(var(--accent-rgb), 0.08);
+  --surface-border: rgba(var(--accent-rgb), 0.22);
+  --surface-shadow: none;
+}
+[data-surface='hud'] .card {
+  border-radius: var(--r-xs);
+}
+[data-surface='hud'] .card::before {
+  --c: var(--accent);
+  --l: 16px;
+  --w: 2px;
+  z-index: 1;
+  background:
+    linear-gradient(var(--c), var(--c)) top left / var(--l) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) top left / var(--w) var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / var(--l) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / var(--w) var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / var(--l) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / var(--w) var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / var(--l) var(--w) no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / var(--w) var(--l) no-repeat;
+}
+[data-surface='hud'] .card .card::before {
+  --l: 8px;
+  --c: rgba(var(--accent-rgb), 0.6);
+}
+
+[data-surface='chrome'] {
+  --surface-fill: linear-gradient(180deg, rgba(var(--ink-rgb), 0.1), rgba(var(--ink-rgb), 0.025) 42%, rgba(var(--ink-rgb), 0.06));
+  --surface-fill-hi: rgba(var(--ink-rgb), 0.1);
+  --surface-border: transparent;
+}
+[data-surface='chrome'] .card {
+  background: linear-gradient(180deg, rgba(var(--ink-rgb), 0.1), rgba(var(--ink-rgb), 0.025) 42%, rgba(var(--ink-rgb), 0.06)), var(--bg2);
+  border: 0;
+}
+[data-surface='chrome'] .card::before {
+  z-index: 1;
+  padding: 1.5px;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--ink-rgb), 0.65),
+    rgba(var(--ink-rgb), 0.08) 28%,
+    rgba(var(--accent-rgb), 0.55) 52%,
+    rgba(var(--ink-rgb), 0.06) 76%,
+    rgba(var(--ink-rgb), 0.45)
+  );
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+[data-surface='chrome'] .card .card {
+  background: rgba(var(--ink-rgb), 0.06);
+}
+
+[data-surface='aero'] {
+  --surface-fill: rgba(var(--glass-rgb), calc(var(--glass-alpha) * (0.5 + var(--glass-a) * 1.5)));
+  --surface-fill-hi: rgba(var(--glass-rgb), calc(var(--glass-alpha) * (0.8 + var(--glass-a) * 1.8)));
+  --surface-border: var(--glass-border);
+}
+[data-surface='aero'] .card {
+  box-shadow: var(--surface-shadow), inset 0 1px 0 var(--glass-hi), inset 0 -10px 24px rgba(var(--accent-rgb), 0.08);
+}
+[data-surface='aero'] .card::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0, rgba(255, 255, 255, 0.06) 44%, transparent 45%);
+  border-radius: inherit;
+}
+
+/* Brutalist: a flat panel, a thick ink border and a hard shadow in the accent, offset like a sticker. */
+[data-surface='brutal'] {
+  --surface-fill: var(--bg2);
+  --surface-fill-hi: var(--card-hi);
+  --surface-border: rgba(var(--ink-rgb), 0.88);
+  --surface-shadow: 6px 6px 0 rgba(var(--accent-rgb), 0.9);
+}
+[data-surface='brutal'] .card {
+  border-width: 2.5px;
+  border-radius: var(--r-xs);
+}
+[data-surface='brutal'] .card .card {
+  --surface-border: rgba(var(--ink-rgb), 0.55);
+  border-width: 2px;
+}
+
+/* Holographic: glass with a rainbow foil edge, and a pastel sheen that turns slowly inside (the ::after, so it rests while driving). */
+[data-surface='holo'] {
+  --surface-fill: rgba(var(--glass-rgb), calc(var(--glass-alpha) * (0.45 + var(--glass-a) * 1.5)));
+  --surface-fill-hi: rgba(var(--glass-rgb), calc(var(--glass-alpha) * (0.7 + var(--glass-a) * 1.8)));
+  --surface-border: transparent;
+}
+[data-surface='holo'] .card::before {
+  z-index: 1;
+  padding: 1.5px;
+  background: linear-gradient(115deg, #ff9ad5, #9ef0ff 25%, #b5ffd9 45%, #ffe69e 65%, #c4b5fd 85%, #ff9ad5);
+  opacity: 0.85;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+[data-surface='holo'] .card::after {
+  inset: -70%;
+  border-radius: 0;
+  background: conic-gradient(from 0deg, rgba(255, 154, 213, 0.1), rgba(158, 240, 255, 0.1), rgba(181, 255, 217, 0.08), rgba(196, 181, 253, 0.1), rgba(255, 154, 213, 0.1));
+  animation: spin calc(30s * var(--tempo)) linear infinite;
+}
+
+/* Terminal: a green-screen panel. Square corners, a phosphor border and scan lines over the fill. */
+[data-surface='terminal'] {
+  --surface-fill: rgba(var(--bg-rgb), 0.86);
+  --surface-fill-hi: rgba(var(--accent-rgb), 0.1);
+  --surface-border: rgba(var(--accent-rgb), 0.5);
+}
+[data-surface='terminal'] .card {
+  border-radius: var(--r-xs);
+}
+[data-surface='terminal'] .card::before {
+  background: repeating-linear-gradient(0deg, rgba(var(--accent-rgb), 0.06) 0 1px, transparent 1px 3px), linear-gradient(180deg, rgba(var(--accent-rgb), 0.08), transparent 30%);
+}
+[data-surface='terminal'] .card .card::before {
+  background: none;
+}
+
+/* Lumen: panels lit from within, brightest at the top, with the light spilling out underneath. */
+[data-surface='lumen'] {
+  --surface-fill: radial-gradient(120% 90% at 50% 0%, rgba(var(--accent-rgb), 0.18), rgba(var(--glass-rgb), calc(var(--glass-alpha) * 1.1)) 65%);
+  --surface-fill-hi: rgba(var(--accent-rgb), 0.14);
+  --surface-border: rgba(var(--accent-rgb), 0.28);
+}
+[data-surface='lumen'] .card .card {
+  --surface-fill: rgba(var(--accent-rgb), 0.08);
+}
+
+/* Full effects + a see-through surface: a real frosted backdrop blur (the only backdrop-filter in the app). */
+[data-effects='full'][data-surface='glass'],
+[data-effects='full'][data-surface='aero'],
+[data-effects='full'][data-surface='holo'],
+[data-effects='full'] [data-surface='glass'],
+[data-effects='full'] [data-surface='aero'],
+[data-effects='full'] [data-surface='holo'] {
+  --surface-blur: blur(18px) saturate(140%);
+}
+[data-effects='full'][data-glass='clear'],
+[data-effects='full'] [data-glass='clear'] {
+  --surface-blur: blur(6px);
+}
+
+/* ---- Depth ------------------------------------------------------------------------------------------------------------- */
+
+[data-depth='flat'] {
+  --surface-shadow: none;
+}
+[data-depth='soft'] {
+  --surface-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+[data-scheme='light'][data-depth='soft'],
+[data-scheme='light'] [data-depth='soft'] {
+  --surface-shadow: 0 4px 14px rgba(20, 30, 60, 0.1);
+}
+[data-depth='deep'] {
+  --surface-shadow: 0 18px 42px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+[data-scheme='light'][data-depth='deep'],
+[data-scheme='light'] [data-depth='deep'] {
+  --surface-shadow: 0 16px 36px rgba(20, 30, 60, 0.18), 0 2px 6px rgba(20, 30, 60, 0.1);
+}
+[data-depth='crystal'] {
+  --surface-shadow: 0 14px 34px rgba(0, 0, 0, 0.38), inset 0 1px 0 var(--glass-hi), inset 0 0 0 1px rgba(var(--ink-rgb), 0.04);
+}
+[data-depth='crystal'] .card::after {
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.14), transparent 32%),
+    linear-gradient(305deg, rgba(var(--accent-rgb), 0.12), transparent 40%);
+}
+[data-depth='float'] {
+  --surface-shadow: 0 22px 44px -12px rgba(0, 0, 0, 0.55), 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+[data-depth='float'] .page .card:not(.card .card) {
+  transform: translateY(-2px);
+}
+[data-depth='bevel'] {
+  --surface-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.12), inset -1px -1px 0 rgba(0, 0, 0, 0.45), 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+[data-depth='layered'] {
+  --surface-shadow: 5px 5px 0 rgba(var(--accent-rgb), 0.22), 10px 10px 0 rgba(var(--accent-rgb), 0.08);
+}
+[data-depth='layered'] .card .card {
+  --surface-shadow: none;
+}
+
+/* The surfaces that define their own shadow keep it whatever the depth says. */
+[data-surface='outline'] .card,
+[data-surface='hud'] .card {
+  box-shadow: none;
+}
+[data-surface='brutal'] .card {
+  box-shadow: 6px 6px 0 rgba(var(--accent-rgb), 0.9);
+}
+[data-surface='brutal'] .card .card {
+  box-shadow: 3px 3px 0 rgba(var(--accent-rgb), 0.55);
+}
+[data-surface='terminal'] .card {
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.12), inset 0 0 22px rgba(var(--accent-rgb), 0.07);
+}
+[data-surface='lumen'] .card {
+  box-shadow: 0 14px 36px -14px rgba(var(--accent-rgb), 0.55), inset 0 1px 0 rgba(var(--accent-rgb), 0.35);
+}
+[data-surface='neon'] .card {
+  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.35), inset 0 0 18px rgba(var(--accent-rgb), 0.1);
+}
+[data-surface='clay'] .card {
+  box-shadow: -5px -5px 14px rgba(255, 255, 255, calc(0.035 + var(--glow) * 0.1)), 8px 10px 22px rgba(0, 0, 0, 0.42),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.06), inset -2px -3px 6px rgba(0, 0, 0, 0.22);
+}
+[data-scheme='light'][data-surface='clay'] .card,
+[data-scheme='light'] [data-surface='clay'] .card {
+  box-shadow: -6px -6px 14px rgba(255, 255, 255, 0.9), 8px 10px 22px rgba(0, 0, 0, 0.14), inset 1px 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* ---- Glass finishes (glass and aero) ----------------------------------------------------------------------------------- */
+
+[data-surface='glass'][data-glass='smoked'],
+[data-surface='glass'] [data-glass='smoked'],
+[data-surface='aero'][data-glass='smoked'] {
+  --surface-fill: rgba(var(--bg-rgb), calc(0.35 + var(--glass-a) * 0.45));
+}
+
+:is([data-surface='glass'], [data-surface='aero'])[data-glass='prismatic'] .card::after,
+:is([data-surface='glass'], [data-surface='aero']) [data-glass='prismatic'] .card::after {
+  padding: 1.5px;
+  background: linear-gradient(120deg, #ff5e8a, #ffc75a 25%, #5af2a6 50%, #5ab8ff 75%, #b47bff);
+  opacity: 0.7;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  z-index: 1;
+}
+
+:is([data-surface='glass'], [data-surface='aero'])[data-glass='iridescent'] .card::after,
+:is([data-surface='glass'], [data-surface='aero']) [data-glass='iridescent'] .card::after {
+  inset: -60%;
+  border-radius: 0;
+  background: conic-gradient(
+    from 0deg,
+    rgba(var(--accent-rgb), 0.16),
+    rgba(var(--accent-2-rgb), 0.12),
+    rgba(90, 242, 166, 0.08),
+    rgba(var(--accent-rgb), 0.16)
+  );
+  animation: spin calc(24s * var(--tempo)) linear infinite;
+}
+
+:is([data-surface='glass'], [data-surface='aero'])[data-glass='liquid'] .card::after,
+:is([data-surface='glass'], [data-surface='aero']) [data-glass='liquid'] .card::after {
+  inset: 0 auto 0 -60%;
+  width: 45%;
+  border-radius: 0;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.1) 45%, rgba(255, 255, 255, 0.16) 50%, transparent 70%);
+  animation: sheen calc(9s * var(--tempo)) var(--ease-in-out) infinite;
+}
+
+:is([data-surface='glass'], [data-surface='aero'])[data-glass='frosted'] .card {
+  box-shadow: var(--surface-shadow), inset 0 1px 0 var(--glass-hi), inset 0 0 22px rgba(var(--glass-rgb), 0.05);
+}
